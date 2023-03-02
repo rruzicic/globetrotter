@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  flights_backend:
+    container_name: 'flights_backend'
+    build: 
+      context: ./
+      dockerfile: './flights/backend/Dockerfile'
+    ports:
+      - '8080:8080'
+    volumes:
+      - './flights/backend:/go/src/app'
+    depends_on:
+      - 'mongo'
+
+  flights_frontend: 
+    container_name: 'flights_frontend'
+    build: './flights/frontend'
+    volumes:
+      - './flights/frontend:/react-app'
+    depends_on:
+      - 'flights_backend'
+    ports:
+      - "3000:3000"
+
+  mongo:
+    image: 'mongo:latest'
+    container_name: 'mongo'
+    ports:
+      - '27100:27017'
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+    
