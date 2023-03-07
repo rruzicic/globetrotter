@@ -1,9 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"github.com/rruzicic/globetrotter/flights/backend/repos"
+	"github.com/rruzicic/globetrotter/flights/backend/routers"
 )
 
 func main() {
-	fmt.Println("Hello world!")
+
+	repos.Setup()
+	routers.InitRouter()
+	repos.Disconnect()
 }

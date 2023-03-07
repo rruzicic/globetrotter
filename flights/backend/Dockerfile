@@ -5,8 +5,8 @@ USER api
 
 WORKDIR /go/src/app
 COPY . .
-COPY ../../go.mod .
-COPY ../../go.sum .
+COPY go.mod .
+COPY go.sum .
 
 RUN go get github.com/pilu/fresh
 RUN go install github.com/pilu/fresh

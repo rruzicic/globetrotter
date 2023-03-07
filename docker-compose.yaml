@@ -2,9 +2,9 @@ version: '3.3'
 services:
   flights_backend:
     container_name: 'flights_backend'
-    build: 
-      context: ./
-      dockerfile: './flights/backend/Dockerfile'
+    build: './flights/backend'
+      #context: ./
+      #dockerfile: './flights/backend/Dockerfile'
     ports:
       - '8080:8080'
     volumes:
