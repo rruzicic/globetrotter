@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	routers "github.com/rruzicic/globetrotter/flights/backend/routers/controllers"
+	"github.com/rruzicic/globetrotter/flights/backend/controllers"
 )
 
 func InitRouter() *gin.Engine {
@@ -11,9 +11,9 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.POST("/user/register", routers.RegisterUser)
-	r.GET("/hello", routers.Hello)
-	r.GET("/users/all", routers.GetAllUsers)
+	r.POST("/user/register", controllers.RegisterUser)
+	r.GET("/hello", controllers.Hello)
+	r.GET("/users/all", controllers.GetAllUsers)
 
 	r.Run()
 	return nil

@@ -9,7 +9,8 @@ WORKDIR /react-app
 
 # Installing dependencies
 COPY ./package.json /react-app
-RUN npm install
+COPY ./package-lock.json /react-app
+RUN npm ci
 
 # Copying all the files in our project
 COPY . .

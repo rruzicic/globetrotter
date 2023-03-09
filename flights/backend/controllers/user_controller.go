@@ -1,31 +1,33 @@
 package controllers
 
 import (
-	"fmt"
-	"net/http"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
+	"github.com/rruzicic/globetrotter/flights/backend/pkg/http"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
 
 func RegisterUser(ctx *gin.Context) {
+	httpGin := http.Gin{Context: ctx}
 	var user models.User
 
 	if err := ctx.BindJSON(&user); err != nil {
-		fmt.Println("Bind err")
+		httpGin.BadRequest()
+		log.Print("could not bind JSON to models.User")
 	}
+
 	services.RegisterUser(user)
-	ctx.JSON(http.StatusCreated, http.Response{
-		Status: "203",
-	})
+	httpGin.Created()
 }
 
 func GetAllUsers(ctx *gin.Context) {
-	users := services.GetAllUsers()
-	ctx.JSON(200, users)
+	httpGin := http.Gin{Context: ctx}
+	httpGin.OKObject(services.GetAllUsers())
 }
 
 func Hello(ctx *gin.Context) {
-	ctx.Writer.WriteString("Hello!")
+	httpGin := http.Gin{Context: ctx}
+	httpGin.OKObject("Hello")
 }
