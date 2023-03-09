@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/repos"
@@ -10,24 +9,26 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateFlight(flight models.Flight) {
+func CreateFlight(flight models.Flight) error {
 	// TODO: add created on
 
 	if _, err := repos.FlightsCollection.InsertOne(context.TODO(), flight); err != nil {
-		fmt.Println("Could not save flight document into database")
-		fmt.Println(err.Error())
+		return err
 	}
+
+	return nil
 }
 
-func DeleteFlight(flight models.Flight) {
+func DeleteFlight(flight models.Flight) error {
 	// TODO: add deleted on
 
 	// most/all mongodb collection funcitons take a filter. Which represents the query basically
 	filter := bson.M{"_id": bson.M{"$eq": flight.Id}}
 	if _, err := repos.FlightsCollection.DeleteOne(context.TODO(), filter); err != nil {
-		fmt.Println("Could not delete flight document from database")
-		fmt.Println(err.Error())
+		return err
 	}
+
+	return nil
 }
 
 func GetAllFlights() ([]models.Flight, error) {
