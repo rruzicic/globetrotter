@@ -12,9 +12,9 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.POST("/user/register", routers.RegisterUser)
-	r.GET("/hello", routers.Hello)
-	r.GET("/users/all", routers.GetAllUsers)
+	r.POST("/user/register", controllers.RegisterUser)
+	r.GET("/hello", controllers.Hello)
+	r.GET("/users/all", controllers.GetAllUsers)
 
 	r.POST("/flights/create", controllers.CreateFlight)
 	r.DELETE("/flights/delete", controllers.DeleteFlight)
