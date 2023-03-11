@@ -112,3 +112,24 @@ func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) erro
 
 	return nil
 }
+
+func GetTicketsByUser(userId string) ([]models.Ticket, error) {
+	tickets := []models.Ticket{}
+	cursor, err := repos.TicketsCollection.Find(context.TODO(), bson.D{{"user_id", userId}})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var ticket models.Ticket
+		err := cursor.Decode(&ticket)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tickets = append(tickets, ticket)
+	}
+
+	return tickets, nil
+}

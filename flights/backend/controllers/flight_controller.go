@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,10 @@ import (
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
+
+type UserIdStruct struct {
+	UserId string `json:"userId" bson:"user_id"`
+}
 
 func CreateFlight(ctx *gin.Context) {
 	var flight models.Flight
@@ -123,4 +128,28 @@ func BuyTicket(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, request)
+}
+
+func GetTicketsByUser(ctx *gin.Context) {
+	var userIdStruct UserIdStruct
+	if err := ctx.BindJSON(&userIdStruct); err != nil {
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
+
+		ctx.JSON(http.StatusBadRequest, http.Response{
+			Status: "400",
+		})
+	}
+
+	tickets, err := services.GetTicketsByUser(userIdStruct.UserId)
+	if err != nil {
+		log.Println("Couldn't get tickets for user")
+		log.Println(err.Error())
+
+		ctx.JSON(http.StatusInternalServerError, http.Response{
+			Status: "500",
+		})
+	}
+
+	ctx.JSON(http.StatusOK, tickets)
 }

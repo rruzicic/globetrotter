@@ -21,6 +21,7 @@ func InitRouter() *gin.Engine {
 	r.POST("/flights/get-one", controllers.GetFlightById)
 
 	r.POST("/flights/buy-ticket", controllers.BuyTicket)
+	r.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
 
 	r.Run()
 	return nil
