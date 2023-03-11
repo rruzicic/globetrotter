@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/repos"
@@ -69,4 +70,57 @@ func GetFlightById(id string) (*models.Flight, error) {
 
 	return &flight, nil
 
+}
+
+func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) error { //numOfTicketsOptional is gonna be optional
+	numOfTickets := 1                  //default value
+	if len(numOfTicketsOptional) > 0 { //handling of default value
+		numOfTickets = numOfTicketsOptional[0]
+	}
+
+	flight, err := GetFlightById(flightId)
+	if err != nil {
+		return err //Didn't find a flight with that id
+	}
+	if flight.Seats-numOfTickets < 0 {
+		return err //Not enough seats on the flight
+	}
+
+	flightObjId, _ := primitive.ObjectIDFromHex(flightId)
+
+	//reduce number of seats on the flight
+	result, err := repos.FlightsCollection.UpdateOne(context.TODO(), bson.D{{"_id", flightObjId}}, bson.D{{"$set", bson.D{{"seats", flight.Seats - numOfTickets}}}})
+	if result.MatchedCount != 0 {
+		log.Println("Updated number of seats on the flight")
+	} else {
+		log.Println("Didn't update number of seats on the flight")
+	}
+	if err != nil {
+		return err //Failed to update number of seats
+	}
+
+	ticket := models.Ticket{}
+	ticket.Flight = *flight
+	ticket.UserId = userId
+
+	for numOfTickets > 0 {
+		if _, err := repos.TicketsCollection.InsertOne(context.TODO(), ticket); err != nil {
+			return err
+		}
+		numOfTickets--
+	}
+
+	return nil
+}
+
+func GetTicketsByUser(userId string) ([]models.Ticket, error) {
+	tickets := []models.Ticket{}
+	cursor, err := repos.TicketsCollection.Find(context.TODO(), bson.D{{"user_id", userId}})
+	if err != nil {
+		return nil, err
+	}
+
+	cursor.All(context.TODO(), &tickets)
+
+	return tickets, nil
 }
