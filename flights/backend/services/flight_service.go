@@ -72,23 +72,23 @@ func GetFlightById(id string) (*models.Flight, error) {
 
 }
 
-func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) error { //numOfTickets je opcioni
-	numOfTickets := 1                  //default vrednost
-	if len(numOfTicketsOptional) > 0 { //hendlovanje opcionog parametra
+func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) error { //numOfTicketsOptional is gonna be optional
+	numOfTickets := 1                  //default value
+	if len(numOfTicketsOptional) > 0 { //handling of default value
 		numOfTickets = numOfTicketsOptional[0]
 	}
 
 	flight, err := GetFlightById(flightId)
 	if err != nil {
-		return err //nije nasao flight sa tim Id-em
+		return err //Didn't find a flight with that id
 	}
 	if flight.Seats-numOfTickets < 0 {
-		return err //nema dovoljno slobodnih mesta
+		return err //Not enough seats on the flight
 	}
 
 	flightObjId, _ := primitive.ObjectIDFromHex(flightId)
 
-	//smanji broj slobodnih mesta za taj let
+	//reduce number of seats on the flight
 	result, err := repos.FlightsCollection.UpdateOne(context.TODO(), bson.D{{"_id", flightObjId}}, bson.D{{"$set", bson.D{{"seats", flight.Seats - numOfTickets}}}})
 	if result.MatchedCount != 0 {
 		log.Println("Updated number of seats on the flight")
@@ -96,7 +96,7 @@ func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) erro
 		log.Println("Didn't update number of seats on the flight")
 	}
 	if err != nil {
-		return err //Nije updejtovao broj mesta
+		return err //Failed to update number of seats
 	}
 
 	ticket := models.Ticket{}
@@ -120,16 +120,7 @@ func GetTicketsByUser(userId string) ([]models.Ticket, error) {
 		return nil, err
 	}
 
-	for cursor.Next(context.TODO()) {
-		var ticket models.Ticket
-		err := cursor.Decode(&ticket)
-
-		if err != nil {
-			return nil, err
-		}
-
-		tickets = append(tickets, ticket)
-	}
+	cursor.All(context.TODO(), &tickets)
 
 	return tickets, nil
 }
