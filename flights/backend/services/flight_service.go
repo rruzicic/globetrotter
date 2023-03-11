@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/repos"
@@ -69,4 +70,45 @@ func GetFlightById(id string) (*models.Flight, error) {
 
 	return &flight, nil
 
+}
+
+func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) error { //numOfTickets je opcioni
+	numOfTickets := 1                  //default vrednost
+	if len(numOfTicketsOptional) > 0 { //hendlovanje opcionog parametra
+		numOfTickets = numOfTicketsOptional[0]
+	}
+
+	flight, err := GetFlightById(flightId)
+	if err != nil {
+		return err //nije nasao flight sa tim Id-em
+	}
+	if flight.Seats-numOfTickets < 0 {
+		return err //nema dovoljno slobodnih mesta
+	}
+
+	flightObjId, _ := primitive.ObjectIDFromHex(flightId)
+
+	//smanji broj slobodnih mesta za taj let
+	result, err := repos.FlightsCollection.UpdateOne(context.TODO(), bson.D{{"_id", flightObjId}}, bson.D{{"$set", bson.D{{"seats", flight.Seats - numOfTickets}}}})
+	if result.MatchedCount != 0 {
+		log.Println("Updated number of seats on the flight")
+	} else {
+		log.Println("Didn't update number of seats on the flight")
+	}
+	if err != nil {
+		return err //Nije updejtovao broj mesta
+	}
+
+	ticket := models.Ticket{}
+	ticket.Flight = *flight
+	ticket.UserId = userId
+
+	for numOfTickets > 0 {
+		if _, err := repos.TicketsCollection.InsertOne(context.TODO(), ticket); err != nil {
+			return err
+		}
+		numOfTickets--
+	}
+
+	return nil
 }

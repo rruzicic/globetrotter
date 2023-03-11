@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/flights/backend/DTO"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
@@ -97,4 +98,29 @@ func GetFlightById(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, flight)
+}
+
+func BuyTicket(ctx *gin.Context) {
+	var request DTO.TicketRequest
+	if err := ctx.BindJSON(&request); err != nil {
+		fmt.Println("Passed JSON couldn't be decoded")
+		fmt.Println(err.Error())
+
+		ctx.JSON(http.StatusBadRequest, http.Response{
+			Status: "400",
+		})
+	}
+
+	err := services.BuyTicket(request.FlightId, request.UserId, request.NumOfTicketsOptional...)
+
+	if err != nil {
+		fmt.Println("Couldn't buy ticket")
+		fmt.Println(err.Error())
+
+		ctx.JSON(http.StatusInternalServerError, http.Response{
+			Status: "500",
+		})
+	}
+
+	ctx.JSON(http.StatusOK, request)
 }

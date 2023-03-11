@@ -2,8 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	controllers "github.com/rruzicic/globetrotter/flights/backend/controllers"
-	routers "github.com/rruzicic/globetrotter/flights/backend/routers/controllers"
+	"github.com/rruzicic/globetrotter/flights/backend/controllers"
 )
 
 func InitRouter() *gin.Engine {
@@ -20,6 +19,8 @@ func InitRouter() *gin.Engine {
 	r.DELETE("/flights/delete", controllers.DeleteFlight)
 	r.GET("/flights/", controllers.GetAllFlights)
 	r.POST("/flights/get-one", controllers.GetFlightById)
+
+	r.POST("/flights/buy-ticket", controllers.BuyTicket)
 
 	r.Run()
 	return nil

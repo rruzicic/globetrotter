@@ -12,6 +12,7 @@ const DATABASE_URI = "mongodb://mongo"
 
 var UsersCollection *mongo.Collection
 var FlightsCollection *mongo.Collection
+var TicketsCollection *mongo.Collection
 
 var client *mongo.Client
 
@@ -24,6 +25,7 @@ func Setup() {
 
 	UsersCollection = client.Database("flights").Collection("users")
 	FlightsCollection = client.Database("flights").Collection("flights")
+	TicketsCollection = client.Database("flights").Collection("tickets")
 }
 
 func Disconnect() {
