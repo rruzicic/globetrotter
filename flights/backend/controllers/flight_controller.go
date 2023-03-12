@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,16 +19,16 @@ func CreateFlight(ctx *gin.Context) {
 	var flight models.Flight
 
 	if err := ctx.BindJSON(&flight); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
 		httpGin.BadRequest(nil)
 		return
 	}
 
 	if err := services.CreateFlight(flight); err != nil {
-		fmt.Println("Could not save flight document into database")
-		fmt.Println(err.Error())
+		log.Println("Could not save flight document into database")
+		log.Println(err.Error())
 
 		httpGin.NoContent(nil)
 		return
@@ -43,16 +42,16 @@ func DeleteFlight(ctx *gin.Context) {
 	var flight models.Flight
 
 	if err := ctx.BindJSON(&flight); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
 		httpGin.BadRequest(nil)
 		return
 	}
 
 	if err := services.DeleteFlight(flight); err != nil {
-		fmt.Println("Could not delete flight document from database")
-		fmt.Println(err.Error())
+		log.Println("Could not delete flight document from database")
+		log.Println(err.Error())
 
 		httpGin.NoContent(nil)
 		return
@@ -78,8 +77,8 @@ func GetFlightById(ctx *gin.Context) {
 	var id string
 
 	if err := ctx.BindJSON(id); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
 		httpGin.BadRequest(nil)
 		return
@@ -88,8 +87,8 @@ func GetFlightById(ctx *gin.Context) {
 	flight, err := services.GetFlightById(id)
 
 	if err != nil {
-		fmt.Println("Couldn't find flight with id", id)
-		fmt.Println(err.Error())
+		log.Println("Couldn't find flight with id", id)
+		log.Println(err.Error())
 
 		httpGin.NoContent(nil)
 		return
