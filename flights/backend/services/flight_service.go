@@ -89,7 +89,7 @@ func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) erro
 	flightObjId, _ := primitive.ObjectIDFromHex(flightId)
 
 	//reduce number of seats on the flight
-	result, err := repos.FlightsCollection.UpdateOne(context.TODO(), bson.D{{"_id", flightObjId}}, bson.D{{"$set", bson.D{{"seats", flight.Seats - numOfTickets}}}})
+	result, err := repos.FlightsCollection.UpdateOne(context.TODO(), bson.M{"_id": bson.M{"$eq": flightObjId}}, bson.M{"$set": bson.M{"seats": flight.Seats - numOfTickets}})
 	if result.MatchedCount != 0 {
 		log.Println("Updated number of seats on the flight")
 	} else {
@@ -115,7 +115,7 @@ func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) erro
 
 func GetTicketsByUser(userId string) ([]models.Ticket, error) {
 	tickets := []models.Ticket{}
-	cursor, err := repos.TicketsCollection.Find(context.TODO(), bson.D{{"user_id", userId}})
+	cursor, err := repos.TicketsCollection.Find(context.TODO(), bson.M{"user_id": bson.M{"$eq": userId}})
 	if err != nil {
 		return nil, err
 	}
