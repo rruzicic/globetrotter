@@ -12,6 +12,8 @@ import (
 const DATABASE_URI = "mongodb://mongo"
 
 var usersCollection *mongo.Collection
+var FlightsCollection *mongo.Collection
+var TicketsCollection *mongo.Collection
 
 var client *mongo.Client
 
@@ -30,6 +32,8 @@ func Setup() {
 	if _, err := usersCollection.Indexes().CreateOne(context.TODO(), index); err != nil {
 		log.Println("couldn't set email field to unique")
 	}
+	FlightsCollection = client.Database("flights").Collection("flights")
+	TicketsCollection = client.Database("flights").Collection("tickets")
 }
 
 func Disconnect() {

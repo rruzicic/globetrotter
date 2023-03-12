@@ -15,6 +15,14 @@ func InitRouter() *gin.Engine {
 	r.GET("/hello", controllers.Hello)
 	r.GET("/user/all", controllers.GetAllUsers)
 
+	r.POST("/flights/create", controllers.CreateFlight)
+	r.DELETE("/flights/delete", controllers.DeleteFlight)
+	r.GET("/flights/", controllers.GetAllFlights)
+	r.POST("/flights/get-one", controllers.GetFlightById)
+
+	r.POST("/flights/buy-ticket", controllers.BuyTicket)
+	r.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
+
 	r.Run()
 	return nil
 }
