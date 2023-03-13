@@ -1,5 +1,5 @@
 const REGEX = {
-    EMAIL: /^[a-z\d\._-]+@[a-z]+\.{1}[a-z]+$/,
+    EMAIL: /^[a-z\d._-]+@[a-z]+\.{1}[a-z]+$/,
     NUMBER: /^[0-9]+$/
 }
 
