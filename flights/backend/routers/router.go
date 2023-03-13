@@ -13,7 +13,7 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/user/register", controllers.RegisterUser)
 	r.GET("/hello", controllers.Hello)
-	r.GET("/users/all", controllers.GetAllUsers)
+	r.GET("/user/all", controllers.GetAllUsers)
 
 	r.POST("/flights/create", controllers.CreateFlight)
 	r.DELETE("/flights/delete", controllers.DeleteFlight)

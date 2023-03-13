@@ -34,42 +34,30 @@ func (gin *Gin) GenericResponse(code int, message string, data interface{}) {
 	})
 }
 
-func (gin *Gin) OK() {
-	sendResponse(gin.Context, 200, "OK", nil)
-}
-
-func (gin *Gin) OKObject(data interface{}) {
+func (gin *Gin) OK(data interface{}) {
 	sendResponse(gin.Context, 200, "OK", data)
 }
 
-func (gin *Gin) Created() {
-	sendResponse(gin.Context, 201, "Created", nil)
-}
-
-func (gin *Gin) CreatedObject(data interface{}) {
+func (gin *Gin) Created(data interface{}) {
 	sendResponse(gin.Context, 201, "Created", data)
 }
 
-func (gin *Gin) Accepted() {
-	sendResponse(gin.Context, 202, "Accepted", nil)
-}
-
-func (gin *Gin) AcceptedObject(data interface{}) {
+func (gin *Gin) Accepted(data interface{}) {
 	sendResponse(gin.Context, 202, "Accepted", data)
 }
 
-func (gin *Gin) NoContent() {
-	sendResponse(gin.Context, 204, "No Content", nil)
+func (gin *Gin) NoContent(data interface{}) {
+	sendResponse(gin.Context, 204, "No Content", data)
 }
 
-func (gin *Gin) BadRequest() {
-	sendResponse(gin.Context, 400, "Bad Request", nil)
+func (gin *Gin) BadRequest(data interface{}) {
+	sendResponse(gin.Context, 400, "Bad Request", data)
 }
 
-func (gin *Gin) Unauthorized() {
-	sendResponse(gin.Context, 401, "Unauthorized", nil)
+func (gin *Gin) Unauthorized(data interface{}) {
+	sendResponse(gin.Context, 401, "Unauthorized", data)
 }
 
-func (gin *Gin) NotFound() {
-	sendResponse(gin.Context, 404, "Not Found", nil)
+func (gin *Gin) NotFound(data interface{}) {
+	sendResponse(gin.Context, 404, "Not Found", data)
 }

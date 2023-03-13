@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,20 +19,22 @@ func CreateFlight(ctx *gin.Context) {
 	var flight models.Flight
 
 	if err := ctx.BindJSON(&flight); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
-		httpGin.BadRequest()
+		httpGin.BadRequest(nil)
+		return
 	}
 
 	if err := services.CreateFlight(flight); err != nil {
-		fmt.Println("Could not save flight document into database")
-		fmt.Println(err.Error())
+		log.Println("Could not save flight document into database")
+		log.Println(err.Error())
 
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.Created()
+	httpGin.Created(nil)
 }
 
 func DeleteFlight(ctx *gin.Context) {
@@ -41,20 +42,22 @@ func DeleteFlight(ctx *gin.Context) {
 	var flight models.Flight
 
 	if err := ctx.BindJSON(&flight); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
-		httpGin.BadRequest()
+		httpGin.BadRequest(nil)
+		return
 	}
 
 	if err := services.DeleteFlight(flight); err != nil {
-		fmt.Println("Could not delete flight document from database")
-		fmt.Println(err.Error())
+		log.Println("Could not delete flight document from database")
+		log.Println(err.Error())
 
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.OK()
+	httpGin.OK(nil)
 }
 
 func GetAllFlights(ctx *gin.Context) {
@@ -62,10 +65,11 @@ func GetAllFlights(ctx *gin.Context) {
 	flights, err := services.GetAllFlights()
 
 	if err != nil {
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.OKObject(flights)
+	httpGin.OK(flights)
 }
 
 func GetFlightById(ctx *gin.Context) {
@@ -73,22 +77,24 @@ func GetFlightById(ctx *gin.Context) {
 	var id string
 
 	if err := ctx.BindJSON(id); err != nil {
-		fmt.Println("Passed JSON couldn't be decoded")
-		fmt.Println(err.Error())
+		log.Println("Passed JSON couldn't be decoded")
+		log.Println(err.Error())
 
-		httpGin.BadRequest()
+		httpGin.BadRequest(nil)
+		return
 	}
 
 	flight, err := services.GetFlightById(id)
 
 	if err != nil {
-		fmt.Println("Couldn't find flight with id", id)
-		fmt.Println(err.Error())
+		log.Println("Couldn't find flight with id", id)
+		log.Println(err.Error())
 
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.OKObject(flight)
+	httpGin.OK(flight)
 }
 
 func BuyTicket(ctx *gin.Context) {
@@ -98,7 +104,8 @@ func BuyTicket(ctx *gin.Context) {
 		log.Println("Passed JSON couldn't be decoded")
 		log.Println(err.Error())
 
-		httpGin.BadRequest()
+		httpGin.BadRequest(nil)
+		return
 	}
 
 	err := services.BuyTicket(request.FlightId, request.UserId, request.NumOfTicketsOptional...)
@@ -107,10 +114,11 @@ func BuyTicket(ctx *gin.Context) {
 		log.Println("Couldn't buy ticket")
 		log.Println(err.Error())
 
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.OKObject(request)
+	httpGin.OK(request)
 }
 
 func GetTicketsByUser(ctx *gin.Context) {
@@ -120,7 +128,8 @@ func GetTicketsByUser(ctx *gin.Context) {
 		log.Println("Passed JSON couldn't be decoded")
 		log.Println(err.Error())
 
-		httpGin.BadRequest()
+		httpGin.BadRequest(nil)
+		return
 	}
 
 	tickets, err := services.GetTicketsByUser(userIdStruct.UserId)
@@ -128,8 +137,9 @@ func GetTicketsByUser(ctx *gin.Context) {
 		log.Println("Couldn't get tickets for user")
 		log.Println(err.Error())
 
-		httpGin.NoContent()
+		httpGin.NoContent(nil)
+		return
 	}
 
-	httpGin.OKObject(tickets)
+	httpGin.OK(tickets)
 }
