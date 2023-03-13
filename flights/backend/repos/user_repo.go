@@ -35,11 +35,7 @@ func FindAllUsers() []models.User {
 	cursor.All(context.TODO(), &result)
 	return result
 }
-
 func CreateUser(user models.User) bool {
-	user.CreatedOn = int(time.Now().Unix())
-	user.ModifiedOn = int(time.Now().Unix())
-
 	if _, err := usersCollection.InsertOne(context.TODO(), user); err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
 		return false
