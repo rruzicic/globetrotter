@@ -6,6 +6,7 @@ import theme from "theme";
 import { ThemeProvider } from "@mui/material";
 import Layout from "components/common/Layout";
 import './App.css'
+import RegistrationPage from "pages/RegistrationPage";
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path="" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegistrationPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
