@@ -6,10 +6,8 @@ import (
 )
 
 func RegisterUser(user models.User) bool {
-	if repos.CreateUser(user) {
-		return true
-	}
-	return false
+	user.Role = models.UserRole
+	return repos.CreateUser(user)
 }
 
 func GetAllUsers() []models.User {

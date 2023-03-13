@@ -10,8 +10,18 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func FindUserByObjectId(id bson.ObjectId) {
+func FindUserByObjectId(id string) {
 
+}
+
+func FindUserByEmail(email string) (models.User, error) {
+	result := models.User{}
+	filter := bson.M{"email": bson.M{"$eq": email}}
+	err := usersCollection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		return models.User{}, err
+	}
+	return result, nil
 }
 
 func FindAllUsers() []models.User {
@@ -22,7 +32,7 @@ func FindAllUsers() []models.User {
 		log.Panic("could not find users err: ", err.Error())
 		return []models.User{}
 	}
-	cursor.All(context.TODO(), result)
+	cursor.All(context.TODO(), &result)
 	return result
 }
 
