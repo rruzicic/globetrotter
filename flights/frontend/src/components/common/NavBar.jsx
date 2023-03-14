@@ -15,12 +15,6 @@ const NavBar = () => {
 
     return (
 
-        // Login
-        // register
-        // craete flight
-        // all flights
-
-
         <Stack direction='row' sx={styles.container} bgcolor='primary.main'>
             <Link to='/' sx={{textDecoration: 'none'}}>
                 <Button  sx={{textDecoration: 'none'}} variant="contained" color="secondary" startIcon={<HomeIcon />}>
@@ -42,7 +36,7 @@ const NavBar = () => {
                     All flights
                 </Button>
             </Link>
-            <Link to='/new/flight'>
+            <Link to='/flights/create'>
                 <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
                     Create flight
                 </Button>
