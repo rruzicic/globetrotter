@@ -11,6 +11,7 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middlewares.CORSMiddleware())
 
 	userProtected := r.Group("")
 	userProtected.Use(middlewares.UserAuthMiddleware())
@@ -21,9 +22,11 @@ func InitRouter() *gin.Engine {
 	public := r.Group("")
 
 	public.POST("/user/register", controllers.RegisterUser)
+	public.POST("/user/login", controllers.Login)
 	public.GET("/hello", controllers.Hello)
 	public.GET("/user/all", controllers.GetAllUsers)
-	public.POST("/user/login", controllers.Login)
+
+	userProtected.GET("/user/current", controllers.CurrentUser)
 
 	public.POST("/flights/create", controllers.CreateFlight)
 	public.DELETE("/flights/delete", controllers.DeleteFlight)

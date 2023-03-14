@@ -22,3 +22,13 @@ func Login(ctx *gin.Context) {
 
 	httpGin.OK(token)
 }
+
+func CurrentUser(ctx *gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	user, err := services.GetUserFromToken(ctx)
+	if err != nil {
+		httpGin.BadRequest(err.Error())
+		return
+	}
+	httpGin.OK(user)
+}

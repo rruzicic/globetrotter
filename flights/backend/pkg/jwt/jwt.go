@@ -54,10 +54,6 @@ func ExtractTokenEmail(ctx *gin.Context) (string, error) {
 }
 
 func extractToken(ctx *gin.Context) string {
-	/*token := ctx.Query("token")
-	if token != "" {
-		return token
-	}*/
 	bearerToken := ctx.Request.Header.Get("Authorization")
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		return strings.Split(bearerToken, " ")[1]

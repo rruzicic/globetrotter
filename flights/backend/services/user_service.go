@@ -13,3 +13,7 @@ func RegisterUser(user models.User) bool {
 func GetAllUsers() []models.User {
 	return repos.FindAllUsers()
 }
+
+func GetUserByEmail(email string) (models.User, error) {
+	return repos.FindUserByEmail(email)
+}

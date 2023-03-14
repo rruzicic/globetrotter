@@ -3,7 +3,9 @@ package services
 import (
 	"errors"
 
+	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/dto"
+	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/pkg/jwt"
 	"github.com/rruzicic/globetrotter/flights/backend/repos"
 )
@@ -23,6 +25,18 @@ func Login(credentials dto.LoginDTO) (string, error) {
 	}
 
 	return token, nil
+}
+
+func GetUserFromToken(ctx *gin.Context) (models.User, error) {
+	email, err := jwt.ExtractTokenEmail(ctx)
+	if err != nil {
+		return models.User{}, err
+	}
+	user, err := GetUserByEmail(email)
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
 }
 
 func verifyPassword(dbPassword string, dtoPassword string) bool {
