@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material";
 import Layout from "components/common/Layout";
 import './App.css'
 import RegistrationPage from "pages/RegistrationPage";
+import FlightsPage from "pages/FlightsPage";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path="" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/flights" element={<FlightsPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

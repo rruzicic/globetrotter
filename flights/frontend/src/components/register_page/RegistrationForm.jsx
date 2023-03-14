@@ -16,7 +16,7 @@ const RegistrationForm = () => {
     return (
         <>
         <Grid container spacing={1}>
-            <Typography variant="subtitle1" sx={{ marginTop: '3rem', color: theme.palette.primary.dark }}>
+            <Typography variant="subtitle1" sx={{ marginTop: '2rem', color: theme.palette.primary.dark }}>
                 Personal information:
             </Typography>
             <Divider variant='fullWidth' sx={{ borderColor: theme.palette.primary.dark, width: '100%' }} />
@@ -69,7 +69,7 @@ const RegistrationForm = () => {
                     type='password'
                 />
             </Grid>
-            <Typography variant="subtitle1" color="tertiary" sx={{ marginTop: '3rem', color: theme.palette.primary.dark }}>
+            <Typography variant="subtitle1" color="tertiary" sx={{ marginTop: '1rem', color: theme.palette.primary.dark }}>
                 Address information:
             </Typography>
             <Divider variant='fullWidth' sx={{ borderColor: theme.palette.primary.dark, width: '100%' }} />
