@@ -2,7 +2,6 @@ import { Button, Container, Grid } from "@mui/material";
 import CreateFlightForm from "components/flight_management/CreateFlightForm";
 import { Form } from "react-final-form";
 import REGEX from "regex";
-// import theme from "theme";
 
 const numberRegex = new RegExp(REGEX.NUMBER)
 const CreateFlightPage = () => {
@@ -12,24 +11,18 @@ const CreateFlightPage = () => {
         if (!values.departure) {
             returnObject.departure = 'This field is required!'
         }
-        // if (!values.departureDateTime) {
-        //     returnObject.departureDateTime = 'This field is required!'
-        // }
         if (!values.destination) {
             returnObject.destination = 'This field is required!'
         }
-        // if (!values.arrivalDateTime) {
-        //     returnObject.arrivalDateTime = 'This field is required!'
-        // }
         if (new Date(values.departureDateTime) > new Date(values.arrivalDateTime)) {
-            returnObject.departureDateTime = 'Arrival must be after departure!'
-            returnObject.arrivalDateTime = 'Arrival must be after departure!'
+            returnObject.departure = 'Arrival must be after departure!'
+            returnObject.destination = 'Arrival must be after departure!'
         }
         if (!numberRegex.test(values.price)) {
-            returnObject.price = 'This is not a valid email address!'
+            returnObject.price = 'This must be a number!'
         }
         if (!numberRegex.test(values.seats)) {
-            returnObject.seats = 'This is not a valid email address!'
+            returnObject.seats = 'This must be a number!'
         }
         return returnObject
     }
@@ -43,23 +36,6 @@ const CreateFlightPage = () => {
         console.log(values);
     }
 
-    // const styles = {
-    //     imageDiv: {
-    //         backgroundImage: `url(${process.env.PUBLIC_URL}/plane.svg)`,
-    //         backgroundPosition: 'center',
-    //         backgroundSize: 'contain',
-    //         backgroundRepeat: 'no-repeat',
-    //         textAlign: 'center',
-    //         display: 'flex',
-    //         justifyContent: 'center',
-    //         flexDirection: 'column'
-    //     },
-    //     titles: {
-    //         backdropFilter: 'blur(10px)',
-    //         color: theme.palette.primary.dark
-    //     }
-    // }
-
     return (
         <>
             <Form
@@ -70,9 +46,9 @@ const CreateFlightPage = () => {
                     <form onSubmit={handleSubmit} noValidate>
                         <Grid container sx={{ margin: 'auto' }}>
                             <Grid item xs={12}>
-                                <Container sx={{ display: 'grid', placeItems: 'center', width: '90%' }}>
+                                <Container sx={{ display: 'grid', placeItems: 'center', width: '90%', marginTop: '4%' }}>
                                     <CreateFlightForm />
-                                    <Button variant="contained" color="primary" type='submit'>
+                                    <Button variant="contained" color="primary" type='submit' sx={{marginTop: '1rem'}}>
                                         Submit
                                     </Button>
                                 </Container>

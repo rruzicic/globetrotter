@@ -1,4 +1,4 @@
-import { Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
+import { Button, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import theme from "theme";
 import formatDate from "util";
@@ -17,6 +17,7 @@ const FlightsPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
+    const [admin, setAdmin] = useState(true)
 
     const flights = [
         {
@@ -129,6 +130,10 @@ const FlightsPage = () => {
         }
     }
 
+    const deleteFlight = (id) => {
+        console.log('Should delete flight with id: ' + id);
+    }
+
     return (
         <>
             <Typography variant="h2" align="center" sx={{margin: '1rem 0'}}>List of all flights</Typography>
@@ -217,6 +222,15 @@ const FlightsPage = () => {
                             <TableCell>{flight.price}</TableCell>
                             <TableCell>{flight.seats}</TableCell>
                             <TableCell>{flight.duration}</TableCell>
+                            {
+                                admin ?
+                                (<TableCell>
+                                    <Button variant='contained' color='primary' onClick={() => deleteFlight(flight.id)}>
+                                        Delete
+                                    </Button>
+                                </TableCell>) :
+                                <></>
+                            }
                         </TableRow>
                     ))}
                 </TableBody>

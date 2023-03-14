@@ -25,7 +25,7 @@ const CreateFlightForm = () => {
     return (
         <>
             <Grid container spacing={1}>
-                <Typography variant="subtitle1" sx={{ marginTop: '2rem', color: theme.palette.primary.dark }}>
+                <Typography variant="h5" sx={{ margin: '2rem 0', color: theme.palette.primary.dark }}>
                         New Flight Information:
                 </Typography>
                 <Divider variant='fullWidth' sx={{ borderColor: theme.palette.primary.dark, width: '100%' }} />
