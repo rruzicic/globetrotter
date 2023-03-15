@@ -14,7 +14,6 @@ const NavBar = () => {
     }
 
     return (
-
         <Stack direction='row' sx={styles.container} bgcolor='primary.main'>
             <Link to='/' sx={{textDecoration: 'none'}}>
                 <Button  sx={{textDecoration: 'none'}} variant="contained" color="secondary" startIcon={<HomeIcon />}>
@@ -41,7 +40,6 @@ const NavBar = () => {
                     Create flight
                 </Button>
             </Link>
-
         </Stack>
     );
 }

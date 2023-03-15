@@ -33,6 +33,7 @@ const CreateFlightPage = () => {
     }
 
     const onSubmit = (values) => {
+        //TODO: make request to API for flight creation
         console.log(values);
     }
 

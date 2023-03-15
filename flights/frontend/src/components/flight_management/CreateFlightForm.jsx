@@ -1,12 +1,10 @@
 import { Divider, Grid, Typography } from "@mui/material";
 import { DateTimePicker, TextField } from "mui-rff";
-import { useState } from "react";
 import { AdapterDateFns } from '@mui/x-date-pickers-pro/AdapterDateFns';
 import theme from "theme";
-import { LocalizationProvider } from "@mui/x-date-pickers-pro";
-// import { DateTimePicker } from "@mui/x-date-pickers-pro";
 
 const CreateFlightForm = () => {
+    //model for reference
     // DepartureDateTime time.Time     `json:"departureDateTime" bson:"departure_date_time"`
     // ArrivalDateTime   time.Time     `json:"arrivalDateTime" bson:"arrival_date_time"`
     // Departure         string        `json:"departure" bson:"departure" `
@@ -14,13 +12,6 @@ const CreateFlightForm = () => {
     // Price             float32       `json:"price" bson:"price"`
     // Seats             int           `json:"seats" bson:"seats"`
     // Duration          int           `json:"duration" bson:"duration"`
-    // const [selectedDepartureDate, ChangeDepartureDate] = useState(new Date())
-    // const [selectedArrivalDate, ChangeArrivalDate] = useState(new Date())
-    // const test = () => {
-    //     console.log(selectedDepartureDate);
-    //     console.log(selectedArrivalDate);
-    // }
-
 
     return (
         <>
