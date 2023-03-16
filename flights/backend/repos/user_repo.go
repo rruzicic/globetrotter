@@ -58,3 +58,28 @@ func UpdateUser(user models.User) bool {
 func DeleteUser(id bson.ObjectId) {
 
 }
+
+func FindUserByAPIKey(api_key string) (*models.User, error) {
+	var user models.User
+
+	filter := bson.M{"api_key": bson.M{"value": bson.M{"$eq": api_key}}}
+
+	if err := usersCollection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+		log.Panic("Could not find user by api key: ", api_key)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func DeleteUserAPIKey(api_key string) bool {
+	user, err := FindUserByAPIKey(api_key)
+
+	if err != nil {
+		return false
+	}
+
+	user.APIKey = models.API_Key{}
+
+	return UpdateUser(*user)
+}
