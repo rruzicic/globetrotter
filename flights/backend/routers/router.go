@@ -23,6 +23,8 @@ func InitRouter() *gin.Engine {
 	r.POST("/flights/buy-ticket", controllers.BuyTicket)
 	r.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
 
+	r.GET("/api-key/", controllers.CreateAPIKey)
+
 	r.Run()
 	return nil
 }
