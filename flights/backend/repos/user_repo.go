@@ -59,6 +59,17 @@ func DeleteUser(id bson.ObjectId) {
 
 }
 
+func FindUserByMail(mail string) (*models.User, error) {
+	user := models.User{}
+	filter := bson.M{"email": bson.M{"$eq": mail}}
+
+	if err := usersCollection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func FindUserByAPIKey(api_key string) (*models.User, error) {
 	var user models.User
 
