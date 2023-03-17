@@ -159,5 +159,4 @@ func BuyTicketForOtherUser(ctx *gin.Context) {
 	}
 
 	httpGin.OK("Ticket Bought for Other User")
-
 }
