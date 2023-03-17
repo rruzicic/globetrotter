@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/rruzicic/globetrotter/flights/backend/dto"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/repos"
 	"go.mongodb.org/mongo-driver/bson"
@@ -97,4 +98,20 @@ func GetTicketsByUser(userId string) ([]models.Ticket, error) {
 	cursor.All(context.TODO(), &tickets)
 
 	return tickets, nil
+}
+
+func BuyTicketForOtherUser(buyTicketForOtherUserDTO dto.BuyTicketForOtherUserDTO) error {
+	user, err := repos.FindUserByAPIKey(buyTicketForOtherUserDTO.ApiKey)
+
+	if err != nil {
+		return err
+	}
+
+	// user.Id.Hex could be a problem
+	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.Id.Hex(), buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
+		return err
+	}
+
+	return nil
+
 }

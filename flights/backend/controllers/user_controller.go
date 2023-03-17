@@ -49,8 +49,7 @@ func AddUserAPIKey(ctx *gin.Context) {
 	}
 
 	if !services.AddUserAPIKey(*user, addUserAPIKeyDTO.APIKey) {
-		// should be Internal Server Error but can't see it for some reason
-		httpGin.BadRequest(nil)
+		httpGin.InternalServerError(nil)
 		return
 	}
 
