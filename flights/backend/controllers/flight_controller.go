@@ -143,3 +143,20 @@ func GetTicketsByUser(ctx *gin.Context) {
 
 	httpGin.OK(tickets)
 }
+
+func BuyTicketForOtherUser(ctx *gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	buyTicketForOtherUserDTO := dto.BuyTicketForOtherUserDTO{}
+
+	if err := httpGin.Context.ShouldBindJSON(&buyTicketForOtherUserDTO); err != nil {
+		httpGin.BadRequest(nil)
+		return
+	}
+
+	if err := services.BuyTicketForOtherUser(buyTicketForOtherUserDTO); err != nil {
+		httpGin.InternalServerError(nil)
+		return
+	}
+
+	httpGin.OK("Ticket Bought for Other User")
+}
