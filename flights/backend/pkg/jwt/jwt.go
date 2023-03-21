@@ -8,21 +8,20 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/flights/backend/config"
 )
 
-const SECRET_KEY = "someSecret_addThisToConf"
-
 func GenerateToken(email string, role string) (string, error) {
-	tokenLifespan := 1 // in hrs
+	tokenLifespanHrs := config.Configuration.GetInt("JWT_EXP_HRS")
 
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["email"] = email
 	claims["role"] = role
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespanHrs)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(SECRET_KEY))
+	return token.SignedString([]byte(config.Configuration.GetString("JWT_SECRET")))
 }
 
 func TokenValid(ctx *gin.Context, role string) error {
@@ -66,7 +65,7 @@ func parseToken(tokenString string) (*jwt.Token, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("token not signed properly")
 		}
-		return []byte(SECRET_KEY), nil
+		return []byte(config.Configuration.GetString("JWT_SECRET")), nil
 	})
 	return token, err
 }
