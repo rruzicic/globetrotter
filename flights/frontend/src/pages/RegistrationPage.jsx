@@ -6,7 +6,6 @@ import REGEX from "regex";
 import theme from "theme";
 
 const emailRegex = new RegExp(REGEX.EMAIL)
-const numberRegex = new RegExp(REGEX.NUMBER)
 const RegistrationPage = () => {
     const validate = (values) => {
         let returnObject = {}

@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/flights/backend/config"
 	"github.com/rruzicic/globetrotter/flights/backend/controllers"
 	"github.com/rruzicic/globetrotter/flights/backend/middlewares"
 )
@@ -13,13 +14,18 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middlewares.CORSMiddleware())
 
+	public := r.Group("")
+
 	userProtected := r.Group("")
 	userProtected.Use(middlewares.UserAuthMiddleware())
 
 	adminProtected := r.Group("")
 	adminProtected.Use(middlewares.AdminAuthMiddleware())
 
-	public := r.Group("")
+	useAPIKeyMiddleware := r.Group("")
+	useAPIKeyMiddleware.Use(middlewares.APIKeyAuthMiddleware())
+
+	r.POST("/user/add-api-key-to-user", controllers.AddUserAPIKey)
 
 	public.POST("/user/register", controllers.RegisterUser)
 	public.POST("/user/login", controllers.Login)
@@ -35,7 +41,10 @@ func InitRouter() *gin.Engine {
 
 	public.POST("/flights/buy-ticket", controllers.BuyTicket)
 	public.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
+	useAPIKeyMiddleware.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
 
-	r.Run()
+	r.GET("/api-key/", controllers.CreateAPIKey)
+
+	r.Run(config.Configuration.GetString("PORT"))
 	return nil
 }

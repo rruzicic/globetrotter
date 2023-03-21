@@ -27,14 +27,14 @@ func Login(credentials dto.LoginDTO) (string, error) {
 	return token, nil
 }
 
-func GetUserFromToken(ctx *gin.Context) (models.User, error) {
+func GetUserFromToken(ctx *gin.Context) (*models.User, error) {
 	email, err := jwt.ExtractTokenEmail(ctx)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
-	user, err := GetUserByEmail(email)
+	user, err := FindUserByMail(email)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 	return user, nil
 }
