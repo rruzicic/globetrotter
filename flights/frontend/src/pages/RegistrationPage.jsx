@@ -1,4 +1,5 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
+import axios from "axios";
 import RegistrationForm from "components/register_page/RegistrationForm";
 import { Form } from "react-final-form";
 import REGEX from "regex";
@@ -45,7 +46,13 @@ const RegistrationPage = () => {
 
     const onSubmit = (values) => {
         //values contain what you type in in json format with names matching the json of model
-        console.log(values);
+        delete values.confirmPassword       // redundant 
+        values.zip = parseInt(values.zip)   // backend only accepts int
+        axios.post('http://localhost:8080/user/register', values)   // it would be nice to move this to config file
+        .then((res) => {
+            console.log(res.data.msg)       // consider adding a popup    
+        })
+        .catch((err) => console.log(err.response.data.data))
     }
 
     const styles = {

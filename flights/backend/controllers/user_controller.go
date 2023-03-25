@@ -41,7 +41,7 @@ func AddUserAPIKey(ctx *gin.Context) {
 		return
 	}
 
-	user, err := services.FindUserByMail(addUserAPIKeyDTO.UserMail)
+	user, err := services.FindUserByEmail(addUserAPIKeyDTO.UserMail)
 
 	if err != nil {
 		httpGin.BadRequest(nil)
