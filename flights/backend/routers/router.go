@@ -32,9 +32,9 @@ func InitRouter() *gin.Engine {
 	public.GET("/hello", controllers.Hello)
 	public.GET("/user/all", controllers.GetAllUsers)
 
-	r.POST("/flights/buy-ticket", controllers.BuyTicket)
-	r.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
-	r.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
+	// r.POST("/flights/buy-ticket", controllers.BuyTicket)
+	// r.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
+	// r.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
 	r.GET("/flights/search", controllers.SearchFlights)
 	userProtected.GET("/user/current", controllers.CurrentUser)
 

@@ -75,11 +75,12 @@ func GetFlightById(id string) (*models.Flight, error) {
 func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight, error) {
 
 	filter := bson.M{
-        "$or": []bson.M{
-            bson.M{"arrival_date_time": searchParams.ArrivalDateTime},
-            bson.M{"departure_date_time": searchParams.DepartureDateTime},
-            bson.M{"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
-            bson.M{"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
+        "$and": []bson.M{
+            {"arrival_date_time": searchParams.ArrivalDateTime},
+            {"departure_date_time": searchParams.DepartureDateTime},
+            {"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
+            {"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
+			//TODO: passenger number?
         },
     }
 	
