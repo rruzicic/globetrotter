@@ -160,3 +160,22 @@ func BuyTicketForOtherUser(ctx *gin.Context) {
 
 	httpGin.OK("Ticket Bought for Other User")
 }
+
+func SearchFlights(ctx* gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	searchFlightsDto := dto.SearchFlightsDTO{}
+	flights := []models.Flight{}
+
+	if err := httpGin.Context.ShouldBindJSON(&searchFlightsDto); err != nil {
+		httpGin.BadRequest(nil)
+		return
+	}
+
+	flights, err := services.SearchFlights(searchFlightsDto);
+	if(err != nil) {
+		httpGin.InternalServerError(err)
+		return
+	}
+
+	httpGin.OK(flights)
+}
