@@ -32,7 +32,7 @@ func GetUserFromToken(ctx *gin.Context) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user, err := FindUserByMail(email)
+	user, err := FindUserByEmail(email)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ func GetAllUsers() []models.User {
 	return repos.FindAllUsers()
 }
 
-func FindUserByMail(mail string) (*models.User, error) {
+func FindUserByEmail(mail string) (*models.User, error) {
 	user, err := repos.FindUserByEmail(mail)
 
 	if err != nil {
