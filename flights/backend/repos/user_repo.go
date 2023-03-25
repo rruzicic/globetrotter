@@ -14,16 +14,6 @@ func FindUserByObjectId(id string) {
 
 }
 
-func FindUserByEmail(email string) (models.User, error) {
-	result := models.User{}
-	filter := bson.M{"email": bson.M{"$eq": email}}
-	err := usersCollection.FindOne(context.TODO(), filter).Decode(&result)
-	if err != nil {
-		return models.User{}, err
-	}
-	return result, nil
-}
-
 func FindAllUsers() []models.User {
 	result := []models.User{}
 	//filter := bson.D{{Name: "deleted_on", Value: bson.D{{Name: "$eq", Value: "0"}}}}
@@ -71,7 +61,7 @@ func DeleteUser(id bson.ObjectId) {
 
 }
 
-func FindUserByMail(mail string) (*models.User, error) {
+func FindUserByEmail(mail string) (*models.User, error) {
 	user := models.User{}
 	filter := bson.M{"email": bson.M{"$eq": mail}}
 
