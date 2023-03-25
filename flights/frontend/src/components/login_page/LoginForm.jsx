@@ -30,6 +30,7 @@ const LoginForm = () => {
                     fullWidth
                     required
                     margin="normal"
+                    type="password"
                     name="password"
                     label="Password"
                 />

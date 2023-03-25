@@ -10,12 +10,12 @@ const emailRegex = new RegExp(REGEX.EMAIL)
 
 const LoginPage = () => {
     const onSubmit = (values) => {
-        axios.post('TODO: dodati endpoint', values)
+        axios.post('http://localhost:8080/user/login', values)
             .catch((e) => {
-                console.error(e.message)
+                console.log('Login unsuccessful!')
             })
-            .then(() => {
-                console.log('Login successful!')
+            .then((res) => {
+                localStorage.setItem('flights_jwt', res.data.data)
             })
     }
 

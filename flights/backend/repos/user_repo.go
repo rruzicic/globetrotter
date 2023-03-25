@@ -10,7 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func FindUserByObjectId(id bson.ObjectId) {
+func FindUserByObjectId(id string) {
 
 }
 
@@ -22,14 +22,16 @@ func FindAllUsers() []models.User {
 		log.Panic("could not find users err: ", err.Error())
 		return []models.User{}
 	}
-	cursor.All(context.TODO(), result)
+	cursor.All(context.TODO(), &result)
 	return result
 }
-
 func CreateUser(user models.User) bool {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
 
+	if _, err := FindUserByEmail(user.EMail); err == nil {
+		return false
+	}
 	if _, err := usersCollection.InsertOne(context.TODO(), user); err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
 		return false
@@ -59,7 +61,7 @@ func DeleteUser(id bson.ObjectId) {
 
 }
 
-func FindUserByMail(mail string) (*models.User, error) {
+func FindUserByEmail(mail string) (*models.User, error) {
 	user := models.User{}
 	filter := bson.M{"email": bson.M{"$eq": mail}}
 

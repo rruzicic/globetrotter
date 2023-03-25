@@ -6,18 +6,16 @@ import (
 )
 
 func RegisterUser(user models.User) bool {
-	if repos.CreateUser(user) {
-		return true
-	}
-	return false
+	user.Role = models.UserRole
+	return repos.CreateUser(user)
 }
 
 func GetAllUsers() []models.User {
 	return repos.FindAllUsers()
 }
 
-func FindUserByMail(mail string) (*models.User, error) {
-	user, err := repos.FindUserByMail(mail)
+func FindUserByEmail(mail string) (*models.User, error) {
+	user, err := repos.FindUserByEmail(mail)
 
 	if err != nil {
 		return nil, err
