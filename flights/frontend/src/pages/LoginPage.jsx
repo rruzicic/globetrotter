@@ -1,21 +1,28 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import LoginForm from "components/login_page/LoginForm";
+import AuthContext, { AuthContextProvider } from "config/authContext";
+import { useContext } from "react";
 import { Form } from "react-final-form";
+import { useNavigate } from "react-router";
 import REGEX from "regex";
 import theme from "theme";
 
 const emailRegex = new RegExp(REGEX.EMAIL)
-// const numberRegex = new RegExp(REGEX.NUMBER)
 
 const LoginPage = () => {
+    let navigate = useNavigate()
+    const authCtx = useContext(AuthContext)
+
     const onSubmit = (values) => {
         axios.post('http://localhost:8080/user/login', values)
             .catch((e) => {
                 console.log('Login unsuccessful!')
             })
             .then((res) => {
-                localStorage.setItem('flights_jwt', res.data.data)
+                console.log(res)
+                authCtx.login(res.data.data)
+                navigate('/flights')
             })
     }
 
