@@ -7,7 +7,7 @@ const AuthContext = createContext({
     isLoggedIn: false,
     login: (token) => { },
     logout: () => { },
-    isUser: false
+    isUser: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {

@@ -18,7 +18,7 @@ import AuthContext from "config/authContext";
 
 function App() {
   const authCtx = useContext(AuthContext)
-  console.log(authCtx.isLoggedIn);
+  console.log(authCtx.isUser());
 
   return (
     <ThemeProvider theme={theme}>
