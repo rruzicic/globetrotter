@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/dto"
@@ -159,4 +161,24 @@ func BuyTicketForOtherUser(ctx *gin.Context) {
 	}
 
 	httpGin.OK("Ticket Bought for Other User")
+}
+
+func SearchFlights(ctx* gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	var searchFlightsDTO dto.SearchFlightsDTO
+	layout := "2006-01-02T15:04:05.00Z"
+
+	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
+	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
+	searchFlightsDTO.DepartureDateTime, _ = time.Parse(layout, httpGin.Context.Query("departureDateTime"))
+	searchFlightsDTO.ArrivalDateTime, _ = time.Parse(layout, httpGin.Context.Query("arrivalDateTime"))
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber"))
+
+	flights, err := services.SearchFlights(searchFlightsDTO);
+	if(err != nil) {
+		httpGin.InternalServerError(err)
+		return
+	}
+
+	httpGin.OK(flights)
 }

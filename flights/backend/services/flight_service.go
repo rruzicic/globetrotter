@@ -115,3 +115,13 @@ func BuyTicketForOtherUser(buyTicketForOtherUserDTO dto.BuyTicketForOtherUserDTO
 	return nil
 
 }
+
+func SearchFlights(searchFLightsDTO dto.SearchFlightsDTO) ([]models.Flight, error) {
+	flights, err := repos.GetFlightBySearchParams(searchFLightsDTO)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return flights, nil;
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/rruzicic/globetrotter/flights/backend/dto"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -69,4 +70,29 @@ func GetFlightById(id string) (*models.Flight, error) {
 
 	return &flight, nil
 
+}
+
+func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight, error) {
+
+	filter := bson.M{
+        "$and": []bson.M{
+            {"arrival_date_time": searchParams.ArrivalDateTime},
+            {"departure_date_time": searchParams.DepartureDateTime},
+            {"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
+            {"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
+			//TODO: passenger number?
+        },
+    }
+	
+	cursor, err := FlightsCollection.Find(context.Background(), filter)
+    if err != nil {
+        return nil, err
+    }
+
+	var flights []models.Flight
+    if err := cursor.All(context.Background(), &flights); err != nil {
+        return nil, err
+    }
+
+	return flights, nil;
 }
