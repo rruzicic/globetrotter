@@ -24,13 +24,11 @@ const NavBar = () => {
                     Home
                 </Button>
             </Link>
-
             <Link to='/flights'>
                 <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
                     All flights
                 </Button>
             </Link>
-
             {
                 !authCtx.isLoggedIn && (
                     <>

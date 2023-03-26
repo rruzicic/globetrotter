@@ -20,7 +20,6 @@ const LoginPage = () => {
                 console.log('Login unsuccessful!')
             })
             .then((res) => {
-                console.log(res)
                 authCtx.login(res.data.data)
                 navigate('/flights')
             })

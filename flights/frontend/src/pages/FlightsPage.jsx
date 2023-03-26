@@ -1,5 +1,6 @@
 import { Button, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
@@ -21,83 +22,17 @@ const FlightsPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
-    //TODO: remove after adding role recognition
-    const [admin, setAdmin] = useState(true)
+    const [flights, setFlights] = useState([])
 
-    //temporary dummy data, should fetch flights from API inside useEffect hook with no
-    //parameters in dependency array
-    const flights = [
-        {
-            id: 0,
-            departureDateTime: new Date('2024-04-15T18:00:00'),
-            arrivalDateTime: new Date('2024-04-16T02:00:00'),
-            departure: 'Belgrade',
-            destination: 'Bangkok',
-            price: 290.33,
-            seats: 150,
-            duration: 8
-        },
-        {
-            id: 1,
-            departureDateTime: new Date('2024-05-15T12:00:00'),
-            arrivalDateTime: new Date('2024-05-15T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Shanghai',
-            price: 130.33,
-            seats: 200,
-            duration: 7
-        },
-        {
-            id: 2,
-            departureDateTime: new Date('2024-04-23T08:00:00'),
-            arrivalDateTime: new Date('2024-04-23T09:00:00'),
-            departure: 'Belgrade',
-            destination: 'Kharkiv',
-            price: 20.33,
-            seats: 100,
-            duration: 1
-        },
-        {
-            id: 3,
-            departureDateTime: new Date('2024-04-22T16:00:00'),
-            arrivalDateTime: new Date('2024-04-22T17:00:00'),
-            departure: 'Belgrade',
-            destination: 'Donbas',
-            price: 20.33,
-            seats: 100,
-            duration: 1
-        },
-        {
-            id: 4,
-            departureDateTime: new Date('2024-04-22T17:00:00'),
-            arrivalDateTime: new Date('2024-04-22T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Munich',
-            price: 120.33,
-            seats: 200,
-            duration: 2
-        },
-        {
-            id: 5,
-            departureDateTime: new Date('2024-04-22T16:00:00'),
-            arrivalDateTime: new Date('2024-04-22T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Paris',
-            price: 300.00,
-            seats: 200,
-            duration: 3
-        },
-        {
-            id: 6,
-            departureDateTime: new Date('2024-04-22T08:00:00'),
-            arrivalDateTime: new Date('2024-04-22T12:00:00'),
-            departure: 'Belgrade',
-            destination: 'Mogadishu',
-            price: 250.33,
-            seats: 50,
-            duration: 4
-        },
-    ]
+    useEffect(() => {
+        axios.get('http://localhost:8080/flights')
+        .catch((error) => {
+            console.error(error);
+        })
+        .then((response) => {
+            setFlights(response.data.data)
+        })
+    }, [])
 
     const handleSort = (field) => {
         const isAsc = (orderBy === field && order === 'asc');
@@ -109,8 +44,8 @@ const FlightsPage = () => {
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
             return order === 'asc'
-                ? a[orderBy].getTime() - b[orderBy].getTime()
-                : b[orderBy].getTime() - a[orderBy].getTime();
+                ? new Date(a[orderBy]).getTime() - new Date(b[orderBy]).getTime()
+                : new Date(b[orderBy]).getTime() - new Date(a[orderBy]).getTime();
         } else if (orderBy === 'departure' || orderBy === 'destination') {
             return order === 'asc'
                 ? a[orderBy].localeCompare(b[orderBy])
@@ -141,11 +76,6 @@ const FlightsPage = () => {
     const deleteFlight = (id) => {
         console.log('Should delete flight with id: ' + id);
         //should send API request to remove flight
-    }
-
-    //TODO: remove after adding role recognition
-    const changeRole = () => {
-        setAdmin((prev) => !prev)
     }
 
     //tracks values
@@ -197,7 +127,7 @@ const FlightsPage = () => {
 
     return (
         <>
-            <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights <Button onClick={changeRole}>Is admin: {String(admin)}</Button></Typography>
+            <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
             <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem 0' }} >
                 <TextField onChange={changeDeparture} label='Departure' />
                 <DatePicker
@@ -278,30 +208,30 @@ const FlightsPage = () => {
                                     Duration(hr)
                                 </TableSortLabel>
                             </TableCell>
-                            {
-                                admin &&
+                            {/* {
+                                isAdmin &&
                                 <TableCell />
-                            }
+                            } */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
                             <TableRow key={flight.id} sx={styles.row}>
-                                <TableCell>{formatDate(flight.departureDateTime.toISOString())}</TableCell>
+                                <TableCell>{formatDate(flight.departureDateTime)}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
-                                <TableCell>{formatDate(flight.arrivalDateTime.toISOString())}</TableCell>
+                                <TableCell>{formatDate(flight.arrivalDateTime)}</TableCell>
                                 <TableCell>{flight.destination}</TableCell>
                                 <TableCell>{flight.price}</TableCell>
                                 <TableCell>{flight.seats}</TableCell>
                                 <TableCell>{flight.duration}</TableCell>
-                                {
-                                    admin &&
+                                {/* {
+                                    isAdmin &&
                                     <TableCell>
                                         <Button variant='contained' color='primary' onClick={() => deleteFlight(flight.id)}>
                                             Delete
                                         </Button>
                                     </TableCell>
-                                }
+                                } */}
                             </TableRow>
                         ))}
                     </TableBody>
