@@ -123,5 +123,5 @@ func SearchFlights(searchFLightsDTO dto.SearchFlightsDTO) ([]models.Flight, erro
 		return nil, err
 	}
 
-	return flights, nil;
+	return flights, nil
 }

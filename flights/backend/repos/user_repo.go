@@ -17,7 +17,7 @@ func FindUserByObjectId(id string) {
 func FindAllUsers() []models.User {
 	result := []models.User{}
 	//filter := bson.D{{Name: "deleted_on", Value: bson.D{{Name: "$eq", Value: "0"}}}}
-	cursor, err := usersCollection.Find(context.TODO(), bson.D{})
+	cursor, err := usersCollection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		log.Panic("could not find users err: ", err.Error())
 		return []models.User{}
