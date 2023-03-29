@@ -2,6 +2,8 @@ import { Button, Container, Grid } from "@mui/material";
 import CreateFlightForm from "components/flight_management/CreateFlightForm";
 import { axiosInstance } from "config/interceptor";
 import { Form } from "react-final-form";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 import REGEX from "regex";
 
 const numberRegex = new RegExp(REGEX.NUMBER)
@@ -36,6 +38,7 @@ const CreateFlightPage = () => {
         arrivalDateTime: new Date()
     }
 
+    const navigate = useNavigate()
     const onSubmit = (values) => {
         values.arrivalDateTime = values.arrivalDateTime.toISOString()
         values.departureDateTime= values.departureDateTime.toISOString()
@@ -45,10 +48,13 @@ const CreateFlightPage = () => {
         console.log(values);
         axiosInstance.post("http://localhost:8080/flights/create", values)
         .catch((err) => {
-            console.error(err)
+            toast('That flight could not be created! 😢')
         })
         .then((response) => {
-            console.log(response);
+            if(response !== undefined) {
+                toast('Flight created successfully! 😊')
+                navigate('/flights')
+            }
         })
     }
 

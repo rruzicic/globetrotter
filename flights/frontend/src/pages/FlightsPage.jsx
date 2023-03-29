@@ -6,6 +6,8 @@ import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
 import AuthContext from "config/authContext";
+import { toast } from "react-toastify";
+import { axiosInstance } from "config/interceptor";
 
 const FlightsPage = () => {
 
@@ -64,7 +66,6 @@ const FlightsPage = () => {
         setPassengerNumSP(e.target.value);
     }
 
-    //probably spaghetti code but the best i could do
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
             return order === 'asc'
@@ -95,12 +96,12 @@ const FlightsPage = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8080/flights')
+        axiosInstance.get('/flights')
             .catch((error) => {
-                console.error(error);
+                toast('Unable to fetch flights, try again in a few seconds 😢')
+                return
             })
             .then((response) => {
-                console.log(response.data.data);
                 setFlights(response.data.data)
             })
     }, [])
@@ -116,7 +117,7 @@ const FlightsPage = () => {
 
     const deleteFlight = (id) => {
         console.log('Should delete flight with id: ' + id);
-        //should send API request to remove flight
+        //TODO: should send API request to remove flight
     }
 
     const resetSearch = () => {
@@ -133,17 +134,20 @@ const FlightsPage = () => {
     const authCtx = useContext(AuthContext)
 
     const buyTicket = (() => {
-        axios.post('http://localhost:8080/flights/buy-ticket', {
+        axiosInstance.post('/flights/buy-ticket', {
             flightId: selectedFlight,
             userEmail: authCtx.userEmail(),
             numOfTicketsOptional: [parseInt(ticketNumber)]
         })
-        .catch((err) => {
-            console.error(err)
-        })
-        .then((response) => {
-            console.log(response);
-        })
+            .catch((err) => {
+                toast('Not enough tickets left 😢')
+                return
+            })
+            .then((response) => {
+                if (response !== undefined) {
+                    toast('Successfully bought tickets! 😊')
+                }
+            })
         handleClose()
     })
 
@@ -162,7 +166,7 @@ const FlightsPage = () => {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080/flights/search', {
+        axiosInstance.get('/flights/search', {
             params: {
                 departure: debounceDepartureSP,
                 departureDateTime: debounceDepartureDateSP,
@@ -171,7 +175,8 @@ const FlightsPage = () => {
                 passengerNumber: debouncePassengerNumSP
             }
         }).catch((err) => {
-            console.error(err);
+            toast('No flights match that criteria 😢')
+            return
         }).then((response) => {
             if (response.data.data == null) {
                 setFlights([])

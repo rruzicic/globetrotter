@@ -1,10 +1,11 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
-import axios from "axios";
 import LoginForm from "components/login_page/LoginForm";
-import AuthContext, { AuthContextProvider } from "config/authContext";
+import AuthContext from "config/authContext";
+import { axiosInstance } from "config/interceptor";
 import { useContext } from "react";
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 import REGEX from "regex";
 import theme from "theme";
 
@@ -15,13 +16,18 @@ const LoginPage = () => {
     const authCtx = useContext(AuthContext)
 
     const onSubmit = (values) => {
-        axios.post('http://localhost:8080/user/login', values)
+        axiosInstance.post('http://localhost:8080/user/login', values)
             .catch((e) => {
-                console.log('Login unsuccessful!')
+                toast('Login unsuccessful! 😢')
+                return
             })
             .then((res) => {
-                authCtx.login(res.data.data)
-                navigate('/flights')
+                if (res !== undefined) {
+                    console.log('a');
+                    authCtx.login(res.data.data)
+                    toast('Welcome! 😊')
+                    navigate('/flights')
+                }
             })
     }
 

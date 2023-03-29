@@ -14,6 +14,8 @@ import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import APIKeyPage from "pages/APIKeyPage";
 import { useContext } from "react";
 import AuthContext from "config/authContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 
@@ -43,6 +45,7 @@ function App() {
           </Layout>
         </BrowserRouter>
       </LocalizationProvider>
+      <ToastContainer />
     </ThemeProvider>
 
   );
