@@ -37,7 +37,7 @@ func InitRouter() *gin.Engine {
 
 	public.POST("/flights/create", controllers.CreateFlight)
 	public.DELETE("/flights/delete", controllers.DeleteFlight)
-	public.GET("/flights/", controllers.GetAllFlights)
+	public.GET("/flights", controllers.GetAllFlights)
 	public.POST("/flights/get-one", controllers.GetFlightById)
 
 	public.POST("/flights/buy-ticket", controllers.BuyTicket)

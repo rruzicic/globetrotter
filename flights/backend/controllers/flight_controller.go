@@ -166,12 +166,21 @@ func BuyTicketForOtherUser(ctx *gin.Context) {
 func SearchFlights(ctx* gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	var searchFlightsDTO dto.SearchFlightsDTO
-	layout := "2006-01-02T15:04:05.00Z"
+	layout := "2006-01-02"
 
 	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
 	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
-	searchFlightsDTO.DepartureDateTime, _ = time.Parse(layout, httpGin.Context.Query("departureDateTime"))
-	searchFlightsDTO.ArrivalDateTime, _ = time.Parse(layout, httpGin.Context.Query("arrivalDateTime"))
+
+	departureDateString :=  httpGin.Context.Query("departureDateTime")
+	if(len(departureDateString) != 0) {
+		searchFlightsDTO.DepartureDateTime, _ = time.Parse(layout, departureDateString)
+		searchFlightsDTO.DepartureDateTime = searchFlightsDTO.DepartureDateTime.Truncate(24 * time.Hour);
+	}
+	arrivalDateString :=  httpGin.Context.Query("arrivalDateTime")
+	if(len(arrivalDateString) != 0) {
+		searchFlightsDTO.ArrivalDateTime, _ = time.Parse(layout, arrivalDateString)
+		searchFlightsDTO.ArrivalDateTime = searchFlightsDTO.ArrivalDateTime.Truncate(24 * time.Hour);
+	}
 	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber"))
 
 	flights, err := services.SearchFlights(searchFlightsDTO);
