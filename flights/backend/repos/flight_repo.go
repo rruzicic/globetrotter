@@ -32,7 +32,7 @@ func DeleteFlight(flight models.Flight) error {
 
 func GetAllFlights() ([]models.Flight, error) {
 	flights := []models.Flight{}
-	cursor, err := FlightsCollection.Find(context.TODO(), bson.D{})
+	cursor, err := FlightsCollection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
 		log.Panic("Could not get all flights")

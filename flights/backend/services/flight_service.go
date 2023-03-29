@@ -47,7 +47,7 @@ func GetFlightById(id string) (*models.Flight, error) {
 	return flight, err
 }
 
-func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) error { //numOfTicketsOptional is gonna be optional
+func BuyTicket(flightId string, userEmail string, numOfTicketsOptional ...int) error { //numOfTicketsOptional is gonna be optional
 	numOfTickets := 1                  //default value
 	if len(numOfTicketsOptional) > 0 { //handling of default value
 		numOfTickets = numOfTicketsOptional[0]
@@ -74,9 +74,15 @@ func BuyTicket(flightId string, userId string, numOfTicketsOptional ...int) erro
 		return err //Failed to update number of seats
 	}
 
+	userId, err := FindUserByEmail(userEmail)
+
+	if err != nil {
+		log.Println("Could not find user with id")
+	}
+
 	ticket := models.Ticket{}
 	ticket.Flight = *flight
-	ticket.UserId = userId
+	ticket.UserId = userId.Id.String()
 
 	for numOfTickets > 0 {
 		if _, err := repos.TicketsCollection.InsertOne(context.TODO(), ticket); err != nil {

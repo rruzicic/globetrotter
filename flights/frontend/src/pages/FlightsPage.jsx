@@ -1,10 +1,11 @@
-import { Button, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
+import AuthContext from "config/authContext";
 
 const FlightsPage = () => {
 
@@ -38,7 +39,7 @@ const FlightsPage = () => {
         , 500)
     const [debounceDestinationSP] = useDebounce(destinationSP, 500)
     const [debounceArrivalDateSP] = useDebounce(
-        (arrivalDateSP == null) ? null  
+        (arrivalDateSP == null) ? null
             :
             arrivalDateSP.toISOString().split('T')[0]
         , 500)
@@ -99,6 +100,7 @@ const FlightsPage = () => {
                 console.error(error);
             })
             .then((response) => {
+                console.log(response.data.data);
                 setFlights(response.data.data)
             })
     }, [])
@@ -125,15 +127,41 @@ const FlightsPage = () => {
         setPassengerNumSP("")
     }
 
+    const [openModal, setOpenModal] = useState(false)
+    const [selectedFlight, setSelectedFlight] = useState(false)
+    const [ticketNumber, setTicketNumber] = useState(false)
+    const authCtx = useContext(AuthContext)
+
+    const buyTicket = (() => {
+        axios.post('http://localhost:8080/flights/buy-ticket', {
+            flightId: selectedFlight,
+            userEmail: authCtx.userEmail(),
+            numOfTicketsOptional: [parseInt(ticketNumber)]
+        })
+        .catch((err) => {
+            console.error(err)
+        })
+        .then((response) => {
+            console.log(response);
+        })
+        handleClose()
+    })
+
+    const handleOpen = (flightId) => {
+        setSelectedFlight(flightId)
+        setOpenModal(true)
+    }
+    const handleClose = () => {
+        setSelectedFlight(null)
+        setTicketNumber(0)
+        setOpenModal(false)
+    }
+
+    const changeTicketNumber = (e) => {
+        setTicketNumber(e.target.value)
+    }
 
     useEffect(() => {
-        console.log({
-            departure: debounceDepartureSP,
-            departureDateTime: debounceDepartureDateSP,
-            destination: debounceDestinationSP,
-            arrivalDateTime: debounceArrivalDateSP,
-            passengerNumber: debouncePassengerNumSP
-        });
         axios.get('http://localhost:8080/flights/search', {
             params: {
                 departure: debounceDepartureSP,
@@ -155,23 +183,41 @@ const FlightsPage = () => {
 
     return (
         <>
+            <Dialog
+                open={openModal}
+                keepMounted
+                onClose={handleClose}
+            >
+                <DialogTitle>{"How many tickets would you like to buy?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <TextField onChange={changeTicketNumber} label="Number of Tickets">
+
+                        </TextField>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={() => { buyTicket() }}>Buy</Button>
+                </DialogActions>
+            </Dialog>
             <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
             <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
-                <TextField onChange={changeDeparture} label='Departure' value={departureSP}/>
+                <TextField onChange={changeDeparture} label='Departure' value={departureSP} />
                 <DatePicker
                     disablePast
                     value={departureDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeDepartureDate} label='Departure Date' />
-                <TextField onChange={changeDestination} label='Destination' value={destinationSP}/>
+                <TextField onChange={changeDestination} label='Destination' value={destinationSP} />
                 <DatePicker
                     disablePast
                     value={arrivalDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeArrivalDate} label='Arrival Date' />
-                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP}/>
+                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP} />
                 <Button variant="outlined" color="primary" onClick={resetSearch}>
-                  Reset Search
+                    Reset Search
                 </Button>
             </Paper>
             <Paper elevation={4} sx={{ width: '90%', margin: '1rem auto' }}>
@@ -249,7 +295,7 @@ const FlightsPage = () => {
                     </TableHead>
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
-                            <TableRow key={flight.id} sx={styles.row}>
+                            <TableRow key={flight.id} sx={styles.row} onClick={() => { handleOpen(flight.id) }}>
                                 <TableCell>{formatDate(flight.departureDateTime)}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
                                 <TableCell>{formatDate(flight.arrivalDateTime)}</TableCell>
