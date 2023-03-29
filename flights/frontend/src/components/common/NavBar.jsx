@@ -53,6 +53,11 @@ const NavBar = () => {
                                 Create flight
                             </Button>
                         </Link>
+                        <Link to='/api'>
+                            <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
+                                API key
+                            </Button>
+                        </Link>
                         <Button variant="contained" color="secondary" startIcon={<LogoutIcon />} onClick={() => { authCtx.logout() }}>
                             Logout
                         </Button>

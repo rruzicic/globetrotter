@@ -11,6 +11,7 @@ import FlightsPage from "pages/FlightsPage";
 import CreateFlightPage from "pages/CreateFlightPage";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import APIKeyPage from "pages/APIKeyPage";
 import { useContext } from "react";
 import AuthContext from "config/authContext";
 
@@ -36,6 +37,7 @@ function App() {
               }
               <Route path="/flights" element={<FlightsPage />} />
               <Route path="/flights/create" element={<CreateFlightPage />} />
+              <Route path="/api" element={<APIKeyPage />} />
               <Route path="*" element={<Navigate to={'/home'} replace />} />
             </Routes>
           </Layout>
