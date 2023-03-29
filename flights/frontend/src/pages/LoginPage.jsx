@@ -16,14 +16,13 @@ const LoginPage = () => {
     const authCtx = useContext(AuthContext)
 
     const onSubmit = (values) => {
-        axiosInstance.post('http://localhost:8080/user/login', values)
+        axiosInstance.post('/user/login', values)
             .catch((e) => {
                 toast('Login unsuccessful! 😢')
                 return
             })
             .then((res) => {
                 if (res !== undefined) {
-                    console.log('a');
                     authCtx.login(res.data.data)
                     toast('Welcome! 😊')
                     navigate('/flights')
