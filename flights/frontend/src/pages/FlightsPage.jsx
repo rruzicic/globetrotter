@@ -23,22 +23,45 @@ const FlightsPage = () => {
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
     const [flights, setFlights] = useState([])
+    //tracks values
+    const [departureSP, setDepartureSP] = useState("")
+    const [departureDateSP, setDepartureDateSP] = useState(null)
+    const [destinationSP, setDestinationSP] = useState("")
+    const [arrivalDateSP, setArrivalDateSP] = useState(null)
+    const [passengerNumSP, setPassengerNumSP] = useState("")
+    //prevents sending api requests for every char typed, sends it 500ms after last char is typed
+    const [debounceDepartureSP] = useDebounce(departureSP, 500)
+    const [debounceDepartureDateSP] = useDebounce(
+        (departureDateSP == null) ? null
+            :
+            departureDateSP.toISOString().split('T')[0]
+        , 500)
+    const [debounceDestinationSP] = useDebounce(destinationSP, 500)
+    const [debounceArrivalDateSP] = useDebounce(
+        (arrivalDateSP == null) ? null  
+            :
+            arrivalDateSP.toISOString().split('T')[0]
+        , 500)
+    const [debouncePassengerNumSP] = useDebounce(passengerNumSP, 500)
 
-    useEffect(() => {
-        axios.get('http://localhost:8080/flights')
-        .catch((error) => {
-            console.error(error);
-        })
-        .then((response) => {
-            setFlights(response.data.data)
-        })
-    }, [])
-
-    const handleSort = (field) => {
-        const isAsc = (orderBy === field && order === 'asc');
-        setOrderBy(field);
-        setOrder(isAsc ? 'desc' : 'asc');
-    };
+    //had to do it like this because of non matching versions of npm packages
+    const changeDeparture = (e) => {
+        setDepartureSP(e.target.value);
+    }
+    const changeDepartureDate = (e) => {
+        console.log(e);
+        setDepartureDateSP(e)
+    }
+    const changeDestination = (e) => {
+        setDestinationSP(e.target.value);
+    }
+    const changeArrivalDate = (e) => {
+        console.log(e);
+        setArrivalDateSP(e);
+    }
+    const changePassengerNumber = (e) => {
+        setPassengerNumSP(e.target.value);
+    }
 
     //probably spaghetti code but the best i could do
     const sortedFlights = flights.sort((a, b) => {
@@ -64,6 +87,22 @@ const FlightsPage = () => {
         setPage(0);
     };
 
+    const handleSort = (field) => {
+        const isAsc = (orderBy === field && order === 'asc');
+        setOrderBy(field);
+        setOrder(isAsc ? 'desc' : 'asc');
+    };
+
+    useEffect(() => {
+        axios.get('http://localhost:8080/flights')
+            .catch((error) => {
+                console.error(error);
+            })
+            .then((response) => {
+                setFlights(response.data.data)
+            })
+    }, [])
+
     const styles = {
         row: {
             cursor: 'pointer',
@@ -78,68 +117,62 @@ const FlightsPage = () => {
         //should send API request to remove flight
     }
 
-    //tracks values
-    const [departureSP, setDepartureSP] = useState()
-    const [departureDateSP, setDepartureDateSP] = useState()
-    const [destinationSP, setDestinationSP] = useState()
-    const [arrivalDateSP, setArrivalDateSP] = useState()
-    const [passengerNumSP, setPassengerNumSP] = useState()
-    //prevents sending api requests for every char typed, sends it 500ms after last char is typed
-    const [debounceDepartureSP] = useDebounce(departureSP, 500)
-    const [debounceDepartureDateSP] = useDebounce(departureDateSP, 500)
-    const [debounceDestinationSP] = useDebounce(destinationSP, 500)
-    const [debounceArrivalDateSP] = useDebounce(arrivalDateSP, 500)
-    const [debouncePassengerNumSP] = useDebounce(passengerNumSP, 500)
-
-    //had to do it like this because of non matching versions of npm packages
-    const changeDeparture = (e) => {
-        setDepartureSP(e.target.value);
-    }
-    const changeDepartureDate = (e) => {
-        setDepartureDateSP(e)
-    }
-    const changeDestination = (e) => {
-        setDestinationSP(e.target.value);
-    }
-    const changeArrivalDate = (e) => {
-        setArrivalDateSP(e);
-    }
-    const changePassengerNumber = (e) => {
-        setPassengerNumSP(e.target.value);
+    const resetSearch = () => {
+        setDepartureSP("")
+        setDepartureDateSP(null)
+        setArrivalDateSP(null)
+        setDestinationSP("")
+        setPassengerNumSP("")
     }
 
-    const search = useCallback(() => {
-        console.log(
-            {
+
+    useEffect(() => {
+        console.log({
+            departure: debounceDepartureSP,
+            departureDateTime: debounceDepartureDateSP,
+            destination: debounceDestinationSP,
+            arrivalDateTime: debounceArrivalDateSP,
+            passengerNumber: debouncePassengerNumSP
+        });
+        axios.get('http://localhost:8080/flights/search', {
+            params: {
                 departure: debounceDepartureSP,
                 departureDateTime: debounceDepartureDateSP,
                 destination: debounceDestinationSP,
                 arrivalDateTime: debounceArrivalDateSP,
                 passengerNumber: debouncePassengerNumSP
             }
-        //should not be logged, should send request to search api with these params
-        );
+        }).catch((err) => {
+            console.error(err);
+        }).then((response) => {
+            if (response.data.data == null) {
+                setFlights([])
+            } else {
+                setFlights(response.data.data)
+            }
+        })
     }, [debounceDepartureSP, debounceDepartureDateSP, debounceDestinationSP, debounceArrivalDateSP, debouncePassengerNumSP])
-
-    useEffect(() => {
-        search()
-    }, [search])
 
     return (
         <>
             <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
-            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem 0' }} >
-                <TextField onChange={changeDeparture} label='Departure' />
+            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
+                <TextField onChange={changeDeparture} label='Departure' value={departureSP}/>
                 <DatePicker
+                    disablePast
                     value={departureDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeDepartureDate} label='Departure Date' />
-                <TextField onChange={changeDestination} label='Destination' />
+                <TextField onChange={changeDestination} label='Destination' value={destinationSP}/>
                 <DatePicker
+                    disablePast
                     value={arrivalDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeArrivalDate} label='Arrival Date' />
-                <TextField onChange={changePassengerNumber} label='Passenger Number' />
+                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP}/>
+                <Button variant="outlined" color="primary" onClick={resetSearch}>
+                  Reset Search
+                </Button>
             </Paper>
             <Paper elevation={4} sx={{ width: '90%', margin: '1rem auto' }}>
                 <Table>

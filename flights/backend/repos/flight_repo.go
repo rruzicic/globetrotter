@@ -3,6 +3,7 @@ package repos
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/rruzicic/globetrotter/flights/backend/dto"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
@@ -74,14 +75,40 @@ func GetFlightById(id string) (*models.Flight, error) {
 
 func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight, error) {
 
-	filter := bson.M{
+	startOfDay := time.Date(searchParams.ArrivalDateTime.Year(), searchParams.ArrivalDateTime.Month(), searchParams.ArrivalDateTime.Day(), 0, 0, 0, 0, time.UTC)
+	endOfDay := startOfDay.Add(24 * time.Hour)
+	startOfDay1 := time.Date(searchParams.DepartureDateTime.Year(), searchParams.DepartureDateTime.Month(), searchParams.DepartureDateTime.Day(), 0, 0, 0, 0, time.UTC)
+	endOfDay1 := startOfDay1.Add(24 * time.Hour)
+
+    filter := bson.M{
         "$and": []bson.M{
-            {"arrival_date_time": searchParams.ArrivalDateTime},
-            {"departure_date_time": searchParams.DepartureDateTime},
             {"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
             {"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
-			//TODO: passenger number?
         },
+    }
+
+    if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
+        andClauses := make([]bson.M, 0)
+
+        if !searchParams.ArrivalDateTime.IsZero() {
+            andClauses = append(andClauses, bson.M{
+                "arrival_date_time": bson.M{
+                    "$gte": startOfDay,
+                    "$lte": endOfDay,
+                },
+            })
+        }
+
+        if !searchParams.DepartureDateTime.IsZero() {
+            andClauses = append(andClauses, bson.M{
+                "departure_date_time": bson.M{
+                    "$gte": startOfDay1,
+                    "$lte": endOfDay1,
+                },
+            })
+        }
+
+        filter["$and"] = andClauses
     }
 	
 	cursor, err := FlightsCollection.Find(context.Background(), filter)
