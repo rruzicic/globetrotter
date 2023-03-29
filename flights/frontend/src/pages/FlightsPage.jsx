@@ -1,5 +1,6 @@
 import { Button, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
@@ -21,96 +22,53 @@ const FlightsPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
-    //TODO: remove after adding role recognition
-    const [admin, setAdmin] = useState(true)
+    const [flights, setFlights] = useState([])
+    //tracks values
+    const [departureSP, setDepartureSP] = useState("")
+    const [departureDateSP, setDepartureDateSP] = useState(null)
+    const [destinationSP, setDestinationSP] = useState("")
+    const [arrivalDateSP, setArrivalDateSP] = useState(null)
+    const [passengerNumSP, setPassengerNumSP] = useState("")
+    //prevents sending api requests for every char typed, sends it 500ms after last char is typed
+    const [debounceDepartureSP] = useDebounce(departureSP, 500)
+    const [debounceDepartureDateSP] = useDebounce(
+        (departureDateSP == null) ? null
+            :
+            departureDateSP.toISOString().split('T')[0]
+        , 500)
+    const [debounceDestinationSP] = useDebounce(destinationSP, 500)
+    const [debounceArrivalDateSP] = useDebounce(
+        (arrivalDateSP == null) ? null  
+            :
+            arrivalDateSP.toISOString().split('T')[0]
+        , 500)
+    const [debouncePassengerNumSP] = useDebounce(passengerNumSP, 500)
 
-    //temporary dummy data, should fetch flights from API inside useEffect hook with no
-    //parameters in dependency array
-    const flights = [
-        {
-            id: 0,
-            departureDateTime: new Date('2024-04-15T18:00:00'),
-            arrivalDateTime: new Date('2024-04-16T02:00:00'),
-            departure: 'Belgrade',
-            destination: 'Bangkok',
-            price: 290.33,
-            seats: 150,
-            duration: 8
-        },
-        {
-            id: 1,
-            departureDateTime: new Date('2024-05-15T12:00:00'),
-            arrivalDateTime: new Date('2024-05-15T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Shanghai',
-            price: 130.33,
-            seats: 200,
-            duration: 7
-        },
-        {
-            id: 2,
-            departureDateTime: new Date('2024-04-23T08:00:00'),
-            arrivalDateTime: new Date('2024-04-23T09:00:00'),
-            departure: 'Belgrade',
-            destination: 'Kharkiv',
-            price: 20.33,
-            seats: 100,
-            duration: 1
-        },
-        {
-            id: 3,
-            departureDateTime: new Date('2024-04-22T16:00:00'),
-            arrivalDateTime: new Date('2024-04-22T17:00:00'),
-            departure: 'Belgrade',
-            destination: 'Donbas',
-            price: 20.33,
-            seats: 100,
-            duration: 1
-        },
-        {
-            id: 4,
-            departureDateTime: new Date('2024-04-22T17:00:00'),
-            arrivalDateTime: new Date('2024-04-22T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Munich',
-            price: 120.33,
-            seats: 200,
-            duration: 2
-        },
-        {
-            id: 5,
-            departureDateTime: new Date('2024-04-22T16:00:00'),
-            arrivalDateTime: new Date('2024-04-22T19:00:00'),
-            departure: 'Belgrade',
-            destination: 'Paris',
-            price: 300.00,
-            seats: 200,
-            duration: 3
-        },
-        {
-            id: 6,
-            departureDateTime: new Date('2024-04-22T08:00:00'),
-            arrivalDateTime: new Date('2024-04-22T12:00:00'),
-            departure: 'Belgrade',
-            destination: 'Mogadishu',
-            price: 250.33,
-            seats: 50,
-            duration: 4
-        },
-    ]
-
-    const handleSort = (field) => {
-        const isAsc = (orderBy === field && order === 'asc');
-        setOrderBy(field);
-        setOrder(isAsc ? 'desc' : 'asc');
-    };
+    //had to do it like this because of non matching versions of npm packages
+    const changeDeparture = (e) => {
+        setDepartureSP(e.target.value);
+    }
+    const changeDepartureDate = (e) => {
+        console.log(e);
+        setDepartureDateSP(e)
+    }
+    const changeDestination = (e) => {
+        setDestinationSP(e.target.value);
+    }
+    const changeArrivalDate = (e) => {
+        console.log(e);
+        setArrivalDateSP(e);
+    }
+    const changePassengerNumber = (e) => {
+        setPassengerNumSP(e.target.value);
+    }
 
     //probably spaghetti code but the best i could do
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
             return order === 'asc'
-                ? a[orderBy].getTime() - b[orderBy].getTime()
-                : b[orderBy].getTime() - a[orderBy].getTime();
+                ? new Date(a[orderBy]).getTime() - new Date(b[orderBy]).getTime()
+                : new Date(b[orderBy]).getTime() - new Date(a[orderBy]).getTime();
         } else if (orderBy === 'departure' || orderBy === 'destination') {
             return order === 'asc'
                 ? a[orderBy].localeCompare(b[orderBy])
@@ -129,6 +87,22 @@ const FlightsPage = () => {
         setPage(0);
     };
 
+    const handleSort = (field) => {
+        const isAsc = (orderBy === field && order === 'asc');
+        setOrderBy(field);
+        setOrder(isAsc ? 'desc' : 'asc');
+    };
+
+    useEffect(() => {
+        axios.get('http://localhost:8080/flights')
+            .catch((error) => {
+                console.error(error);
+            })
+            .then((response) => {
+                setFlights(response.data.data)
+            })
+    }, [])
+
     const styles = {
         row: {
             cursor: 'pointer',
@@ -143,73 +117,62 @@ const FlightsPage = () => {
         //should send API request to remove flight
     }
 
-    //TODO: remove after adding role recognition
-    const changeRole = () => {
-        setAdmin((prev) => !prev)
+    const resetSearch = () => {
+        setDepartureSP("")
+        setDepartureDateSP(null)
+        setArrivalDateSP(null)
+        setDestinationSP("")
+        setPassengerNumSP("")
     }
 
-    //tracks values
-    const [departureSP, setDepartureSP] = useState()
-    const [departureDateSP, setDepartureDateSP] = useState()
-    const [destinationSP, setDestinationSP] = useState()
-    const [arrivalDateSP, setArrivalDateSP] = useState()
-    const [passengerNumSP, setPassengerNumSP] = useState()
-    //prevents sending api requests for every char typed, sends it 500ms after last char is typed
-    const [debounceDepartureSP] = useDebounce(departureSP, 500)
-    const [debounceDepartureDateSP] = useDebounce(departureDateSP, 500)
-    const [debounceDestinationSP] = useDebounce(destinationSP, 500)
-    const [debounceArrivalDateSP] = useDebounce(arrivalDateSP, 500)
-    const [debouncePassengerNumSP] = useDebounce(passengerNumSP, 500)
 
-    //had to do it like this because of non matching versions of npm packages
-    const changeDeparture = (e) => {
-        setDepartureSP(e.target.value);
-    }
-    const changeDepartureDate = (e) => {
-        setDepartureDateSP(e)
-    }
-    const changeDestination = (e) => {
-        setDestinationSP(e.target.value);
-    }
-    const changeArrivalDate = (e) => {
-        setArrivalDateSP(e);
-    }
-    const changePassengerNumber = (e) => {
-        setPassengerNumSP(e.target.value);
-    }
-
-    const search = useCallback(() => {
-        console.log(
-            {
+    useEffect(() => {
+        console.log({
+            departure: debounceDepartureSP,
+            departureDateTime: debounceDepartureDateSP,
+            destination: debounceDestinationSP,
+            arrivalDateTime: debounceArrivalDateSP,
+            passengerNumber: debouncePassengerNumSP
+        });
+        axios.get('http://localhost:8080/flights/search', {
+            params: {
                 departure: debounceDepartureSP,
                 departureDateTime: debounceDepartureDateSP,
                 destination: debounceDestinationSP,
                 arrivalDateTime: debounceArrivalDateSP,
                 passengerNumber: debouncePassengerNumSP
             }
-        //should not be logged, should send request to search api with these params
-        );
+        }).catch((err) => {
+            console.error(err);
+        }).then((response) => {
+            if (response.data.data == null) {
+                setFlights([])
+            } else {
+                setFlights(response.data.data)
+            }
+        })
     }, [debounceDepartureSP, debounceDepartureDateSP, debounceDestinationSP, debounceArrivalDateSP, debouncePassengerNumSP])
-
-    useEffect(() => {
-        search()
-    }, [search])
 
     return (
         <>
-            <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights <Button onClick={changeRole}>Is admin: {String(admin)}</Button></Typography>
-            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem 0' }} >
-                <TextField onChange={changeDeparture} label='Departure' />
+            <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
+            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
+                <TextField onChange={changeDeparture} label='Departure' value={departureSP}/>
                 <DatePicker
+                    disablePast
                     value={departureDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeDepartureDate} label='Departure Date' />
-                <TextField onChange={changeDestination} label='Destination' />
+                <TextField onChange={changeDestination} label='Destination' value={destinationSP}/>
                 <DatePicker
+                    disablePast
                     value={arrivalDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeArrivalDate} label='Arrival Date' />
-                <TextField onChange={changePassengerNumber} label='Passenger Number' />
+                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP}/>
+                <Button variant="outlined" color="primary" onClick={resetSearch}>
+                  Reset Search
+                </Button>
             </Paper>
             <Paper elevation={4} sx={{ width: '90%', margin: '1rem auto' }}>
                 <Table>
@@ -278,30 +241,30 @@ const FlightsPage = () => {
                                     Duration(hr)
                                 </TableSortLabel>
                             </TableCell>
-                            {
-                                admin &&
+                            {/* {
+                                isAdmin &&
                                 <TableCell />
-                            }
+                            } */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
                             <TableRow key={flight.id} sx={styles.row}>
-                                <TableCell>{formatDate(flight.departureDateTime.toISOString())}</TableCell>
+                                <TableCell>{formatDate(flight.departureDateTime)}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
-                                <TableCell>{formatDate(flight.arrivalDateTime.toISOString())}</TableCell>
+                                <TableCell>{formatDate(flight.arrivalDateTime)}</TableCell>
                                 <TableCell>{flight.destination}</TableCell>
                                 <TableCell>{flight.price}</TableCell>
                                 <TableCell>{flight.seats}</TableCell>
                                 <TableCell>{flight.duration}</TableCell>
-                                {
-                                    admin &&
+                                {/* {
+                                    isAdmin &&
                                     <TableCell>
                                         <Button variant='contained' color='primary' onClick={() => deleteFlight(flight.id)}>
                                             Delete
                                         </Button>
                                     </TableCell>
-                                }
+                                } */}
                             </TableRow>
                         ))}
                     </TableBody>

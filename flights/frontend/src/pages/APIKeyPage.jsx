@@ -15,7 +15,6 @@ const APIKeyPage = () => {
 
     const getAPIKey = () => {
         //TODO: userId and permanent? not on endpoint
-        console.log(permanent);
         axios.get('http://localhost:8080/api-key/')
         .catch((err)=>{
             console.error(err)
