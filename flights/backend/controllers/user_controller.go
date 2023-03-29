@@ -3,19 +3,18 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/dto"
-	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/pkg/http"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
 
 func RegisterUser(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
-	user := models.User{}
+	user := dto.RegisterUserDTO{}
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		httpGin.BadRequest(err.Error())
 		return
 	}
-	if services.RegisterUser(user) {
+	if services.RegisterUser(dto.RegisterUserDTOToUser(user)) {
 		httpGin.Created(nil)
 		return
 	}
