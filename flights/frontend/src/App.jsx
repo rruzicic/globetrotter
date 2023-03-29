@@ -11,6 +11,7 @@ import FlightsPage from "pages/FlightsPage";
 import CreateFlightPage from "pages/CreateFlightPage";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import APIKeyPage from "pages/APIKeyPage";
 
 
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="/register" element={<RegistrationPage />} />
               <Route path="/flights" element={<FlightsPage />} />
               <Route path="/flights/create" element={<CreateFlightPage />} />
+              <Route path="/api" element={<APIKeyPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>
