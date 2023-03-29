@@ -6,6 +6,9 @@ import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
 import AuthContext from "config/authContext";
+import { toast } from "react-toastify";
+import { axiosInstance } from "config/interceptor";
+import { useNavigate } from "react-router";
 
 const FlightsPage = () => {
 
@@ -64,7 +67,6 @@ const FlightsPage = () => {
         setPassengerNumSP(e.target.value);
     }
 
-    //probably spaghetti code but the best i could do
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
             return order === 'asc'
@@ -95,12 +97,12 @@ const FlightsPage = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8080/flights')
+        axiosInstance.get('/flights')
             .catch((error) => {
-                console.error(error);
+                toast('Unable to fetch flights, try again in a few seconds 😢')
+                return
             })
             .then((response) => {
-                console.log(response.data.data);
                 setFlights(response.data.data)
             })
     }, [])
@@ -113,10 +115,21 @@ const FlightsPage = () => {
             }
         }
     }
+    const navigate = useNavigate()
 
-    const deleteFlight = (id) => {
+    const deleteFlight = (id, event) => {
+        event.stopPropagation()
         console.log('Should delete flight with id: ' + id);
-        //should send API request to remove flight
+        axiosInstance.delete('/flights/delete', id)
+        .catch((e)=> {
+            toast('Could not delete flight! 😢')
+        })
+        .then((response) => {
+            if(response !== undefined) {
+                toast('Flight successfully deleted!')
+                navigate('/flights')
+            }
+        })
     }
 
     const resetSearch = () => {
@@ -133,17 +146,20 @@ const FlightsPage = () => {
     const authCtx = useContext(AuthContext)
 
     const buyTicket = (() => {
-        axios.post('http://localhost:8080/flights/buy-ticket', {
+        axiosInstance.post('/flights/buy-ticket', {
             flightId: selectedFlight,
             userEmail: authCtx.userEmail(),
             numOfTicketsOptional: [parseInt(ticketNumber)]
         })
-        .catch((err) => {
-            console.error(err)
-        })
-        .then((response) => {
-            console.log(response);
-        })
+            .catch((err) => {
+                toast('Not enough tickets left 😢')
+                return
+            })
+            .then((response) => {
+                if (response !== undefined) {
+                    toast('Successfully bought tickets! 😊')
+                }
+            })
         handleClose()
     })
 
@@ -162,7 +178,7 @@ const FlightsPage = () => {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080/flights/search', {
+        axiosInstance.get('/flights/search', {
             params: {
                 departure: debounceDepartureSP,
                 departureDateTime: debounceDepartureDateSP,
@@ -171,7 +187,8 @@ const FlightsPage = () => {
                 passengerNumber: debouncePassengerNumSP
             }
         }).catch((err) => {
-            console.error(err);
+            toast('No flights match that criteria 😢')
+            return
         }).then((response) => {
             if (response.data.data == null) {
                 setFlights([])
@@ -287,10 +304,12 @@ const FlightsPage = () => {
                                     Duration(hr)
                                 </TableSortLabel>
                             </TableCell>
-                            {/* {
-                                isAdmin &&
-                                <TableCell />
-                            } */}
+                            {
+                                authCtx.isAdmin() &&
+                                <TableCell>
+                                    Admin
+                                </TableCell>
+                            }
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -303,14 +322,14 @@ const FlightsPage = () => {
                                 <TableCell>{flight.price}</TableCell>
                                 <TableCell>{flight.seats}</TableCell>
                                 <TableCell>{flight.duration}</TableCell>
-                                {/* {
-                                    isAdmin &&
+                                {
+                                    authCtx.isAdmin() &&
                                     <TableCell>
-                                        <Button variant='contained' color='primary' onClick={() => deleteFlight(flight.id)}>
+                                        <Button variant='contained' color='primary' onClick={(event) => deleteFlight(flight.id, event)}>
                                             Delete
                                         </Button>
                                     </TableCell>
-                                } */}
+                                }
                             </TableRow>
                         ))}
                     </TableBody>

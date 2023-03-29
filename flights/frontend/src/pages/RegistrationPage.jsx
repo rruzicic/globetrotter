@@ -1,7 +1,10 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import RegistrationForm from "components/register_page/RegistrationForm";
+import { axiosInstance } from "config/interceptor";
 import { Form } from "react-final-form";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 import REGEX from "regex";
 import theme from "theme";
 
@@ -44,15 +47,21 @@ const RegistrationPage = () => {
         return returnObject
     }
 
+    const navigate = useNavigate()
+
     const onSubmit = (values) => {
-        //values contain what you type in in json format with names matching the json of model
-        delete values.confirmPassword       // redundant 
-        values.zip = parseInt(values.zip)   // backend only accepts int
-        axios.post('http://localhost:8080/user/register', values)   // it would be nice to move this to config file
-        .then((res) => {
-            console.log(res.data.msg)       // consider adding a popup    
-        })
-        .catch((err) => console.log(err.response.data.data))
+        values.zip = parseInt(values.zip)
+        axiosInstance.post('/user/register', values)
+            .catch((err) => {
+                toast('Registration unsuccessful! 😢')
+                return
+            })
+            .then((res) => {
+                if (res !== undefined) {
+                    toast('Registration successful! Try out you new account now! 😊')
+                    navigate('/login')
+                }
+            })
     }
 
     const styles = {
@@ -79,7 +88,7 @@ const RegistrationPage = () => {
                 validate={validate}
                 render={({ handleSubmit, values }) => (
                     <form onSubmit={handleSubmit} noValidate>
-                        <Grid container sx={{margin: 'auto'}}>
+                        <Grid container sx={{ margin: 'auto' }}>
                             <Grid item xs={0} sm={6} justifyContent='center' sx={styles.imageDiv}>
                                 <Typography sx={styles.titles} variant="h2">Welcome to our website!</Typography>
                                 <Typography sx={styles.titles} variant="h4">Register now, to become a member!</Typography>

@@ -8,6 +8,7 @@ const AuthContext = createContext({
     login: (token) => { },
     logout: () => { },
     isUser: () => { },
+    isAdmin: () => { },
     userEmail: () => { }
 })
 
@@ -31,6 +32,11 @@ export const AuthContextProvider = ({ children }) => {
         if (jwt_decode(localStorage.getItem("flights_jwt")).role === "USER") return true;
         return false;
     }
+    const isAdminHandler = () => {
+        if (token == null) return null;
+        if (jwt_decode(localStorage.getItem("flights_jwt")).role === "ADMIN") return true;
+        return false;
+    }
 
     const userEmailHandler = () => {
         return jwt_decode(localStorage.getItem("flights_jwt")).email
@@ -40,6 +46,7 @@ export const AuthContextProvider = ({ children }) => {
         token: token,
         isLoggedIn: isLoggedIn,
         isUser: isUserHandler,
+        isAdmin: isAdminHandler,
         login: loginHandler,
         logout: logoutHandler,
         userEmail: userEmailHandler
