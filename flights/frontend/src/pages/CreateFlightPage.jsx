@@ -1,5 +1,6 @@
 import { Button, Container, Grid } from "@mui/material";
 import CreateFlightForm from "components/flight_management/CreateFlightForm";
+import { axiosInstance } from "config/interceptor";
 import { Form } from "react-final-form";
 import REGEX from "regex";
 
@@ -24,6 +25,9 @@ const CreateFlightPage = () => {
         if (!numberRegex.test(values.seats)) {
             returnObject.seats = 'This must be a number!'
         }
+        if (!numberRegex.test(values.duration)) {
+            returnObject.duration = 'This must be a number!'
+        }
         return returnObject
     }
 
@@ -33,8 +37,19 @@ const CreateFlightPage = () => {
     }
 
     const onSubmit = (values) => {
-        //TODO: make request to API for flight creation
+        values.arrivalDateTime = values.arrivalDateTime.toISOString()
+        values.departureDateTime= values.departureDateTime.toISOString()
+        values.price = parseInt(values.price)
+        values.seats = parseInt(values.seats)
+        values.duration = parseInt(values.duration)
         console.log(values);
+        axiosInstance.post("http://localhost:8080/flights/create", values)
+        .catch((err) => {
+            console.error(err)
+        })
+        .then((response) => {
+            console.log(response);
+        })
     }
 
     return (

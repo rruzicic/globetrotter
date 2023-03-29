@@ -2,9 +2,13 @@ import { Stack } from "@mui/system";
 import Button from '@mui/material/Button'
 import LoginIcon from '@mui/icons-material/Login';
 import HomeIcon from '@mui/icons-material/Home';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "config/authContext";
 
 const NavBar = () => {
+    const authCtx = useContext(AuthContext)
     const styles = {
         container: {
             width: '100%',
@@ -15,19 +19,9 @@ const NavBar = () => {
 
     return (
         <Stack direction='row' sx={styles.container} bgcolor='primary.main'>
-            <Link to='/' sx={{textDecoration: 'none'}}>
-                <Button  sx={{textDecoration: 'none'}} variant="contained" color="secondary" startIcon={<HomeIcon />}>
+            <Link to='/' sx={{ textDecoration: 'none' }}>
+                <Button sx={{ textDecoration: 'none' }} variant="contained" color="secondary" startIcon={<HomeIcon />}>
                     Home
-                </Button>
-            </Link>
-            <Link to='/login'>
-                <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
-                    Login
-                </Button>
-            </Link>
-            <Link to='/register'>
-                <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
-                    Register
                 </Button>
             </Link>
             <Link to='/flights'>
@@ -35,11 +29,36 @@ const NavBar = () => {
                     All flights
                 </Button>
             </Link>
-            <Link to='/flights/create'>
-                <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
-                    Create flight
-                </Button>
-            </Link>
+            {
+                !authCtx.isLoggedIn && (
+                    <>
+                        <Link to='/login'>
+                            <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
+                                Login
+                            </Button>
+                        </Link>
+                        <Link to='/register'>
+                            <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
+                                Register
+                            </Button>
+                        </Link>
+                    </>
+                )
+            }
+            {
+                authCtx.isLoggedIn && (
+                    <>
+                        <Link to='/flights/create'>
+                            <Button variant="contained" color="secondary" startIcon={<LoginIcon />}>
+                                Create flight
+                            </Button>
+                        </Link>
+                        <Button variant="contained" color="secondary" startIcon={<LogoutIcon />} onClick={() => { authCtx.logout() }}>
+                            Logout
+                        </Button>
+                    </>
+                )
+            }
         </Stack>
     );
 }

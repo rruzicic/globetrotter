@@ -66,7 +66,7 @@ const CreateFlightForm = () => {
                             adapter={AdapterDateFns}
                         />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={4}>
                     <TextField
                         autoComplete='off'
                         fullWidth
@@ -76,7 +76,7 @@ const CreateFlightForm = () => {
                         label="Ticket Price"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={4}>
                     <TextField
                         autoComplete='off'
                         fullWidth
@@ -84,6 +84,16 @@ const CreateFlightForm = () => {
                         margin="normal"
                         name="seats"
                         label="Number of seats"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField
+                        autoComplete='off'
+                        fullWidth
+                        required
+                        margin="normal"
+                        name="duration"
+                        label="Flight Duration"
                     />
                 </Grid>
             </Grid>
