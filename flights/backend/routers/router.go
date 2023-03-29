@@ -30,7 +30,7 @@ func InitRouter() *gin.Engine {
 	public.POST("/user/register", controllers.RegisterUser)
 	public.POST("/user/login", controllers.Login)
 	public.GET("/hello", controllers.Hello)
-	public.GET("/user/all", controllers.GetAllUsers)
+	adminProtected.GET("/user/all", controllers.GetAllUsers)
 
 	public.GET("/flights/search", controllers.SearchFlights)
 	userProtected.GET("/user/current", controllers.CurrentUser)
