@@ -8,6 +8,7 @@ import formatDate from "util";
 import AuthContext from "config/authContext";
 import { toast } from "react-toastify";
 import { axiosInstance } from "config/interceptor";
+import { useNavigate } from "react-router";
 
 const FlightsPage = () => {
 
@@ -114,10 +115,21 @@ const FlightsPage = () => {
             }
         }
     }
+    const navigate = useNavigate()
 
-    const deleteFlight = (id) => {
+    const deleteFlight = (id, event) => {
+        event.stopPropagation()
         console.log('Should delete flight with id: ' + id);
-        //TODO: should send API request to remove flight
+        axiosInstance.delete('/flights/delete', id)
+        .catch((e)=> {
+            toast('Could not delete flight! 😢')
+        })
+        .then((response) => {
+            if(response !== undefined) {
+                toast('Flight successfully deleted!')
+                navigate('/flights')
+            }
+        })
     }
 
     const resetSearch = () => {
@@ -292,10 +304,12 @@ const FlightsPage = () => {
                                     Duration(hr)
                                 </TableSortLabel>
                             </TableCell>
-                            {/* {
-                                isAdmin &&
-                                <TableCell />
-                            } */}
+                            {
+                                authCtx.isAdmin() &&
+                                <TableCell>
+                                    Admin
+                                </TableCell>
+                            }
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -308,14 +322,14 @@ const FlightsPage = () => {
                                 <TableCell>{flight.price}</TableCell>
                                 <TableCell>{flight.seats}</TableCell>
                                 <TableCell>{flight.duration}</TableCell>
-                                {/* {
-                                    isAdmin &&
+                                {
+                                    authCtx.isAdmin() &&
                                     <TableCell>
-                                        <Button variant='contained' color='primary' onClick={() => deleteFlight(flight.id)}>
+                                        <Button variant='contained' color='primary' onClick={(event) => deleteFlight(flight.id, event)}>
                                             Delete
                                         </Button>
                                     </TableCell>
-                                } */}
+                                }
                             </TableRow>
                         ))}
                     </TableBody>
