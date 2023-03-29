@@ -7,7 +7,8 @@ const AuthContext = createContext({
     isLoggedIn: false,
     login: (token) => { },
     logout: () => { },
-    isUser: () => { }
+    isUser: () => { },
+    userEmail: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -31,12 +32,17 @@ export const AuthContextProvider = ({ children }) => {
         return false;
     }
 
+    const userEmailHandler = () => {
+        return jwt_decode(localStorage.getItem("flights_jwt")).email
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
         isUser: isUserHandler,
         login: loginHandler,
         logout: logoutHandler,
+        userEmail: userEmailHandler
     };
 
     return (

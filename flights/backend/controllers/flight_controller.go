@@ -110,7 +110,7 @@ func BuyTicket(ctx *gin.Context) {
 		return
 	}
 
-	err := services.BuyTicket(request.FlightId, request.UserId, request.NumOfTicketsOptional...)
+	err := services.BuyTicket(request.FlightId, request.UserEmail, request.NumOfTicketsOptional...)
 
 	if err != nil {
 		log.Println("Couldn't buy ticket")

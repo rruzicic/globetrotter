@@ -5,6 +5,7 @@ import axios from "axios";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
+import AuthContext from "config/authContext";
 
 const FlightsPage = () => {
 
@@ -99,6 +100,7 @@ const FlightsPage = () => {
                 console.error(error);
             })
             .then((response) => {
+                console.log(response.data.data);
                 setFlights(response.data.data)
             })
     }, [])
@@ -125,20 +127,23 @@ const FlightsPage = () => {
         setPassengerNumSP("")
     }
 
-
     const [openModal, setOpenModal] = useState(false)
     const [selectedFlight, setSelectedFlight] = useState(false)
     const [ticketNumber, setTicketNumber] = useState(false)
-    // const authCntx = useContext(Auth)
+    const authCtx = useContext(AuthContext)
 
     const buyTicket = (() => {
-        console.log('Bought ' + ticketNumber + ' tickets for flight with id ' + selectedFlight);
-        //TOOD: get user id from context
-        // axiosInstance.post('http://localhost:8080/flights/buy-ticket', {
-        //     flightId: selectedFlight,
-        //     userId: 1,
-        //     numOfTicketsOptional: ticketNumber
-        // })
+        axios.post('http://localhost:8080/flights/buy-ticket', {
+            flightId: selectedFlight,
+            userEmail: authCtx.userEmail(),
+            numOfTicketsOptional: [parseInt(ticketNumber)]
+        })
+        .catch((err) => {
+            console.error(err)
+        })
+        .then((response) => {
+            console.log(response);
+        })
         handleClose()
     })
 
@@ -165,7 +170,6 @@ const FlightsPage = () => {
                 arrivalDateTime: debounceArrivalDateSP,
                 passengerNumber: debouncePassengerNumSP
             }
-            //should not be logged, should send request to search api with these params
         }).catch((err) => {
             console.error(err);
         }).then((response) => {
@@ -198,7 +202,7 @@ const FlightsPage = () => {
                 </DialogActions>
             </Dialog>
             <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
-            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} spacing={4} >
+            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
                 <TextField onChange={changeDeparture} label='Departure' value={departureSP} />
                 <DatePicker
                     disablePast
