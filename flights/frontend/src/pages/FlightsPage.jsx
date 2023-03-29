@@ -1,6 +1,6 @@
-import { Button, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
@@ -178,6 +178,36 @@ const FlightsPage = () => {
         setPassengerNumSP(e.target.value);
     }
 
+    const [openModal, setOpenModal] = useState(false)
+    const [selectedFlight, setSelectedFlight] = useState(false)
+    const [ticketNumber, setTicketNumber] = useState(false)
+    // const authCntx = useContext(Auth)
+
+    const buyTicket = (() => {
+        console.log('Bought ' +  ticketNumber + ' tickets for flight with id ' + selectedFlight);
+        //TOOD: get user id from context
+        // axiosInstance.post('http://localhost:8080/flights/buy-ticket', {
+        //     flightId: selectedFlight,
+        //     userId: 1,
+        //     numOfTicketsOptional: ticketNumber
+        // })
+        handleClose()
+    })
+
+    const handleOpen = (flightId) => {
+        setSelectedFlight(flightId)
+        setOpenModal(true)
+    }
+    const handleClose = () => {
+        setSelectedFlight(null)
+        setTicketNumber(0)
+        setOpenModal(false)
+    }
+
+    const changeTicketNumber = (e) => {
+        setTicketNumber(e.target.value)
+    }
+
     const search = useCallback(() => {
         console.log(
             {
@@ -187,7 +217,7 @@ const FlightsPage = () => {
                 arrivalDateTime: debounceArrivalDateSP,
                 passengerNumber: debouncePassengerNumSP
             }
-        //should not be logged, should send request to search api with these params
+            //should not be logged, should send request to search api with these params
         );
     }, [debounceDepartureSP, debounceDepartureDateSP, debounceDestinationSP, debounceArrivalDateSP, debouncePassengerNumSP])
 
@@ -197,6 +227,24 @@ const FlightsPage = () => {
 
     return (
         <>
+            <Dialog
+                open={openModal}
+                keepMounted
+                onClose={handleClose}
+            >
+                <DialogTitle>{"How many tickets would you like to buy?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <TextField onChange={changeTicketNumber} label="Number of Tickets">
+
+                        </TextField>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={() => {buyTicket()}}>Buy</Button>
+                </DialogActions>
+            </Dialog>
             <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights <Button onClick={changeRole}>Is admin: {String(admin)}</Button></Typography>
             <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem 0' }} >
                 <TextField onChange={changeDeparture} label='Departure' />
@@ -286,7 +334,7 @@ const FlightsPage = () => {
                     </TableHead>
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
-                            <TableRow key={flight.id} sx={styles.row}>
+                            <TableRow key={flight.id} sx={styles.row} onClick={() => { handleOpen(flight.id) }}>
                                 <TableCell>{formatDate(flight.departureDateTime.toISOString())}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
                                 <TableCell>{formatDate(flight.arrivalDateTime.toISOString())}</TableCell>
