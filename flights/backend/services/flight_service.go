@@ -113,8 +113,7 @@ func BuyTicketForOtherUser(buyTicketForOtherUserDTO dto.BuyTicketForOtherUserDTO
 		return err
 	}
 
-	// user.Id.Hex could be a problem
-	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.Id.Hex(), buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
+	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.EMail, buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
 		return err
 	}
 
