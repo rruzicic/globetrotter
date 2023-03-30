@@ -41,9 +41,9 @@ func CreateFlight(ctx *gin.Context) {
 
 func DeleteFlight(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
-	var flight models.Flight
+	var id string
 
-	if err := ctx.BindJSON(&flight); err != nil {
+	if err := ctx.BindJSON(&id); err != nil {
 		log.Println("Passed JSON couldn't be decoded")
 		log.Println(err.Error())
 
@@ -51,7 +51,7 @@ func DeleteFlight(ctx *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteFlight(flight); err != nil {
+	if err := services.DeleteFlight(id); err != nil {
 		log.Println("Could not delete flight document from database")
 		log.Println(err.Error())
 
@@ -163,7 +163,7 @@ func BuyTicketForOtherUser(ctx *gin.Context) {
 	httpGin.OK("Ticket Bought for Other User")
 }
 
-func SearchFlights(ctx* gin.Context) {
+func SearchFlights(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	var searchFlightsDTO dto.SearchFlightsDTO
 	layout := "2006-01-02"
@@ -171,20 +171,20 @@ func SearchFlights(ctx* gin.Context) {
 	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
 	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
 
-	departureDateString :=  httpGin.Context.Query("departureDateTime")
-	if(len(departureDateString) != 0) {
+	departureDateString := httpGin.Context.Query("departureDateTime")
+	if len(departureDateString) != 0 {
 		searchFlightsDTO.DepartureDateTime, _ = time.Parse(layout, departureDateString)
-		searchFlightsDTO.DepartureDateTime = searchFlightsDTO.DepartureDateTime.Truncate(24 * time.Hour);
+		searchFlightsDTO.DepartureDateTime = searchFlightsDTO.DepartureDateTime.Truncate(24 * time.Hour)
 	}
-	arrivalDateString :=  httpGin.Context.Query("arrivalDateTime")
-	if(len(arrivalDateString) != 0) {
+	arrivalDateString := httpGin.Context.Query("arrivalDateTime")
+	if len(arrivalDateString) != 0 {
 		searchFlightsDTO.ArrivalDateTime, _ = time.Parse(layout, arrivalDateString)
-		searchFlightsDTO.ArrivalDateTime = searchFlightsDTO.ArrivalDateTime.Truncate(24 * time.Hour);
+		searchFlightsDTO.ArrivalDateTime = searchFlightsDTO.ArrivalDateTime.Truncate(24 * time.Hour)
 	}
 	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber"))
 
-	flights, err := services.SearchFlights(searchFlightsDTO);
-	if(err != nil) {
+	flights, err := services.SearchFlights(searchFlightsDTO)
+	if err != nil {
 		httpGin.InternalServerError(err)
 		return
 	}

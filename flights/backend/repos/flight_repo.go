@@ -20,10 +20,16 @@ func CreateFlight(flight models.Flight) error {
 	return nil
 }
 
-func DeleteFlight(flight models.Flight) error {
-	filter := bson.M{"_id": bson.M{"$eq": flight.Id}}
+func DeleteFlight(id string) error {
+	flight_id, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get id from hex string: ", id)
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": flight_id}}
 	if _, err := FlightsCollection.DeleteOne(context.TODO(), filter); err != nil {
-		log.Panic("Could not delete flight ", flight)
+		log.Panic("Could not delete flight with hex id", id)
 		return err
 	}
 
@@ -80,46 +86,46 @@ func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight
 	startOfDay1 := time.Date(searchParams.DepartureDateTime.Year(), searchParams.DepartureDateTime.Month(), searchParams.DepartureDateTime.Day(), 0, 0, 0, 0, time.UTC)
 	endOfDay1 := startOfDay1.Add(24 * time.Hour)
 
-    filter := bson.M{
-        "$and": []bson.M{
-            {"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
-            {"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
-        },
-    }
+	filter := bson.M{
+		"$and": []bson.M{
+			{"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
+			{"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
+		},
+	}
 
-    if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
-        andClauses := make([]bson.M, 0)
+	if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
+		andClauses := make([]bson.M, 0)
 
-        if !searchParams.ArrivalDateTime.IsZero() {
-            andClauses = append(andClauses, bson.M{
-                "arrival_date_time": bson.M{
-                    "$gte": startOfDay,
-                    "$lte": endOfDay,
-                },
-            })
-        }
+		if !searchParams.ArrivalDateTime.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"arrival_date_time": bson.M{
+					"$gte": startOfDay,
+					"$lte": endOfDay,
+				},
+			})
+		}
 
-        if !searchParams.DepartureDateTime.IsZero() {
-            andClauses = append(andClauses, bson.M{
-                "departure_date_time": bson.M{
-                    "$gte": startOfDay1,
-                    "$lte": endOfDay1,
-                },
-            })
-        }
+		if !searchParams.DepartureDateTime.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"departure_date_time": bson.M{
+					"$gte": startOfDay1,
+					"$lte": endOfDay1,
+				},
+			})
+		}
 
-        filter["$and"] = andClauses
-    }
-	
+		filter["$and"] = andClauses
+	}
+
 	cursor, err := FlightsCollection.Find(context.Background(), filter)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
 	var flights []models.Flight
-    if err := cursor.All(context.Background(), &flights); err != nil {
-        return nil, err
-    }
+	if err := cursor.All(context.Background(), &flights); err != nil {
+		return nil, err
+	}
 
-	return flights, nil;
+	return flights, nil
 }

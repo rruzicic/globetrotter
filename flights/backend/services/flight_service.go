@@ -19,8 +19,8 @@ func CreateFlight(flight models.Flight) error {
 	return nil
 }
 
-func DeleteFlight(flight models.Flight) error {
-	if err := repos.DeleteFlight(flight); err != nil {
+func DeleteFlight(id string) error {
+	if err := repos.DeleteFlight(id); err != nil {
 		return err
 	}
 
@@ -129,5 +129,5 @@ func SearchFlights(searchFLightsDTO dto.SearchFlightsDTO) ([]models.Flight, erro
 		return nil, err
 	}
 
-	return flights, nil;
+	return flights, nil
 }
