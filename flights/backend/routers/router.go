@@ -44,7 +44,7 @@ func InitRouter() *gin.Engine {
 	public.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
 	useAPIKeyMiddleware.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
 
-	r.GET("/api-key/", controllers.CreateAPIKey)
+	r.GET("/api-key", controllers.CreateAPIKey)
 
 	r.Run(config.Configuration.GetString("PORT"))
 	return nil
