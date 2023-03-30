@@ -20,10 +20,16 @@ func CreateFlight(flight models.Flight) error {
 	return nil
 }
 
-func DeleteFlight(flight models.Flight) error {
-	filter := bson.M{"_id": bson.M{"$eq": flight.Id}}
+func DeleteFlight(id string) error {
+	flight_id, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get id from hex string: ", id)
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": flight_id}}
 	if _, err := FlightsCollection.DeleteOne(context.TODO(), filter); err != nil {
-		log.Panic("Could not delete flight ", flight)
+		log.Print("Could not delete flight with hex id", id)
 		return err
 	}
 
@@ -35,7 +41,7 @@ func GetAllFlights() ([]models.Flight, error) {
 	cursor, err := FlightsCollection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
-		log.Panic("Could not get all flights")
+		log.Print("Could not get flights")
 		return nil, err
 	}
 
@@ -44,7 +50,7 @@ func GetAllFlights() ([]models.Flight, error) {
 		err := cursor.Decode(&flight)
 
 		if err != nil {
-			log.Panic("Could not decode unmarshall flight on cursor")
+			log.Panic("Could not unmarshall flight on cursor")
 			return nil, err
 		}
 
@@ -59,13 +65,13 @@ func GetFlightById(id string) (*models.Flight, error) {
 	flight := models.Flight{}
 
 	if err != nil {
-		log.Panic("Could not get object id from string: ", id)
+		log.Print("Could not get object id from string: ", id)
 		return nil, err
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objectId}}
 	if err := FlightsCollection.FindOne(context.TODO(), filter).Decode(&flight); err != nil {
-		log.Panic("Could not find flight with id: ", id)
+		log.Print("Could not find flight with id: ", id)
 		return nil, err
 	}
 
@@ -80,46 +86,46 @@ func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight
 	startOfDay1 := time.Date(searchParams.DepartureDateTime.Year(), searchParams.DepartureDateTime.Month(), searchParams.DepartureDateTime.Day(), 0, 0, 0, 0, time.UTC)
 	endOfDay1 := startOfDay1.Add(24 * time.Hour)
 
-    filter := bson.M{
-        "$and": []bson.M{
-            {"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
-            {"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
-        },
-    }
+	filter := bson.M{
+		"$and": []bson.M{
+			{"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"}},
+			{"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
+		},
+	}
 
-    if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
-        andClauses := make([]bson.M, 0)
+	if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
+		andClauses := make([]bson.M, 0)
 
-        if !searchParams.ArrivalDateTime.IsZero() {
-            andClauses = append(andClauses, bson.M{
-                "arrival_date_time": bson.M{
-                    "$gte": startOfDay,
-                    "$lte": endOfDay,
-                },
-            })
-        }
+		if !searchParams.ArrivalDateTime.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"arrival_date_time": bson.M{
+					"$gte": startOfDay,
+					"$lte": endOfDay,
+				},
+			})
+		}
 
-        if !searchParams.DepartureDateTime.IsZero() {
-            andClauses = append(andClauses, bson.M{
-                "departure_date_time": bson.M{
-                    "$gte": startOfDay1,
-                    "$lte": endOfDay1,
-                },
-            })
-        }
+		if !searchParams.DepartureDateTime.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"departure_date_time": bson.M{
+					"$gte": startOfDay1,
+					"$lte": endOfDay1,
+				},
+			})
+		}
 
-        filter["$and"] = andClauses
-    }
-	
+		filter["$and"] = andClauses
+	}
+
 	cursor, err := FlightsCollection.Find(context.Background(), filter)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
 	var flights []models.Flight
-    if err := cursor.All(context.Background(), &flights); err != nil {
-        return nil, err
-    }
+	if err := cursor.All(context.Background(), &flights); err != nil {
+		return nil, err
+	}
 
-	return flights, nil;
+	return flights, nil
 }

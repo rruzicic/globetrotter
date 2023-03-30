@@ -19,8 +19,8 @@ func CreateFlight(flight models.Flight) error {
 	return nil
 }
 
-func DeleteFlight(flight models.Flight) error {
-	if err := repos.DeleteFlight(flight); err != nil {
+func DeleteFlight(id string) error {
+	if err := repos.DeleteFlight(id); err != nil {
 		return err
 	}
 
@@ -113,8 +113,7 @@ func BuyTicketForOtherUser(buyTicketForOtherUserDTO dto.BuyTicketForOtherUserDTO
 		return err
 	}
 
-	// user.Id.Hex could be a problem
-	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.Id.Hex(), buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
+	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.EMail, buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
 		return err
 	}
 
@@ -129,5 +128,5 @@ func SearchFlights(searchFLightsDTO dto.SearchFlightsDTO) ([]models.Flight, erro
 		return nil, err
 	}
 
-	return flights, nil;
+	return flights, nil
 }
