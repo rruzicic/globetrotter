@@ -44,7 +44,7 @@ func DeleteFlight(ctx *gin.Context) {
 	var id string
 
 	if err := ctx.BindJSON(&id); err != nil {
-		log.Println("Passed JSON couldn't be decoded")
+		log.Println("Passed JSON couldn't be decoded into string")
 		log.Println(err.Error())
 
 		httpGin.BadRequest(nil)
@@ -78,7 +78,7 @@ func GetFlightById(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	var id string
 
-	if err := ctx.BindJSON(id); err != nil {
+	if err := ctx.BindJSON(&id); err != nil {
 		log.Println("Passed JSON couldn't be decoded")
 		log.Println(err.Error())
 
