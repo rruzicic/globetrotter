@@ -1,66 +1,54 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useCallback, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { useContext, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
 import formatDate from "util";
 import AuthContext from "config/authContext";
 import { toast } from "react-toastify";
-import { axiosInstance } from "config/interceptor";
+import { axiosInstance, stringAxiosInstance } from "config/interceptor";
 import { useNavigate } from "react-router";
 
 const FlightsPage = () => {
-
-    //model for reference
-    // Id                bson.ObjectId `json:"id" bson:"_id,omitempty"`
-    // DepartureDateTime time.Time     `json:"departureDateTime" bson:"departure_date_time"`
-    // ArrivalDateTime   time.Time     `json:"arrivalDateTime" bson:"arrival_date_time"`
-    // Departure         string        `json:"departure" bson:"departure" `
-    // Destination       string        `json:"destination" bson:"destination"`
-    // Price             float32       `json:"price" bson:"price"`
-    // Seats             int           `json:"seats" bson:"seats"`
-    // Duration          int           `json:"duration" bson:"duration"`
+    const fixDate = (date) => {
+        date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset())
+        return date.toISOString().split('T')[0]
+    }
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
     const [flights, setFlights] = useState([])
-    //tracks values
     const [departureSP, setDepartureSP] = useState("")
     const [departureDateSP, setDepartureDateSP] = useState(null)
     const [destinationSP, setDestinationSP] = useState("")
     const [arrivalDateSP, setArrivalDateSP] = useState(null)
     const [passengerNumSP, setPassengerNumSP] = useState("")
-    //prevents sending api requests for every char typed, sends it 500ms after last char is typed
     const [debounceDepartureSP] = useDebounce(departureSP, 500)
     const [debounceDepartureDateSP] = useDebounce(
         (departureDateSP == null) ? null
             :
-            departureDateSP.toISOString().split('T')[0]
+            fixDate(departureDateSP)
         , 500)
     const [debounceDestinationSP] = useDebounce(destinationSP, 500)
     const [debounceArrivalDateSP] = useDebounce(
         (arrivalDateSP == null) ? null
             :
-            arrivalDateSP.toISOString().split('T')[0]
+            fixDate(arrivalDateSP)
         , 500)
     const [debouncePassengerNumSP] = useDebounce(passengerNumSP, 500)
 
-    //had to do it like this because of non matching versions of npm packages
     const changeDeparture = (e) => {
         setDepartureSP(e.target.value);
     }
     const changeDepartureDate = (e) => {
-        console.log(e);
         setDepartureDateSP(e)
     }
     const changeDestination = (e) => {
         setDestinationSP(e.target.value);
     }
     const changeArrivalDate = (e) => {
-        console.log(e);
         setArrivalDateSP(e);
     }
     const changePassengerNumber = (e) => {
@@ -96,7 +84,7 @@ const FlightsPage = () => {
         setOrder(isAsc ? 'desc' : 'asc');
     };
 
-    useEffect(() => {
+    const getAll = () => {
         axiosInstance.get('/flights')
             .catch((error) => {
                 toast('Unable to fetch flights, try again in a few seconds 😢')
@@ -105,6 +93,10 @@ const FlightsPage = () => {
             .then((response) => {
                 setFlights(response.data.data)
             })
+    }
+
+    useEffect(() => {
+        getAll()
     }, [])
 
     const styles = {
@@ -115,21 +107,23 @@ const FlightsPage = () => {
             }
         }
     }
-    const navigate = useNavigate()
 
     const deleteFlight = (id, event) => {
         event.stopPropagation()
-        console.log('Should delete flight with id: ' + id);
-        axiosInstance.delete('/flights/delete', id)
-        .catch((e)=> {
-            toast('Could not delete flight! 😢')
-        })
-        .then((response) => {
-            if(response !== undefined) {
-                toast('Flight successfully deleted!')
-                navigate('/flights')
+        stringAxiosInstance.delete(`/flights/delete`, {
+            params: {
+                id: id
             }
         })
+            .catch((e) => {
+                toast('Could not delete flight! 😢')
+            })
+            .then((response) => {
+                if (response !== undefined) {
+                    toast('Flight successfully deleted!')
+                    getAll()
+                }
+            })
     }
 
     const resetSearch = () => {
@@ -220,20 +214,20 @@ const FlightsPage = () => {
             </Dialog>
             <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
             <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
-                <TextField onChange={changeDeparture} label='Departure' value={departureSP} />
+                <TextField onChange={changeDeparture} label='Departure' value={departureSP} sx={{ margin: '0 1rem' }} />
                 <DatePicker
                     disablePast
                     value={departureDateSP}
                     renderInput={(props) => <TextField {...props} />}
-                    onChange={changeDepartureDate} label='Departure Date' />
-                <TextField onChange={changeDestination} label='Destination' value={destinationSP} />
+                    onChange={changeDepartureDate} label='Departure Date' sx={{ margin: '0 1rem' }} />
+                <TextField onChange={changeDestination} label='Destination' value={destinationSP} sx={{ margin: '0 1rem' }} />
                 <DatePicker
                     disablePast
                     value={arrivalDateSP}
                     renderInput={(props) => <TextField {...props} />}
-                    onChange={changeArrivalDate} label='Arrival Date' />
-                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP} />
-                <Button variant="outlined" color="primary" onClick={resetSearch}>
+                    onChange={changeArrivalDate} label='Arrival Date' sx={{ margin: '0 1rem' }} />
+                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP} sx={{ margin: '0 1rem' }} />
+                <Button variant="outlined" color="primary" onClick={resetSearch} sx={{ margin: '0 1rem' }}>
                     Reset Search
                 </Button>
             </Paper>
@@ -301,7 +295,7 @@ const FlightsPage = () => {
                                     direction={orderBy === 'duration' ? order : 'asc'}
                                     onClick={() => handleSort('duration')}
                                 >
-                                    Duration(hr)
+                                    Duration(min)
                                 </TableSortLabel>
                             </TableCell>
                             {

@@ -113,6 +113,11 @@ func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight
 				},
 			})
 		}
+		
+		andClauses = append(andClauses, bson.M{
+			"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"},
+			"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"},
+		})
 
 		filter["$and"] = andClauses
 	}
