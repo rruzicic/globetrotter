@@ -25,26 +25,25 @@ func InitRouter() *gin.Engine {
 	useAPIKeyMiddleware := r.Group("")
 	useAPIKeyMiddleware.Use(middlewares.APIKeyAuthMiddleware())
 
-	r.POST("/user/add-api-key-to-user", controllers.AddUserAPIKey)
+	public.GET("/hello", controllers.Hello)
 
 	public.POST("/user/register", controllers.RegisterUser)
 	public.POST("/user/login", controllers.Login)
-	public.GET("/hello", controllers.Hello)
 	adminProtected.GET("/user/all", controllers.GetAllUsers)
+	userProtected.GET("/user/current", controllers.CurrentUser) // change possibly to get both user and admin auth
+	userProtected.POST("/user/add-api-key-to-user", controllers.AddUserAPIKey)
 
-	public.GET("/flights/search", controllers.SearchFlights)
-	userProtected.GET("/user/current", controllers.CurrentUser)
-
-	public.POST("/flights/create", controllers.CreateFlight)
-	public.DELETE("/flights/delete", controllers.DeleteFlight)
 	public.GET("/flights", controllers.GetAllFlights)
+	public.GET("/flights/search", controllers.SearchFlights)
 	public.POST("/flights/get-one", controllers.GetFlightById)
+	adminProtected.POST("/flights/create", controllers.CreateFlight)
+	adminProtected.DELETE("/flights/delete", controllers.DeleteFlight)
+	userProtected.POST("/flights/buy-ticket", controllers.BuyTicket)
+	userProtected.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
 
-	public.POST("/flights/buy-ticket", controllers.BuyTicket)
-	public.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
 	useAPIKeyMiddleware.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
 
-	r.GET("/api-key", controllers.CreateAPIKey)
+	userProtected.GET("/api-key", controllers.CreateAPIKey)
 
 	r.Run(config.Configuration.GetString("PORT"))
 	return nil
