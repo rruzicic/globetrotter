@@ -19,7 +19,7 @@ const FlightsPage = () => {
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
 
-    
+
     const [flights, setFlights] = useState([])
 
 
@@ -126,6 +126,7 @@ const FlightsPage = () => {
             .then((response) => {
                 if (response !== undefined) {
                     toast('Flight successfully deleted!')
+                    resetSearch()
                     getAll()
                 }
             })
@@ -157,14 +158,20 @@ const FlightsPage = () => {
             .then((response) => {
                 if (response !== undefined) {
                     toast('Successfully bought tickets! 😊')
+                    resetSearch()
+                    getAll()
                 }
             })
         handleClose()
     })
 
     const handleOpen = (flightId) => {
-        setSelectedFlight(flightId)
-        setOpenModal(true)
+        if(authCtx.isUser()) {
+            setSelectedFlight(flightId)
+            setOpenModal(true)
+        } else {
+            return
+        }
     }
     const handleClose = () => {
         setSelectedFlight(null)
@@ -206,11 +213,7 @@ const FlightsPage = () => {
             >
                 <DialogTitle>{"How many tickets would you like to buy?"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        <TextField onChange={changeTicketNumber} label="Number of Tickets">
-
-                        </TextField>
-                    </DialogContentText>
+                    <TextField onChange={changeTicketNumber} label="Number of Tickets" />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
