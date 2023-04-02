@@ -18,12 +18,18 @@ const FlightsPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
+
+    
     const [flights, setFlights] = useState([])
+
+
     const [departureSP, setDepartureSP] = useState("")
     const [departureDateSP, setDepartureDateSP] = useState(null)
     const [destinationSP, setDestinationSP] = useState("")
     const [arrivalDateSP, setArrivalDateSP] = useState(null)
     const [passengerNumSP, setPassengerNumSP] = useState("")
+
+
     const [debounceDepartureSP] = useDebounce(departureSP, 500)
     const [debounceDepartureDateSP] = useDebounce(
         (departureDateSP == null) ? null

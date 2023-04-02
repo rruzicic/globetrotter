@@ -20,7 +20,6 @@ export const AuthContextProvider = ({ children }) => {
     const checkTokenExpiration = () => {
         if (token) {
             const tokenExpirationTime = jwt_decode(token).exp - (Date.now() / 1000);
-            console.log(tokenExpirationTime);
             if (tokenExpirationTime <= 0) {
                 logoutHandler();
             } else {

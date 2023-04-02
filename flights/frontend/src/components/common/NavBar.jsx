@@ -29,7 +29,6 @@ const NavBar = () => {
                         All flights
                     </Button>
                 </Link>
-
                 {
                     authCtx.isAdmin() && (
                         <Link to='/flights/create'>
@@ -40,7 +39,7 @@ const NavBar = () => {
                     )
                 }
                 {
-                    authCtx.isLoggedIn && (
+                    authCtx.isUser() && (
                         <Link to='/api'>
                             <Button variant="contained" color="secondary" startIcon={<KeyIcon />}>
                                 API key
