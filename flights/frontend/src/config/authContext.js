@@ -1,7 +1,6 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext } from "react";
 
-
 const AuthContext = createContext({
     token: "",
     isLoggedIn: false,

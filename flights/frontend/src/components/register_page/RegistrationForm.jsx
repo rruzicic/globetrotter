@@ -4,14 +4,6 @@ import theme from 'theme';
 
 
 const RegistrationForm = () => {
-    // FirstName string`json:"firstName" bson:"first_name" binding:"required"`
-	// LastName  string`json:"lastName" bson:"last_name" binding:"required"`
-	// EMail     string`json:"email" bson:"email" binding:"required,email"`
-	// Password  string`json:"password" bson:"password"`
-    // Country   string`json:"country" bson:"country"`
-	// Street    string`json:"street" bson:"street"`
-	// StreetNum string`json:"streetNum" bson:"street_num"`
-	// ZIPCode   int`json:"zip" bson:"zip"`
 
     return (
         <>

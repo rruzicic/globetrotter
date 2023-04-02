@@ -1,5 +1,4 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
-import axios from "axios";
 import RegistrationForm from "components/register_page/RegistrationForm";
 import { axiosInstance } from "config/interceptor";
 import { Form } from "react-final-form";
