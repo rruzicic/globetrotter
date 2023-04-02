@@ -309,7 +309,7 @@ const FlightsPage = () => {
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
                             <TableRow key={flight.id} sx={styles.row} onClick={() => { handleOpen(flight.id) }}>
-                                <TableCell>{formatDate(flight.departureDateTime)}</TableCell>
+                                <TableCell>{flight.departureDateTime.toLocaleString()}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
                                 <TableCell>{formatDate(flight.arrivalDateTime)}</TableCell>
                                 <TableCell>{flight.destination}</TableCell>

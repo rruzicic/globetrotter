@@ -41,8 +41,12 @@ func CreateFlight(ctx *gin.Context) {
 
 func DeleteFlight(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
-	var id string
-	id = ctx.Query("id")	//DELETE REQUEST HAS NO BODY THEREFORE CAN NOT DEBUG PROPERLY
+
+	id := ctx.Query("id")
+	if(id == "") {
+		httpGin.BadRequest("Invalid flight id")
+		return
+	}
 
 	if err := services.DeleteFlight(id); err != nil {
 		log.Println("Could not delete flight document from database")

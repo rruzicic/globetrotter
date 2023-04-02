@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const createAxiosInstance = (contentType) => {
   const instance = axios.create({
     baseURL: 'http://localhost:8080',
@@ -30,34 +29,3 @@ const createAxiosInstance = (contentType) => {
 
 export const axiosInstance = createAxiosInstance('application/json');
 export const stringAxiosInstance = createAxiosInstance('text/javascript');
-
-
-
-// export const axiosInstance = axios.create({
-//   baseURL: "http://localhost:8080",
-// });
-
-// axiosInstance.interceptors.request.use(
-//   async (config, contentType = 'application/json') => {
-//     const token = localStorage.getItem('flights_jwt');
-//     if (token) {
-//       config.headers["Authorization"] = 'Bearer ' + token;
-//     }
-//     return config;
-//   },
-//   function (error) {
-//     return Promise.reject(error);
-//   }
-// );
-
-// axiosInstance.interceptors.response.use(
-//   function (response) {
-//     return response;
-//   },
-//   function (error) {
-//     return Promise.reject(error);
-//   }
-// );
-
-
-      // config.headers['Content-Type'] = contentType;
