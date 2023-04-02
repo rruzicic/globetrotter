@@ -4,15 +4,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers-pro/AdapterDateFns';
 import theme from "theme";
 
 const CreateFlightForm = () => {
-    //model for reference
-    // DepartureDateTime time.Time     `json:"departureDateTime" bson:"departure_date_time"`
-    // ArrivalDateTime   time.Time     `json:"arrivalDateTime" bson:"arrival_date_time"`
-    // Departure         string        `json:"departure" bson:"departure" `
-    // Destination       string        `json:"destination" bson:"destination"`
-    // Price             float32       `json:"price" bson:"price"`
-    // Seats             int           `json:"seats" bson:"seats"`
-    // Duration          int           `json:"duration" bson:"duration"`
-
     return (
         <>
             <Grid container spacing={1}>

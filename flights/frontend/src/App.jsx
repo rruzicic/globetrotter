@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from "react-router";
-import LandingPage from "pages/LandingPage";
 import { BrowserRouter } from "react-router-dom";
 import LoginPage from "pages/LoginPage";
 import theme from "theme";
@@ -16,12 +15,10 @@ import { useContext } from "react";
 import AuthContext from "config/authContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-
+import { ROUTES } from "config/routes";
 
 function App() {
   const authCtx = useContext(AuthContext)
-
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -32,13 +29,23 @@ function App() {
                 !authCtx.isLoggedIn
                 &&
                 <>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegistrationPage />} />
+                  <Route path={ROUTES.LOGIN_PAGE} element={<LoginPage />} />
+                  <Route path={ROUTES.REGISTER_PAGE} element={<RegistrationPage />} />
                 </>
               }
-              <Route path="/flights" element={<FlightsPage />} />
-              <Route path="/flights/create" element={<CreateFlightPage />} />
-              <Route path="/api" element={<APIKeyPage />} />
+              {
+                authCtx.isAdmin() &&
+                <>
+                  <Route path={ROUTES.NEW_FLIGHT_PAGE} element={<CreateFlightPage />} />
+                </>
+              }
+              {
+                authCtx.isUser() &&
+                <>
+                  <Route path={ROUTES.API_KEY_PAGE} element={<APIKeyPage />} />
+                </>
+              }
+              <Route path={ROUTES.FLIGHTS_PAGE} element={<FlightsPage />} />
               <Route path="*" element={<Navigate to={'/flights'} replace />} />
             </Routes>
           </Layout>
@@ -46,7 +53,6 @@ function App() {
       </LocalizationProvider>
       <ToastContainer />
     </ThemeProvider>
-
   );
 }
 

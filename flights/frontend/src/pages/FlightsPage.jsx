@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useContext, useEffect, useState } from "react";
 import theme from "theme";
@@ -59,6 +59,11 @@ const FlightsPage = () => {
     const changePassengerNumber = (e) => {
         setPassengerNumSP(e.target.value);
     }
+
+    useEffect(()=> {
+        console.log(debounceDepartureDateSP);
+        console.log(departureDateSP);
+    }, [debounceDepartureDateSP])
 
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
@@ -166,7 +171,7 @@ const FlightsPage = () => {
     })
 
     const handleOpen = (flightId) => {
-        if(authCtx.isUser()) {
+        if (authCtx.isUser()) {
             setSelectedFlight(flightId)
             setOpenModal(true)
         } else {

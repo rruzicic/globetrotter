@@ -2,11 +2,11 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { Checkbox, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
-import axios from 'axios';
 import { useState } from 'react';
+import { axiosInstance } from 'config/interceptor';
 
 const APIKeyPage = () => {
-    const [apiKey, setApiKey] = useState()
+    const [apiKey, setApiKey] = useState('')
     const [permanent, setPermanent] = useState(false)
 
     const changePermanent = () => {
@@ -14,8 +14,7 @@ const APIKeyPage = () => {
     }
 
     const getAPIKey = () => {
-        //TODO: userId and permanent? not on endpoint
-        axios.get('http://localhost:8080/api-key')
+        axiosInstance.get('/api-key')
         .catch((err)=>{
             console.error(err)
         })
