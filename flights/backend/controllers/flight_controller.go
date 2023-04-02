@@ -41,13 +41,10 @@ func CreateFlight(ctx *gin.Context) {
 
 func DeleteFlight(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
-	var id string
 
-	if err := ctx.BindJSON(&id); err != nil {
-		log.Println("Passed JSON couldn't be decoded into string")
-		log.Println(err.Error())
-
-		httpGin.BadRequest(nil)
+	id := ctx.Query("id")
+	if(id == "") {
+		httpGin.BadRequest("Invalid flight id")
 		return
 	}
 
@@ -170,6 +167,8 @@ func SearchFlights(ctx *gin.Context) {
 
 	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
 	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber")) 
+
 
 	departureDateString := httpGin.Context.Query("departureDateTime")
 	if len(departureDateString) != 0 {

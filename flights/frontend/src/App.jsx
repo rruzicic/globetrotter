@@ -28,7 +28,6 @@ function App() {
         <BrowserRouter>
           <Layout>
             <Routes>
-              <Route path="/home" element={<LandingPage />} />
               {
                 !authCtx.isLoggedIn
                 &&
@@ -40,7 +39,7 @@ function App() {
               <Route path="/flights" element={<FlightsPage />} />
               <Route path="/flights/create" element={<CreateFlightPage />} />
               <Route path="/api" element={<APIKeyPage />} />
-              <Route path="*" element={<Navigate to={'/home'} replace />} />
+              <Route path="*" element={<Navigate to={'/flights'} replace />} />
             </Routes>
           </Layout>
         </BrowserRouter>

@@ -92,6 +92,9 @@ func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight
 			{"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"}},
 		},
 	}
+	if searchParams.PassengerNumber != 0 {
+		filter["$and"] = append(filter["$and"].([]bson.M), bson.M{"seats": bson.M{"$lt": searchParams.PassengerNumber}})
+	}
 
 	if !searchParams.ArrivalDateTime.IsZero() || !searchParams.DepartureDateTime.IsZero() {
 		andClauses := make([]bson.M, 0)
@@ -113,6 +116,12 @@ func GetFlightBySearchParams(searchParams dto.SearchFlightsDTO) ([]models.Flight
 				},
 			})
 		}
+		
+		andClauses = append(andClauses, bson.M{
+			"destination": bson.M{"$regex": searchParams.Destination, "$options": "i"},
+			"departure": bson.M{"$regex": searchParams.Departure, "$options": "i"},
+			"seats": bson.M{"$lt": searchParams.PassengerNumber},
+		})
 
 		filter["$and"] = andClauses
 	}

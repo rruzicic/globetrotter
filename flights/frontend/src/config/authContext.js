@@ -17,6 +17,20 @@ export const AuthContextProvider = ({ children }) => {
     const [token, setToken] = useState(initialToken)
     const isLoggedIn = !!token
 
+    const checkTokenExpiration = () => {
+        if (token) {
+            const tokenExpirationTime = jwt_decode(token).exp - (Date.now() / 1000);
+            if (tokenExpirationTime <= 0) {
+                logoutHandler();
+            } else {
+                setTimeout(() => {
+                    logoutHandler();
+                }, tokenExpirationTime * 1000);
+            }
+        }
+    }
+    checkTokenExpiration()
+
     const loginHandler = (token) => {
         setToken(token);
         localStorage.setItem("flights_jwt", token);
