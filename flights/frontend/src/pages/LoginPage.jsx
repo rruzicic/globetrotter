@@ -18,7 +18,7 @@ const LoginPage = () => {
     const onSubmit = (values) => {
         axiosInstance.post('/user/login', values)
             .catch((e) => {
-                toast('Login unsuccessful! 😢')
+                toast('Email password combination does not match! 😢')
                 return
             })
             .then((res) => {
@@ -33,10 +33,10 @@ const LoginPage = () => {
     const validate = (values) => {
         let returnObject = {}
         if (!emailRegex.test(values.email)) {
-            returnObject.email = 'This field is required! 🚀🚀🚀'
+            returnObject.email = 'That is not a valid email address!'
         }
         if (!values.password) {
-            returnObject.password = 'This field is required! 🚀🚀🚀'
+            returnObject.password = 'This field is required!'
         }
         return returnObject
     }

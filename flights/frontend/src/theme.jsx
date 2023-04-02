@@ -9,6 +9,9 @@ const theme = createTheme({
     },
     secondary: { main: "#fefefe" },
     tertiary: { main: "#1F2124 " }
+  },
+  typography: {
+    fontFamily: 'Open Sans, sans-serif'
   }
 });
 

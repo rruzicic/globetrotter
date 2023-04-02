@@ -1,5 +1,6 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext } from "react";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext({
     token: "",
@@ -38,6 +39,7 @@ export const AuthContextProvider = ({ children }) => {
     const logoutHandler = () => {
         setToken(null);
         localStorage.removeItem("flights_jwt");
+        toast('Do come back! 😊')
     };
 
     const isUserHandler = () => {

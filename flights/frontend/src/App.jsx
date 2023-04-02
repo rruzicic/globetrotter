@@ -33,9 +33,19 @@ function App() {
                   <Route path={ROUTES.REGISTER_PAGE} element={<RegistrationPage />} />
                 </>
               }
+              {
+                authCtx.isAdmin() &&
+                <>
+                  <Route path={ROUTES.NEW_FLIGHT_PAGE} element={<CreateFlightPage />} />
+                </>
+              }
+              {
+                authCtx.isUser() &&
+                <>
+                  <Route path={ROUTES.API_KEY_PAGE} element={<APIKeyPage />} />
+                </>
+              }
               <Route path={ROUTES.FLIGHTS_PAGE} element={<FlightsPage />} />
-              <Route path={ROUTES.NEW_FLIGHT_PAGE} element={<CreateFlightPage />} />
-              <Route path={ROUTES.API_KEY_PAGE} element={<APIKeyPage />} />
               <Route path="*" element={<Navigate to={'/flights'} replace />} />
             </Routes>
           </Layout>

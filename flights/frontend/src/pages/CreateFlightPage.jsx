@@ -45,8 +45,7 @@ const CreateFlightPage = () => {
         values.price = parseInt(values.price)
         values.seats = parseInt(values.seats)
         values.duration = parseInt(values.duration)
-        console.log(values);
-        axiosInstance.post("http://localhost:8080/flights/create", values)
+        axiosInstance.post("/flights/create", values)
         .catch((err) => {
             toast('That flight could not be created! 😢')
         })

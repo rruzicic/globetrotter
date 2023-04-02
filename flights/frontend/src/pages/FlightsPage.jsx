@@ -60,6 +60,11 @@ const FlightsPage = () => {
         setPassengerNumSP(e.target.value);
     }
 
+    useEffect(()=> {
+        console.log(debounceDepartureDateSP);
+        console.log(departureDateSP);
+    }, [debounceDepartureDateSP])
+
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
             return order === 'asc'
@@ -166,7 +171,7 @@ const FlightsPage = () => {
     })
 
     const handleOpen = (flightId) => {
-        if(authCtx.isUser()) {
+        if (authCtx.isUser()) {
             setSelectedFlight(flightId)
             setOpenModal(true)
         } else {
