@@ -3,11 +3,10 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useContext, useEffect, useState } from "react";
 import theme from "theme";
 import { useDebounce } from "use-debounce";
-import formatDate from "util";
 import AuthContext from "config/authContext";
 import { toast } from "react-toastify";
 import { axiosInstance, stringAxiosInstance } from "config/interceptor";
-import { useNavigate } from "react-router";
+import { formatLocaleDate } from "util";
 
 const FlightsPage = () => {
     const fixDate = (date) => {
@@ -212,8 +211,8 @@ const FlightsPage = () => {
                     <Button onClick={() => { buyTicket() }}>Buy</Button>
                 </DialogActions>
             </Dialog>
-            <Typography variant="h2" align="center" sx={{ margin: '1rem 0' }}>List of all flights </Typography>
-            <Paper elevation={4} sx={{ width: '60%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
+            <Typography variant="h3" align="center" sx={{ margin: '3rem 0rem 1rem 0rem' }}>Feel free to search for the flight you need: </Typography>
+            <Paper elevation={4} sx={{ width: '80%', margin: '1rem auto', display: 'flex', justifyContent: 'space-around', padding: '0.5rem' }} >
                 <TextField onChange={changeDeparture} label='Departure' value={departureSP} sx={{ margin: '0 1rem' }} />
                 <DatePicker
                     disablePast
@@ -226,8 +225,8 @@ const FlightsPage = () => {
                     value={arrivalDateSP}
                     renderInput={(props) => <TextField {...props} />}
                     onChange={changeArrivalDate} label='Arrival Date' sx={{ margin: '0 1rem' }} />
-                <TextField onChange={changePassengerNumber} label='Passenger Number' value={passengerNumSP} sx={{ margin: '0 1rem' }} />
-                <Button variant="outlined" color="primary" onClick={resetSearch} sx={{ margin: '0 1rem' }}>
+                <TextField onChange={changePassengerNumber} label='Remaining Tickets' value={passengerNumSP} sx={{ margin: '0 1rem' }} />
+                <Button variant="contained" color="primary" onClick={resetSearch} sx={{ margin: '0 1rem', whiteSpace: 'nowrap', width: '13rem' }}>
                     Reset Search
                 </Button>
             </Paper>
@@ -286,7 +285,7 @@ const FlightsPage = () => {
                                     direction={orderBy === 'seats' ? order : 'asc'}
                                     onClick={() => handleSort('seats')}
                                 >
-                                    Seats
+                                    Remaining tickets
                                 </TableSortLabel>
                             </TableCell>
                             <TableCell>
@@ -301,7 +300,7 @@ const FlightsPage = () => {
                             {
                                 authCtx.isAdmin() &&
                                 <TableCell>
-                                    Admin
+                                    Admin Controls
                                 </TableCell>
                             }
                         </TableRow>
@@ -309,9 +308,9 @@ const FlightsPage = () => {
                     <TableBody>
                         {sortedFlights.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((flight) => (
                             <TableRow key={flight.id} sx={styles.row} onClick={() => { handleOpen(flight.id) }}>
-                                <TableCell>{flight.departureDateTime.toLocaleString()}</TableCell>
+                                <TableCell>{formatLocaleDate(flight.departureDateTime)}</TableCell>
                                 <TableCell>{flight.departure}</TableCell>
-                                <TableCell>{formatDate(flight.arrivalDateTime)}</TableCell>
+                                <TableCell>{formatLocaleDate(flight.arrivalDateTime)}</TableCell>
                                 <TableCell>{flight.destination}</TableCell>
                                 <TableCell>{flight.price}</TableCell>
                                 <TableCell>{flight.seats}</TableCell>

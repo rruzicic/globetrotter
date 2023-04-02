@@ -167,6 +167,8 @@ func SearchFlights(ctx *gin.Context) {
 
 	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
 	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber")) 
+
 
 	departureDateString := httpGin.Context.Query("departureDateTime")
 	if len(departureDateString) != 0 {
