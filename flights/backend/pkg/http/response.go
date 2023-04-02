@@ -61,3 +61,7 @@ func (gin *Gin) Unauthorized(data interface{}) {
 func (gin *Gin) NotFound(data interface{}) {
 	sendResponse(gin.Context, 404, "Not Found", data)
 }
+
+func (gin *Gin) InternalServerError(data interface{}) {
+	sendResponse(gin.Context, 500, "Internal Server Error", data)
+}

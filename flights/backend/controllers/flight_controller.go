@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/dto"
@@ -39,17 +41,14 @@ func CreateFlight(ctx *gin.Context) {
 
 func DeleteFlight(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
-	var flight models.Flight
 
-	if err := ctx.BindJSON(&flight); err != nil {
-		log.Println("Passed JSON couldn't be decoded")
-		log.Println(err.Error())
-
-		httpGin.BadRequest(nil)
+	id := ctx.Query("id")
+	if(id == "") {
+		httpGin.BadRequest("Invalid flight id")
 		return
 	}
 
-	if err := services.DeleteFlight(flight); err != nil {
+	if err := services.DeleteFlight(id); err != nil {
 		log.Println("Could not delete flight document from database")
 		log.Println(err.Error())
 
@@ -76,7 +75,7 @@ func GetFlightById(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	var id string
 
-	if err := ctx.BindJSON(id); err != nil {
+	if err := ctx.BindJSON(&id); err != nil {
 		log.Println("Passed JSON couldn't be decoded")
 		log.Println(err.Error())
 
@@ -108,7 +107,7 @@ func BuyTicket(ctx *gin.Context) {
 		return
 	}
 
-	err := services.BuyTicket(request.FlightId, request.UserId, request.NumOfTicketsOptional...)
+	err := services.BuyTicket(request.FlightId, request.UserEmail, request.NumOfTicketsOptional...)
 
 	if err != nil {
 		log.Println("Couldn't buy ticket")
@@ -142,4 +141,52 @@ func GetTicketsByUser(ctx *gin.Context) {
 	}
 
 	httpGin.OK(tickets)
+}
+
+func BuyTicketForOtherUser(ctx *gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	buyTicketForOtherUserDTO := dto.BuyTicketForOtherUserDTO{}
+
+	if err := httpGin.Context.ShouldBindJSON(&buyTicketForOtherUserDTO); err != nil {
+		httpGin.BadRequest(nil)
+		return
+	}
+
+	if err := services.BuyTicketForOtherUser(buyTicketForOtherUserDTO); err != nil {
+		httpGin.InternalServerError(nil)
+		return
+	}
+
+	httpGin.OK("Ticket Bought for Other User")
+}
+
+func SearchFlights(ctx *gin.Context) {
+	httpGin := http.Gin{Context: ctx}
+	var searchFlightsDTO dto.SearchFlightsDTO
+	layout := "2006-01-02"
+
+	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
+	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber")) 
+
+
+	departureDateString := httpGin.Context.Query("departureDateTime")
+	if len(departureDateString) != 0 {
+		searchFlightsDTO.DepartureDateTime, _ = time.Parse(layout, departureDateString)
+		searchFlightsDTO.DepartureDateTime = searchFlightsDTO.DepartureDateTime.Truncate(24 * time.Hour)
+	}
+	arrivalDateString := httpGin.Context.Query("arrivalDateTime")
+	if len(arrivalDateString) != 0 {
+		searchFlightsDTO.ArrivalDateTime, _ = time.Parse(layout, arrivalDateString)
+		searchFlightsDTO.ArrivalDateTime = searchFlightsDTO.ArrivalDateTime.Truncate(24 * time.Hour)
+	}
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber"))
+
+	flights, err := services.SearchFlights(searchFlightsDTO)
+	if err != nil {
+		httpGin.InternalServerError(err)
+		return
+	}
+
+	httpGin.OK(flights)
 }

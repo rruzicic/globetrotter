@@ -1,11 +1,11 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Ticket struct {
-	Id     bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Id         *primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	UserId string        `json:"userId" bson:"user_id"`
 	Flight
 }
