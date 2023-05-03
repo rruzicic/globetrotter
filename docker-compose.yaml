@@ -3,8 +3,6 @@ services:
   flights_backend:
     container_name: 'flights_backend'
     build: './flights/backend'
-      #context: ./
-      #dockerfile: './flights/backend/Dockerfile'
     ports:
       - '8080:8080'
     volumes:
@@ -12,15 +10,15 @@ services:
     depends_on:
       - 'mongo'
 
-  flights_frontend: 
-    container_name: 'flights_frontend'
-    build: './flights/frontend'
-    volumes:
-      - './flights/frontend:/react-app'
-    depends_on:
-      - 'flights_backend'
-    ports:
-      - "3000:3000"
+#  flights_frontend: 
+#    container_name: 'flights_frontend'
+#    build: './flights/frontend'
+#    volumes:
+#      - './flights/frontend:/react-app'
+#    depends_on:
+#      - 'flights_backend'
+#    ports:
+#      - "3000:3000"
 
   mongo:
     image: 'mongo:latest'
