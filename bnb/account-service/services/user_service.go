@@ -6,12 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func RegisterHost(user models.User) models.User {
+func RegisterHost(user models.User) (*models.User, error) {
 	user.Role = models.HostRole
 	return repos.CreateUser(user)
 }
 
-func RegisterGuest(user models.User) models.User {
+func RegisterGuest(user models.User) (*models.User, error) {
 	user.Role = models.GuestRole
 	return repos.CreateUser(user)
 }
@@ -28,7 +28,7 @@ func GetById(id primitive.ObjectID) (*models.User, error) {
 	return repos.GetUserById(id)
 }
 
-func UpdateUser(user models.User) bool {
+func UpdateUser(user models.User) (*models.User, error) {
 	return repos.UpdateUser(user)
 }
 

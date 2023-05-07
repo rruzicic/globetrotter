@@ -7,22 +7,23 @@ import (
 
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func CreateUser(user models.User) models.User {
+func CreateUser(user models.User) (*models.User, error) {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
 
 	if _, err := GetUserByEmail(user.EMail); err == nil {
-		return models.User{}
+		return &models.User{}, err
 	}
 	_, err := usersCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
-		return models.User{}
+		return &models.User{}, err
 	}
-	return user
+	return &user, nil
 }
 
 func GetAllUsers() []models.User {
@@ -57,20 +58,22 @@ func GetUserById(id primitive.ObjectID) (*models.User, error) {
 	return &user, nil
 }
 
-func UpdateUser(user models.User) bool {
+func UpdateUser(user models.User) (*models.User, error) {
 	user.ModifiedOn = int(time.Now().Unix())
 
 	objID, err := primitive.ObjectIDFromHex(user.Id.Hex())
 	if err != nil {
 		log.Panic("could not convert hex to id")
-		return false
+		return &models.User{}, err
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 	update := bson.D{{Name: "$set", Value: bson.D{}}}
-
-	if _, err := usersCollection.UpdateByID(context.TODO(), filter, update); err != nil {
-		return false
+	var updatedUser models.User
+	err = usersCollection.FindOneAndUpdate(context.TODO(), filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&updatedUser)
+	if err != nil {
+		return &models.User{}, err
 	}
-	return true
+
+	return &updatedUser, nil
 }
