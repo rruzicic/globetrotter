@@ -40,7 +40,17 @@ func RegisterGuest(ctx *gin.Context) {
 }
 
 func Login(ctx *gin.Context) {
-	// TODO: implement
+	credentials := dto.CredentialsDTO{}
+	if err := ctx.ShouldBindJSON(&credentials); err != nil {
+		ctx.JSON(400, "Could not unmarshal request body, error: "+err.Error())
+		return
+	}
+	token, err := services.LoginUser(credentials)
+	if err != nil {
+		ctx.JSON(400, "Could not login user, error: "+err.Error())
+		return
+	}
+	ctx.JSON(200, token)
 }
 
 func GetAll(ctx *gin.Context) {
@@ -48,7 +58,7 @@ func GetAll(ctx *gin.Context) {
 }
 
 func GetById(ctx *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(ctx.Param("id")[1:])
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, "Could not convert to ObjectId, error: "+err.Error())
 		return
@@ -62,10 +72,10 @@ func GetById(ctx *gin.Context) {
 }
 
 func GetByEmail(ctx *gin.Context) {
-	email := ctx.Param("id")[1:]
+	email := ctx.Param("email")
 	user, err := services.GetByEmail(email)
 	if err != nil {
-		ctx.JSON(400, "Could not get user by id, error: "+err.Error())
+		ctx.JSON(400, "Could not get user by email, error: "+err.Error())
 		return
 	}
 	ctx.JSON(200, user)
