@@ -49,7 +49,7 @@ func (s *server) DeleteUser(ctx context.Context, in *pb.UserRequestId) (*pb.User
 }
 
 func InitServer() {
-	listen, err := net.Listen("tcp", ":50051")
+	listen, err := net.Listen("tcp", "127.0.0.1:50051")
 	if err != nil {
 		log.Println("gRPC failed to listen")
 		return

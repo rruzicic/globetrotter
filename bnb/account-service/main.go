@@ -12,7 +12,7 @@ import (
 
 func main() {
 	repos.Connect()
-	ginSetup()
+	go ginSetup()
 	gapi.InitServer()
 	repos.Disconnect()
 }
