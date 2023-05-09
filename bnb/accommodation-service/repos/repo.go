@@ -10,25 +10,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateAccommodation(accommodation models.Accommodation) (*models.Accommodation, error) {
+func CreateAccommodation(accommodation models.Accommodation) error {
 	accommodation.CreatedOn = int(time.Now().Unix())
 	accommodation.ModifiedOn = int(time.Now().Unix())
 
 	_, err := acommodationsCollection.InsertOne(context.TODO(), accommodation)
 	if err != nil {
 		log.Panic("Could not save Accommodation because: ", err.Error())
-		return nil, err
+		return err
 	}
-	return &accommodation, nil
+	return nil
 }
 
-func UpdateAccommodation(accommodation models.Accommodation) (*models.Accommodation, error) {
+func UpdateAccommodation(accommodation models.Accommodation) error {
 	accommodation.ModifiedOn = int(time.Now().Unix())
 
 	objID, err := primitive.ObjectIDFromHex(accommodation.Id.Hex())
 	if err != nil {
 		log.Panic("Could not convert accommodation hex to id")
-		return nil, err
+		return err
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
@@ -46,8 +46,8 @@ func UpdateAccommodation(accommodation models.Accommodation) (*models.Accommodat
 
 	if _, err := acommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
 		log.Panic("Could not update accommodation")
-		return nil, err
+		return err
 	}
 
-	return &accommodation, nil
+	return nil
 }
