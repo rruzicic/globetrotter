@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func makeUserServiceConnection() (pb.UserServiceClient, context.Context) {
+func MakeUserServiceConnection() (pb.UserServiceClient, context.Context) {
 	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
