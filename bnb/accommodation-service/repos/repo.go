@@ -32,7 +32,7 @@ func UpdateAccommodation(accommodation models.Accommodation) (*models.Accommodat
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
-	update := bson.M{
+	update := bson.M{"$set": bson.M{
 		"reservations":            accommodation.Reservations,
 		"available_commodations":  accommodation.AvailableCommodations,
 		"photos":                  accommodation.Photos,
@@ -41,6 +41,7 @@ func UpdateAccommodation(accommodation models.Accommodation) (*models.Accommodat
 		"unit_price":              accommodation.UnitPrice,
 		"price_for_person":        accommodation.PriceForPerson,
 		"auto_approve":            accommodation.AutoApprove,
+	},
 	}
 
 	if _, err := acommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
