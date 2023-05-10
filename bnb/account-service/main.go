@@ -39,6 +39,6 @@ func ginSetup() {
 	public.POST("/login", controllers.Login)
 
 	protected.DELETE("/delete/:id", controllers.DeleteUser)
-	r.Run("127.0.0.1:8080")
+	r.Run(":8080")
 	log.Println("HTTP server running on port 8080")
 }
