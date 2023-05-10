@@ -31,3 +31,11 @@ message Accommodation {
     string user = 18;
     bool autoApprove = 19;
 }
+
+message RequestAccommodationById {
+    string id = 1;
+}
+
+service AccommodationService {
+    rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
+}
