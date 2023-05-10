@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/bnb/accommodation-service/controllers"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
 )
 
@@ -17,6 +18,8 @@ func ginSetup() {
 	r.NoRoute()
 
 	r.Group("/accommodation")
+	r.POST("/", controllers.CreateAccommodation)
+	r.PUT("/", controllers.UpdateAccommodation)
 
-	r.Run(":8081")
+	r.Run(":8080")
 }
