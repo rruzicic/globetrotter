@@ -33,14 +33,13 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 	update := bson.M{"$set": bson.M{
-		"reservations":            accommodation.Reservations,
-		"available_commodations":  accommodation.AvailableCommodations,
-		"photos":                  accommodation.Photos,
-		"availability_start_date": accommodation.AvailabilityStartDate,
-		"availability_end_date":   accommodation.AvailabilityEndDate,
-		"unit_price":              accommodation.UnitPrice,
-		"price_for_person":        accommodation.PriceForPerson,
-		"auto_approve":            accommodation.AutoApprove,
+		"reservations":           accommodation.Reservations,
+		"available_commodations": accommodation.AvailableCommodations,
+		"photos":                 accommodation.Photos,
+		"availability":           accommodation.Availability,
+		"unit_price":             accommodation.UnitPrice,
+		"price_for_person":       accommodation.PriceForPerson,
+		"auto_approve":           accommodation.AutoApprove,
 	},
 	}
 
