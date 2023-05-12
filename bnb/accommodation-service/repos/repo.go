@@ -50,3 +50,19 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 
 	return nil
 }
+
+func GetAccommodationById(id string) (*models.Accommodation, error) {
+	objId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Panic("Could not convert accommodation hex to id")
+		return nil, err
+	}
+
+	var accommodation models.Accommodation
+	filter := bson.M{"_id": bson.M{"$eq": objId}}
+	if err := acommodationsCollection.FindOne(context.TODO(), filter).Decode(&accommodation); err != nil {
+		return nil, err
+	}
+
+	return &accommodation, nil
+}

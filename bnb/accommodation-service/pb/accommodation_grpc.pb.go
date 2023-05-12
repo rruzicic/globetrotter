@@ -8,9 +8,11 @@ package pb
 
 import (
 	context "context"
+	"log"
+
+	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -54,8 +56,41 @@ type AccommodationServiceServer interface {
 type UnimplementedAccommodationServiceServer struct {
 }
 
-func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationById not implemented")
+func (UnimplementedAccommodationServiceServer) GetAccommodationById(ctx context.Context, req *RequestAccommodationById) (*Accommodation, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetId())
+	if err != nil {
+		log.Panic("Could not get accommodation with id", req.GetId())
+	}
+
+	var reservation_ids []string
+	for _, id := range accommodation.Reservations {
+		reservation_ids = append(reservation_ids, id.Hex())
+	}
+
+	var commodations []string
+	for _, commodation := range accommodation.AvailableCommodations {
+		commodations = append(commodations, string(commodation))
+	}
+
+	grpc_accommodation := Accommodation {
+		Reservations: reservation_ids,
+		Name: accommodation.Name,
+		Country: accommodation.Location.Country,
+		Street: accommodation.Location.Street,
+		StreetNum: accommodation.Location.StreetNum,
+		ZipCode: int32(accommodation.Location.ZIPCode),
+		Commodations: commodations,
+		Photos: accommodation.Photos,
+		Guests: int32(accommodation.Guests),
+		AvailabilityStartDate: timestamppb.New(accommodation.Availability.Start),
+		AvailabilityEndDate: timestamppb.New(accommodation.Availability.End),
+		UnitPrice: accommodation.UnitPrice,
+		PriceForPerson: accommodation.PriceForPerson,
+		User: accommodation.User.Hex(),
+		AutoApprove: accommodation.AutoApprove,
+	}
+
+	return &grpc_accommodation, nil
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
