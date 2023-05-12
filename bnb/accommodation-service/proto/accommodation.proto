@@ -23,10 +23,14 @@ message Accommodation {
     google.protobuf.Timestamp availabilityStartDate = 10;
     google.protobuf.Timestamp availabilityEndDate = 11;
     
-    float unitPrice = 12;
-    bool priceForPerson = 13;
-    string user = 14;
-    bool autoApprove = 15;
+    // unit price
+    float amount = 12;
+    google.protobuf.Timestamp priceStartDate = 13;
+    google.protobuf.Timestamp priceEndDate = 14;
+
+    bool priceForPerson = 15;
+    string user = 16;
+    bool autoApprove = 17;
 }
 
 message RequestAccommodationById {

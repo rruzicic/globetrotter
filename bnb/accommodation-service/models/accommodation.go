@@ -13,7 +13,7 @@ type Accommodation struct {
 	Photos                []string              `json:"photos" bson:"photos"` // b64 strings
 	Guests                int                   `json:"guests" bson:"guests"`
 	Availability          TimeInterval          `json:"availability" bson:"availability"`
-	UnitPrice             float32               `json:"unitPrice" bson:"unit_price"`            // price of 1 person per night or room per night
+	UnitPrice             Price                 `json:"unitPrice" bson:"unit_price"`            // price of 1 person per night or room per night
 	PriceForPerson        bool                  `json:"priceForPerson" bson:"price_for_person"` // flag wether the unit price is for person/night or room/night
 	User                  *primitive.ObjectID   `json:"user" bson:"user"`
 	AutoApprove           bool                  `json:"autoApprove" bson:"auto_approve"` // wether to automatically approve reservations
