@@ -3,7 +3,6 @@ import { Form } from "react-final-form";
 import REGEX from "../regex";
 import NewAccommodationForm from "../components/accommodationManagement/NewAccommodationForm";
 
-let emailRegex = new RegExp(REGEX.EMAIL)
 let numberRegex = new RegExp(REGEX.NUMBER)
 
 const NewAccommodationPage = () => {

@@ -11,21 +11,25 @@ const AccommodationManagementPage = () => {
         //TODO: get hosts objects and setObjects
         setObjects([
             {
+                id: 1,
                 name: 'Village home',
                 location: 'Zlatibor',
                 image: '/home.jpg'
             },
             {
+                id: 2,
                 name: 'Mountain home',
                 location: 'Tara',
                 image: '/home.jpg'
             },
             {
+                id: 3,
                 name: 'Costal home',
                 location: 'Nice',
                 image: '/home.jpg'
             },
             {
+                id: 4,
                 name: 'City home',
                 location: 'NYC',
                 image: '/home.jpg'
@@ -40,13 +44,12 @@ const AccommodationManagementPage = () => {
         },
         card: {
             '&:hover': {
-                transform: 'scale(1.1)'
+                transform: 'scale(1.05)'
             },
             cursor: 'pointer',
             transition: 'all 1s'
         }
     }
-
     return (
         <Grid container spacing={2} mt={6}>
             <Grid item xs={12}>
@@ -66,9 +69,11 @@ const AccommodationManagementPage = () => {
                 objects && objects.map((object) => {
                     return (
                         <Grid item xs={4} sx={styles.grid}>
-                            <Box sx={styles.card}>
-                                <AccommodationCard name={object.name} location={object.location} image={object.image} />
-                            </Box>
+                            <Link to={`/accommodationInfo/${object.id}`}>
+                                <Box sx={styles.card}>
+                                    <AccommodationCard name={object.name} location={object.location} image={object.image} />
+                                </Box>
+                            </Link>
                         </Grid>
                     )
                 }

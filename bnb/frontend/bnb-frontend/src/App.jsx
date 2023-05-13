@@ -10,6 +10,7 @@ import theme from './theme';
 import AccountPage from './pages/AccountPage';
 import AccommodationManagementPage from './pages/AccommodationManagementPage';
 import NewAccommodationPage from './pages/NewAccommodationPage';
+import AccommodationInfoPage from './pages/AccommodationInfoPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path={'/account'} element={<AccountPage />} />
             <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
             <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
+            <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
