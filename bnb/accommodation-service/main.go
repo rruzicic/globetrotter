@@ -26,6 +26,7 @@ func ginSetup() {
 	r.PUT("/", controllers.UpdateAccommodation)
 	r.PUT("/price", controllers.UpdatePriceInterval)
 	r.PUT("/availability", controllers.UpdateAvailabilityInterval)
+	r.GET("/search", controllers.SearchAccomodation)
 
 	r.Run(":8080")
 }
