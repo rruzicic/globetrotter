@@ -1,6 +1,6 @@
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -53,18 +53,28 @@ const ObjectDataGrid = () => {
         //TODO: call API for search
         setObjects([
             {
+                id: 1,
                 name: 'Village House',
                 priceNight: 25,
                 priceTotal: 125,
                 location: 'Tara'
             },
             {
+                id: 2,
                 name: 'Village House',
                 priceNight: 25,
                 priceTotal: 125,
                 location: 'Tara'
             },
             {
+                id: 3,
+                name: 'Village House',
+                priceNight: 25,
+                priceTotal: 125,
+                location: 'Tara'
+            },
+            {
+                id: 4,
                 name: 'Village House',
                 priceNight: 25,
                 priceTotal: 125,
@@ -93,6 +103,11 @@ const ObjectDataGrid = () => {
 
     const handleEndDateChange = (event) => {
         setEndDateSP(event.target.value)
+    }
+
+    const navigate = useNavigate()
+    const seeInfo = (id) => {
+        navigate(`/accommodationInfo/${id}`)
     }
 
     return (
@@ -129,22 +144,20 @@ const ObjectDataGrid = () => {
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((object) => {
                                             return (
-                                                <>
-                                                    <TableRow hover tabIndex={-1} key={object.id}>
-                                                        <TableCell>
-                                                            {object.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {object.location}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {object.priceNight}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {object.priceTotal}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </>
+                                                <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
+                                                    <TableCell>
+                                                        {object.name}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {object.location}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {object.priceNight}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {object.priceTotal}
+                                                    </TableCell>
+                                                </TableRow>
                                             );
                                         })}
                                 </TableBody>
