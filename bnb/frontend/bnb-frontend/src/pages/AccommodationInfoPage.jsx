@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Grid, Typography, Button } from "@mui/material";
+import RequestCard from "../components/accommodationManagement/RequestCard";
 
 const AccommodationInfoPage = () => {
     const { id } = useParams()
     const [objectInfo, setObjectInfo] = useState()
+    const [requests, setRequests] = useState([])
     useEffect(() => {
         //TODO: fetch object info by id
         setObjectInfo(
@@ -18,7 +20,39 @@ const AccommodationInfoPage = () => {
                 country: 'Srbija'
             }
         )
+        setRequests(
+            [{
+                userId: '1',
+                requestId: '1',
+                startDate: new Date(),
+                endDate: new Date(),
+                numberOfGuests: 8
+            },
+            {
+                userId: '2',
+                requestId: '2',
+                startDate: new Date(),
+                endDate: new Date(),
+                numberOfGuests: 4
+            },
+            {
+                userId: '3',
+                requestId: '3',
+                startDate: new Date(),
+                endDate: new Date(),
+                numberOfGuests: 6
+            }]
+        )
     }, [])
+
+    const acceptReservation = (id) => {
+        //TODO: send to BE
+        console.log('Accepted ' + id);
+    }
+    const declineReservation = (id) => {
+        //TODO: send to BE
+        console.log('Declined ' + id);
+    }
 
     return (
         <Grid container>
@@ -64,9 +98,20 @@ const AccommodationInfoPage = () => {
                 )
             }
             <Grid item xs={12}>
-                    React image gallery npm
+                React image gallery npm
             </Grid>
-            <Grid item xs={12}>
+            <Grid container spacing={2} mt={4}>
+                {
+                    requests && requests.map((request) => {
+                        return (
+                            <Grid item xs={12}>
+                                <RequestCard requestId={request.requestId} accept={acceptReservation} decline={declineReservation} userId={request.userId} startDate={request.startDate} endDate={request.endDate} guestNumber={request.numberOfGuests} />
+                            </Grid>
+                        )
+                    })
+                }
+            </Grid>
+            <Grid item xs={12} mt={4}>
                 <Button variant="contained" color="primary" disabled>
                     Change info (coming soon..)
                 </Button>
