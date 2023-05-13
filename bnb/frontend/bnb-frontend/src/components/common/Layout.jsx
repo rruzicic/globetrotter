@@ -4,7 +4,7 @@ const Layout = ({children}) => {
     return ( 
         <>
         <NavBar />
-        <main>
+        <main style={{padding: '0 3rem'}}>
             {children}
         </main>
         </>
