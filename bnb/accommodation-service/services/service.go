@@ -2,6 +2,7 @@ package services
 
 import (
 	"log"
+	"time"
 
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_client"
@@ -81,4 +82,17 @@ func UpdateAvailabilityInterval(updateAvailabilityDTO dtos.UpdateAvailabilityDTO
 	}
 
 	return true, nil
+}
+
+func SearchAccomodation(cityName string, guestNum int, startDate string, endDate string) ([]models.Accommodation, error) {
+	format := "2006-01-02"
+	startTime, err := time.Parse(format, startDate)
+	if err != nil {
+		return []models.Accommodation{}, err
+	}
+	endTime, err := time.Parse(format, endDate)
+	if err != nil {
+		return []models.Accommodation{}, err
+	}
+	return repos.SearchAccomodation(cityName, guestNum, startTime, endTime)
 }

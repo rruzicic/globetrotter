@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/dtos"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
@@ -83,4 +85,22 @@ func UpdateAvailabilityInterval(ctx *gin.Context) {
 	}
 
 	ctx.JSON(500, "Could not update availability")
+}
+
+func SearchAccomodation(ctx *gin.Context) {
+	cityName := ctx.DefaultQuery("cityName", "")
+	guestNum := ctx.DefaultQuery("guestNum", "")
+	startDate := ctx.DefaultQuery("startDate", "")
+	endDate := ctx.DefaultQuery("endDate", "")
+	guests, err := strconv.Atoi(guestNum)
+	if err != nil {
+		ctx.JSON(400, err.Error())
+		return
+	}
+	searchResult, err := services.SearchAccomodation(cityName, guests, startDate, endDate)
+	if err != nil {
+		ctx.JSON(400, err.Error())
+		return
+	}
+	ctx.JSON(200, searchResult)
 }
