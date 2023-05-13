@@ -11,7 +11,7 @@ import (
 
 func connectToReservationService() (*grpc.ClientConn, error) {
 	var opts []grpc.DialOption
-	conn, err := grpc.Dial("localhost:50051", opts)
+	conn, err := grpc.Dial("reservation-service:50051", opts)
 
 	if err != nil {
 		log.Fatalf("Could not connect to reservation service")

@@ -22,6 +22,28 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 	return nil
 }
 
+func GetAllAccommodations() ([]models.Accommodation, error) {
+	var accommodations []models.Accommodation
+	cursor, err := accommodationsCollection.Find(context.TODO(), bson.M{})
+
+	if err != nil {
+		log.Panic("Could not get all accommodations")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var accommodation models.Accommodation
+		if err := cursor.Decode(&accommodation); err != nil {
+			log.Panic("Could not decode accommodation from cursor")
+			return nil, err
+		}
+
+		accommodations = append(accommodations, accommodation)
+	}
+
+	return accommodations, nil
+}
+
 func UpdateAccommodation(accommodation models.Accommodation) error {
 	accommodation.ModifiedOn = int(time.Now().Unix())
 
