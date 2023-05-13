@@ -45,6 +45,7 @@ func buildGRPCAccommodation(accommodation models.Accommodation) pb.Accommodation
 		PriceForPerson:        accommodation.PriceForPerson,
 		User:                  accommodation.User.Hex(),
 		AutoApprove:           accommodation.AutoApprove,
+		Id:                    accommodation.Id.String(),
 	}
 }
 

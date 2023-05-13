@@ -31,12 +31,18 @@ message Accommodation {
     bool priceForPerson = 15;
     string user = 16;
     bool autoApprove = 17;
+    string id = 18;
 }
 
 message RequestAccommodationById {
     string id = 1;
 }
 
+message RequestAccommodationByHostId {
+    string id = 1;
+}
+
 service AccommodationService {
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
+    rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
 }

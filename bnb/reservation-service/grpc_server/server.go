@@ -57,6 +57,16 @@ func (s *ReservationServiceServer) GetReservationsByAccommodationId(req *pb.Requ
 	return nil
 }
 
+func (s *ReservationServiceServer) GetActiveReservationsByUser(req *pb.RequestUserId, stream pb.ReservationService_GetActiveReservationsByUserServer) error {
+
+	return nil
+}
+
+func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.RequestUserId, stream pb.ReservationService_GetFutureActiveReservationsByHostServer) error {
+
+	return nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", "localhost:50051")
 	if err != nil {
