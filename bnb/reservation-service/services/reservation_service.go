@@ -3,6 +3,7 @@ package services
 import (
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 )
@@ -48,31 +49,25 @@ func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
 }
 
 func GetReservationsByHostId(id string) ([]models.Reservation, error) {
-	// get all accomodations from accomodation service by host id
-	accomodations, err := getAccomodationsByHostId(id)
+	accomodations, err := grpcclient.GetAccommodationByHostId(id)
 	if err != nil {
 		return []models.Reservation{}, err
 	}
 	var futureApprovedReservations []models.Reservation
 	for _, accomodation := range accomodations {
-		reservation := repos.GetReservationsByAccommodationId(accomodation.Id)
-		if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
-			futureApprovedReservations = append(futureApprovedReservations, reservation)
+		reservations, err := repos.GetReservationsByAccommodationId(accomodation.Id)
+		if err != nil {
+			return []models.Reservation{}, err
+		}
+		for _, reservation := range reservations {
+			if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
+				futureApprovedReservations = append(futureApprovedReservations, reservation)
+			}
 		}
 	}
 	return futureApprovedReservations, nil
-	// for accomodation in accomodations
-	//reservation := repos.GetReservationsByAccommodationId(accomodationId)
-	//if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
-	//	futureApprovedReservations = append(futureApprovedReservations, reservation)
-	//}
-
 }
 
 func DeleteReservation(id string) error {
 	return repos.DeleteReservation(id)
-}
-
-func getAccomodationsByHostId(id string) error {
-	return nil
 }

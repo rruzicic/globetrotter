@@ -51,24 +51,24 @@ func UpdateUser(user models.User) (*models.User, error) {
 	return repos.UpdateUser(user)
 }
 
-func DeleteUser(id primitive.ObjectID) bool {
+func DeleteUser(id primitive.ObjectID) error {
 	// TODO: implement
+	user, err := GetById(id)
+	if err != nil {
+		return err
+	}
 
-	// check if user exists
-	// check user role
+	if user.Role == models.GuestRole {
+		// if GetActiveReservationsByUser(userId) == 0
+		// delete user
+		// else throw err
+	}
 
-	// if user role == GUEST
-	// then
-	// if GetActiveReservationsByUser(userId) == 0
-	// delete user
-	// else throw err
-
-	// if user role == HOST
-	// then
-	// if GetFutureActiveReservationsByHost(userId) == 0
-	// delete user
-	// else throw err
-	return false
+	if user.Role == models.HostRole {
+		// if GetFutureActiveReservationsByHost(userId) == 0
+		// delete user
+		// else throw err
+	}
 }
 
 func verifyPassword(dbPassword string, dtoPassword string) bool {

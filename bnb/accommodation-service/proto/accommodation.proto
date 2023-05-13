@@ -31,6 +31,7 @@ message Accommodation {
     bool priceForPerson = 15;
     string user = 16;
     bool autoApprove = 17;
+    string id = 18;
 }
 
 message RequestAccommodationById {
