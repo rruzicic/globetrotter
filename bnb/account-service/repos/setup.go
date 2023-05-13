@@ -14,6 +14,7 @@ var usersCollection *mongo.Collection
 var client *mongo.Client
 
 func Connect() {
+	log.Println("connecting to MongoDB database...")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://mongo"))
 	if err != nil {
 		log.Panic("Could not connect to MongoDB")

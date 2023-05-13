@@ -1,14 +1,11 @@
 FROM golang:1.20
 
-RUN adduser --disabled-password --gecos '' api
-USER api
-
 WORKDIR /go/src/app
-COPY . .
-COPY go.mod .
-COPY go.sum .
 
-RUN go get github.com/pilu/fresh
-RUN go install github.com/pilu/fresh
+COPY . . 
 
-CMD [ "fresh" ]
+RUN go mod download
+
+#HEALTHCHECK --interval=60s --timeout=15s --start-period=30s --retries=3 CMD curl --fail http://localhost:8080/user/health || exit 1
+
+CMD [ "go", "run", "main.go" ]
