@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/rruzicic/globetrotter/bnb/accommodation-service/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Accommodation {
+    repeated string reservations = 1;
+    string name = 2;
+
+    // address
+    string country = 3;
+    string street = 4;
+    string streetNum = 5;
+    int32 zipCode = 6;
+
+    repeated string commodations = 7;
+    repeated string photos = 8;
+    int32 guests = 9;
+
+    // time interval
+    google.protobuf.Timestamp availabilityStartDate = 10;
+    google.protobuf.Timestamp availabilityEndDate = 11;
+    
+    // unit price
+    float amount = 12;
+    google.protobuf.Timestamp priceStartDate = 13;
+    google.protobuf.Timestamp priceEndDate = 14;
+
+    bool priceForPerson = 15;
+    string user = 16;
+    bool autoApprove = 17;
+    string id = 18;
+}
+
+message RequestAccommodationById {
+    string id = 1;
+}
+
+message RequestAccommodationByHostId {
+    string id = 1;
+}
+
+service AccommodationService {
+    rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
+    rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
+}
