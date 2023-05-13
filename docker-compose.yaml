@@ -1,24 +1,70 @@
 version: '3.3'
 services:
-  flights_backend:
-    container_name: 'flights_backend'
+
+  nginx:
+    build: './bnb/nginx'
+    ports:
+      - '3000:3000'
+    depends_on:
+      - account-service
+      - accomodation-service
+      - feedback-service
+      - reservation-service
+      - search-service
+
+  accomodation-service:
+    build: './bnb/accommodation-service'
+    ports:
+      - '8081:8080'
+    volumes:
+      - './bnb/account-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  account-service:
+      build: './bnb/account-service'
+      ports:
+        - '8082:8080'
+      volumes:
+        - './bnb/account-service:/go/src/app'
+      depends_on:
+        - mongo
+
+  feedback-service:
+    build: './bnb/feedback-service'
+    ports:
+      - '8083:8080'
+    volumes:
+      - './bnb/feedback-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  reservation-service:
+    build: './bnb/reservation-service'
+    ports:
+      - '8084:8080'
+    volumes:
+      - './bnb/reservation-service:/go/src/app'
+    depends_on:
+      - mongo
+    
+  search-service:
+    build: './bnb/search-service'
+    ports:
+      - '8085:8080'
+    volumes:
+      - './bnb/search-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  flights-backend:
     build: './flights/backend'
     ports:
       - '8080:8080'
     volumes:
       - './flights/backend:/go/src/app'
     depends_on:
-      - 'mongo'
-
-#  flights_frontend: 
-#    container_name: 'flights_frontend'
-#    build: './flights/frontend'
-#    volumes:
-#      - './flights/frontend:/react-app'
-#    depends_on:
-#      - 'flights_backend'
-#    ports:
-#      - "3000:3000"
+      - mongo
 
   mongo:
     image: 'mongo:latest'

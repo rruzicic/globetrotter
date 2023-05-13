@@ -51,13 +51,13 @@ func (s *server) DeleteUser(ctx context.Context, in *pb.UserRequestId) (*pb.User
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Println("Failed to listen")
+		log.Println("gRPC failed to listen")
 		return
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, &server{})
-	log.Printf("server listening at %v", listen.Addr())
+	log.Printf("gRPC server listening at %v", listen.Addr())
 	if err := grpcServer.Serve(listen); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("gRPC failed to serve: %v", err)
 	}
 }

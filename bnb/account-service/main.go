@@ -1,16 +1,19 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/controllers"
 	"github.com/rruzicic/globetrotter/bnb/account-service/gapi"
+	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 )
 
 func main() {
-	gapi.InitServer()
 	repos.Connect()
-	ginSetup()
+	go ginSetup()
+	gapi.InitServer()
 	repos.Disconnect()
 }
 
@@ -20,18 +23,22 @@ func ginSetup() {
 	r.Use(gin.Recovery())
 	r.NoRoute()
 
-	r.Group("/user")
+	public := r.Group("/user")
 
-	r.GET("/health", controllers.HealthCheck)
-	r.GET("/all", controllers.GetAll)
-	r.GET("/:id", controllers.GetById)
-	r.GET("/:email", controllers.GetByEmail)
+	protected := r.Group("/user")
+	protected.Use(jwt.AnyUserAuthMiddleware())
 
-	r.POST("/register/host", controllers.RegisterHost)
-	r.POST("/register/guest", controllers.RegisterGuest)
-	r.POST("/update", controllers.UpdateUser)
-	r.POST("/login", controllers.Login)
+	public.GET("/health", controllers.HealthCheck)
+	public.GET("/all", controllers.GetAll)
+	public.GET("/id/:id", controllers.GetById)
+	public.GET("/email/:email", controllers.GetByEmail)
 
-	r.DELETE("/delete/:id", controllers.DeleteUser)
+	public.POST("/register/host", controllers.RegisterHost)
+	public.POST("/register/guest", controllers.RegisterGuest)
+	protected.POST("/update", controllers.UpdateUser)
+	public.POST("/login", controllers.Login)
+
+	protected.DELETE("/delete/:id", controllers.DeleteUser)
 	r.Run(":8080")
+	log.Println("HTTP server running on port 8080")
 }
