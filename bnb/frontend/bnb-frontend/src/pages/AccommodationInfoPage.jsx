@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Grid, Typography, Button } from "@mui/material";
 import RequestCard from "../components/accommodationManagement/RequestCard";
+import AuthContext from "../config/authContext";
 
 const AccommodationInfoPage = () => {
     const { id } = useParams()
     const [objectInfo, setObjectInfo] = useState()
     const [requests, setRequests] = useState([])
+    let authCtx = useContext(AuthContext)
+
     useEffect(() => {
         //TODO: fetch object info by id
         setObjectInfo(
@@ -102,7 +105,7 @@ const AccommodationInfoPage = () => {
             </Grid>
             <Grid container spacing={2} mt={4}>
                 {
-                    requests && requests.map((request) => {
+                    requests && authCtx.isHost() && requests.map((request) => {
                         return (
                             <Grid item xs={12}>
                                 <RequestCard requestId={request.requestId} accept={acceptReservation} decline={declineReservation} userId={request.userId} startDate={request.startDate} endDate={request.endDate} guestNumber={request.numberOfGuests} />
@@ -111,11 +114,15 @@ const AccommodationInfoPage = () => {
                     })
                 }
             </Grid>
-            <Grid item xs={12} mt={4}>
-                <Button variant="contained" color="primary" disabled>
-                    Change info (coming soon..)
-                </Button>
-            </Grid>
+            {
+                authCtx.isHost() && (
+                    <Grid item xs={12} mt={4}>
+                        <Button variant="contained" color="primary" disabled>
+                            Change info (coming soon..)
+                        </Button>
+                    </Grid>
+                )
+            }
         </Grid>
     );
 }

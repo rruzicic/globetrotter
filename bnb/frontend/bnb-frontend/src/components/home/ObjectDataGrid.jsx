@@ -1,6 +1,6 @@
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -30,22 +30,28 @@ const ObjectDataGrid = () => {
             label: 'Name',
         },
         {
-            id: '1',
+            id: '2',
             align: 'left',
             minWidth: '150px',
             label: 'Location',
         },
         {
-            id: '1',
+            id: '3',
             align: 'left',
             minWidth: '150px',
             label: 'Price per night',
         },
         {
-            id: '1',
+            id: '4',
             align: 'left',
             minWidth: '150px',
             label: 'Total price',
+        },
+        {
+            id: '5',
+            align: 'left',
+            minWidth: '150px',
+            label: 'User Action',
         }
     ]
 
@@ -110,6 +116,11 @@ const ObjectDataGrid = () => {
         navigate(`/accommodationInfo/${id}`)
     }
 
+    const handleBook = (id, event) => {
+        event.stopPropagation()
+        console.log('Sent request for object with id: ' + id);
+    }
+
     return (
         <>
             <Stack direction={"row"} sx={{ width: '100%', justifyContent: 'center' }} spacing={4} mt={4} mb={2}>
@@ -156,6 +167,11 @@ const ObjectDataGrid = () => {
                                                     </TableCell>
                                                     <TableCell>
                                                         {object.priceTotal}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)}>
+                                                            Book!
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
                                             );
