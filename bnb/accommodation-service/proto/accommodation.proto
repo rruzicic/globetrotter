@@ -37,6 +37,11 @@ message RequestAccommodationById {
     string id = 1;
 }
 
+message RequestAccommodationByHostId {
+    string id = 1;
+}
+
 service AccommodationService {
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
+    rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
 }

@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccommodationServiceClient interface {
 	GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error)
+	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
 }
 
 type accommodationServiceClient struct {
@@ -42,11 +43,44 @@ func (c *accommodationServiceClient) GetAccommodationById(ctx context.Context, i
 	return out, nil
 }
 
+func (c *accommodationServiceClient) GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[0], "/pb.AccommodationService/GetAccommodationByHostId", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &accommodationServiceGetAccommodationByHostIdClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type AccommodationService_GetAccommodationByHostIdClient interface {
+	Recv() (*Accommodation, error)
+	grpc.ClientStream
+}
+
+type accommodationServiceGetAccommodationByHostIdClient struct {
+	grpc.ClientStream
+}
+
+func (x *accommodationServiceGetAccommodationByHostIdClient) Recv() (*Accommodation, error) {
+	m := new(Accommodation)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
 type AccommodationServiceServer interface {
 	GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error)
+	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -56,6 +90,9 @@ type UnimplementedAccommodationServiceServer struct {
 
 func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationById not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAccommodationByHostId not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -88,6 +125,27 @@ func _AccommodationService_GetAccommodationById_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_GetAccommodationByHostId_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(RequestAccommodationByHostId)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(AccommodationServiceServer).GetAccommodationByHostId(m, &accommodationServiceGetAccommodationByHostIdServer{stream})
+}
+
+type AccommodationService_GetAccommodationByHostIdServer interface {
+	Send(*Accommodation) error
+	grpc.ServerStream
+}
+
+type accommodationServiceGetAccommodationByHostIdServer struct {
+	grpc.ServerStream
+}
+
+func (x *accommodationServiceGetAccommodationByHostIdServer) Send(m *Accommodation) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +158,12 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AccommodationService_GetAccommodationById_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAccommodationByHostId",
+			Handler:       _AccommodationService_GetAccommodationByHostId_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "accommodation.proto",
 }
