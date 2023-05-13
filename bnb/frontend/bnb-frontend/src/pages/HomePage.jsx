@@ -1,7 +1,9 @@
+import ObjectDataGrid from "../components/home/ObjectDataGrid";
+
 const HomePage = () => {
     return ( 
         <>
-            This is the home page
+            <ObjectDataGrid />
         </>
      );
 }
