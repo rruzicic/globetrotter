@@ -14,7 +14,7 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 	accommodation.CreatedOn = int(time.Now().Unix())
 	accommodation.ModifiedOn = int(time.Now().Unix())
 
-	_, err := acommodationsCollection.InsertOne(context.TODO(), accommodation)
+	_, err := accommodationsCollection.InsertOne(context.TODO(), accommodation)
 	if err != nil {
 		log.Panic("Could not save Accommodation because: ", err.Error())
 		return err
@@ -43,7 +43,7 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 	},
 	}
 
-	if _, err := acommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := accommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
 		log.Panic("Could not update accommodation")
 		return err
 	}
@@ -60,9 +60,39 @@ func GetAccommodationById(id string) (*models.Accommodation, error) {
 
 	var accommodation models.Accommodation
 	filter := bson.M{"_id": bson.M{"$eq": objId}}
-	if err := acommodationsCollection.FindOne(context.TODO(), filter).Decode(&accommodation); err != nil {
+	if err := accommodationsCollection.FindOne(context.TODO(), filter).Decode(&accommodation); err != nil {
 		return nil, err
 	}
 
 	return &accommodation, nil
+}
+
+func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
+	host_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Panic("Could not get user id from hex: ", id)
+		return nil, err
+	}
+
+	var accommodations []models.Accommodation
+	filter := bson.M{"user": bson.M{"$eq": host_id}}
+	cursor, err := accommodationsCollection.Find(context.TODO(), filter)
+	if err != nil {
+		log.Panic("Could not get cursor for accommodations. Error: ", err)
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var accommodation models.Accommodation
+		err := cursor.Decode(&accommodation)
+
+		if err != nil {
+			log.Panic("Could not decode accommodation from cursor. Error: ", err)
+			return nil, err
+		}
+
+		accommodations = append(accommodations, accommodation)
+	}
+
+	return accommodations, nil
 }
