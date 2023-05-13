@@ -17,6 +17,15 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 	return nil
 }
 
+func GetAllAccommodations() ([]models.Accommodation, error) {
+	accommodations, err := repos.GetAllAccommodations()
+	if err != nil {
+		return nil, err
+	}
+
+	return accommodations, nil
+}
+
 func UpdateAccommodation(accommodation models.Accommodation) error {
 	if err := repos.UpdateAccommodation(accommodation); err != nil {
 		return err

@@ -22,6 +22,16 @@ func CreateAccommodation(ctx *gin.Context) {
 	ctx.JSON(201, "Accommodation Created")
 }
 
+func GetAllAccommodations(ctx *gin.Context) {
+	accommodations, err := services.GetAllAccommodations()
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, accommodations)
+}
+
 func UpdateAccommodation(ctx *gin.Context) {
 	var accommodation models.Accommodation
 	if err := ctx.ShouldBindJSON(&accommodation); err != nil {

@@ -20,8 +20,6 @@ func CreateReservation(reservation models.Reservation) error {
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
-	//TODO:Provera da li je taj smestaj vec rezervisan u to vreme. grpc metoda od Accomodation servisa da vrati sve rezervacije za taj smestaj ovde.
-
 	_, err := reservationCollection.InsertOne(context.TODO(), reservation)
 
 	if err != nil {
@@ -131,7 +129,30 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
-	//TODO: Povecati brojac otkazanih rezervacija u useru. grpc metoda prema Ratku
+	return nil
+}
+
+func UpdateReservation(reservation models.Reservation) error {
+	reservation.ModifiedOn = int(time.Now().Unix())
+
+	objID, err := primitive.ObjectIDFromHex(reservation.Id.Hex())
+	if err != nil {
+		log.Panic("Could not convert reservation hex to id")
+		return err
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": objID}}
+	update := bson.M{"$set": bson.M{
+		"date_interval": reservation.DateInterval,
+		"num_of_guests": reservation.NumOfGuests,
+		"is_approved":   reservation.IsApproved,
+	},
+	}
+
+	if _, err := reservationCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+		log.Panic("Could not update reservation")
+		return err
+	}
 
 	return nil
 }

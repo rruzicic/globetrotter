@@ -13,12 +13,18 @@ func CreateReservation(ctx *gin.Context) {
 		return
 	}
 
-	if err := services.CreateReservation(reservation); err != nil {
+	retval, err := services.CreateReservation(reservation)
+	if err != nil {
 		ctx.JSON(500, "Server Error")
 		return
 	}
 
-	ctx.JSON(201, "Reservation Created")
+	if retval == true {
+		ctx.JSON(201, "Reservation Created")
+		return
+	}
+
+	ctx.JSON(500, "Server Error")
 }
 
 func GetReservationById(ctx *gin.Context) {
@@ -66,4 +72,34 @@ func DeleteReservation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, "Reservation Deleted")
+}
+
+func ApproveReservation(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	if err := services.ApproveReservation(id); err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, "Reservation Approved")
+}
+
+func RejectReservation(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	if err := services.RejectReservation(id); err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, "Reservation Rejected")
 }
