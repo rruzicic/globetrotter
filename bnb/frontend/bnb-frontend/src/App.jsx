@@ -9,6 +9,7 @@ import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 import AccountPage from './pages/AccountPage';
 import AccommodationManagementPage from './pages/AccommodationManagementPage';
+import NewAccommodationPage from './pages/NewAccommodationPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path={'/register'} element={<RegistrationPage />} />
             <Route path={'/account'} element={<AccountPage />} />
             <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
+            <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
