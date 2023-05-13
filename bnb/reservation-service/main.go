@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/controllers"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 )
 
@@ -18,8 +19,10 @@ func ginSetup() {
 	r.NoRoute()
 
 	r.Group("/reservation")
-
-	//TODO: Dodati kontroler endpointove
+	r.POST("/", controllers.CreateReservation)
+	r.GET("/:id", controllers.GetReservationById)
+	r.GET("/user/:id", controllers.GetReservationsByUserId)
+	r.DELETE("/:id", controllers.DeleteReservation)
 
 	r.Run(":8080")
 }

@@ -90,7 +90,7 @@ func DeleteReservation(id string) error {
 	currentTime := time.Now()
 	reservation, _ := GetReservationById(id)
 
-	if currentTime.After(reservation.StartDate.Add(time.Hour * 24 * -1)) {
+	if currentTime.After(reservation.DateInterval.Start.Add(time.Hour * 24 * -1)) {
 		log.Print("You cannot cancel a reservation less than one day in advance")
 		return &CustomError{}
 	}
