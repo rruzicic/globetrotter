@@ -68,7 +68,7 @@ const AccommodationManagementPage = () => {
             {
                 objects && objects.map((object) => {
                     return (
-                        <Grid item xs={4} sx={styles.grid}>
+                        <Grid item xs={4} sx={styles.grid} key={object.id}>
                             <Link to={`/accommodationInfo/${object.id}`}>
                                 <Box sx={styles.card}>
                                     <AccommodationCard name={object.name} location={object.location} image={object.image} />

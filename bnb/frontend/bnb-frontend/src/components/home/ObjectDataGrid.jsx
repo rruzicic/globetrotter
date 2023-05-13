@@ -24,6 +24,12 @@ const ObjectDataGrid = () => {
 
     const columns = [
         {
+            id: '0',
+            align: 'left',
+            minWidth: '150px',
+            label: 'Thumbnail',
+        },
+        {
             id: '1',
             align: 'left',
             minWidth: '150px',
@@ -63,28 +69,32 @@ const ObjectDataGrid = () => {
                 name: 'Village House',
                 priceNight: 25,
                 priceTotal: 125,
-                location: 'Tara'
+                location: 'Tara',
+                image: '/home.jpg'
             },
             {
                 id: 2,
-                name: 'Village House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara'
+                name: 'Mountain House',
+                priceNight: 15,
+                priceTotal: 75,
+                location: 'Tara',
+                image: '/home1.jpg'
             },
             {
                 id: 3,
-                name: 'Village House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara'
+                name: 'City House',
+                priceNight: 30,
+                priceTotal: 150,
+                location: 'Tara',
+                image: '/home2.jpg'
             },
             {
                 id: 4,
-                name: 'Village House',
+                name: 'Beach House',
                 priceNight: 25,
                 priceTotal: 125,
-                location: 'Tara'
+                location: 'Tara',
+                image: '/home1.jpg'
             },
         ])
         console.log({
@@ -156,6 +166,9 @@ const ObjectDataGrid = () => {
                                         .map((object) => {
                                             return (
                                                 <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
+                                                    <TableCell>
+                                                        <img src={object.image} alt={object.name} height={'60px'} width={'auto'}/>
+                                                    </TableCell>
                                                     <TableCell>
                                                         {object.name}
                                                     </TableCell>

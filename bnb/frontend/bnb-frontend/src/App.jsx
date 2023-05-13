@@ -11,6 +11,7 @@ import AccountPage from './pages/AccountPage';
 import AccommodationManagementPage from './pages/AccommodationManagementPage';
 import NewAccommodationPage from './pages/NewAccommodationPage';
 import AccommodationInfoPage from './pages/AccommodationInfoPage';
+import "react-image-gallery/styles/css/image-gallery.css";
 
 function App() {
   return (

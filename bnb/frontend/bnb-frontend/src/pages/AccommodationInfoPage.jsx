@@ -1,14 +1,31 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid, Typography, Button, Box } from "@mui/material";
 import RequestCard from "../components/accommodationManagement/RequestCard";
 import AuthContext from "../config/authContext";
+import ImageGallery from 'react-image-gallery';
+import theme from "../theme";
 
 const AccommodationInfoPage = () => {
     const { id } = useParams()
     const [objectInfo, setObjectInfo] = useState()
     const [requests, setRequests] = useState([])
     let authCtx = useContext(AuthContext)
+
+    const images = [
+        {
+            original: '/home.jpg',
+            thumbnail: '/home1.jpg',
+        },
+        {
+            original: '/home1.jpg',
+            thumbnail: '/home1.jpg',
+        },
+        {
+            original: '/home2.jpg',
+            thumbnail: '/home2.jpg',
+        },
+    ];
 
     useEffect(() => {
         //TODO: fetch object info by id
@@ -58,13 +75,19 @@ const AccommodationInfoPage = () => {
     }
 
     return (
-        <Grid container>
+        <Grid container justifyContent={"center"} spacing={4}>
             {
                 objectInfo && (
                     <>
-                        <Grid item xs={6}>
+                        <Typography variant="h6" color="initial" mt={8}>
+                            {objectInfo.name} (id: {id})
+                        </Typography>
+                        <Grid item xs={12}>
+                            <ImageGallery items={images} />
+                        </Grid>
+                        <Grid item xs={5} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem' }}>
                             <Typography variant="h6" color="initial">
-                                Object info with id: {id}
+                                Accommodation info
                             </Typography>
                             <Grid container>
                                 <Grid item xs={6}>
@@ -78,7 +101,7 @@ const AccommodationInfoPage = () => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={5} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem' }}>
                             <Typography variant="h6" color="initial">
                                 Location info
                             </Typography>
@@ -100,9 +123,7 @@ const AccommodationInfoPage = () => {
                     </>
                 )
             }
-            <Grid item xs={12}>
-                React image gallery npm
-            </Grid>
+
             <Grid container spacing={2} mt={4}>
                 {
                     requests && authCtx.isHost() && requests.map((request) => {
