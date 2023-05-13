@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/controllers"
-	"github.com/rruzicic/globetrotter/bnb/account-service/gapi"
+	grpcserver "github.com/rruzicic/globetrotter/bnb/account-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 )
@@ -13,7 +13,7 @@ import (
 func main() {
 	repos.Connect()
 	go ginSetup()
-	gapi.InitServer()
+	grpcserver.InitServer()
 	repos.Disconnect()
 }
 

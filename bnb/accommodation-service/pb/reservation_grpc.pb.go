@@ -19,10 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ReservationService_GetReservationById_FullMethodName                = "/pb.ReservationService/GetReservationById"
-	ReservationService_GetReservationsByAccommodationId_FullMethodName  = "/pb.ReservationService/GetReservationsByAccommodationId"
-	ReservationService_GetActiveReservationsByUser_FullMethodName       = "/pb.ReservationService/GetActiveReservationsByUser"
-	ReservationService_GetFutureActiveReservationsByHost_FullMethodName = "/pb.ReservationService/GetFutureActiveReservationsByHost"
+	ReservationService_GetReservationById_FullMethodName               = "/pb.ReservationService/GetReservationById"
+	ReservationService_GetReservationsByAccommodationId_FullMethodName = "/pb.ReservationService/GetReservationsByAccommodationId"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -31,8 +29,6 @@ const (
 type ReservationServiceClient interface {
 	GetReservationById(ctx context.Context, in *RequestReservationById, opts ...grpc.CallOption) (*Reservation, error)
 	GetReservationsByAccommodationId(ctx context.Context, in *RequestReservationsByAccommodationId, opts ...grpc.CallOption) (ReservationService_GetReservationsByAccommodationIdClient, error)
-	GetActiveReservationsByUser(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetActiveReservationsByUserClient, error)
-	GetFutureActiveReservationsByHost(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetFutureActiveReservationsByHostClient, error)
 }
 
 type reservationServiceClient struct {
@@ -84,78 +80,12 @@ func (x *reservationServiceGetReservationsByAccommodationIdClient) Recv() (*Rese
 	return m, nil
 }
 
-func (c *reservationServiceClient) GetActiveReservationsByUser(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetActiveReservationsByUserClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ReservationService_ServiceDesc.Streams[1], ReservationService_GetActiveReservationsByUser_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &reservationServiceGetActiveReservationsByUserClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ReservationService_GetActiveReservationsByUserClient interface {
-	Recv() (*Reservation, error)
-	grpc.ClientStream
-}
-
-type reservationServiceGetActiveReservationsByUserClient struct {
-	grpc.ClientStream
-}
-
-func (x *reservationServiceGetActiveReservationsByUserClient) Recv() (*Reservation, error) {
-	m := new(Reservation)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *reservationServiceClient) GetFutureActiveReservationsByHost(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetFutureActiveReservationsByHostClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ReservationService_ServiceDesc.Streams[2], ReservationService_GetFutureActiveReservationsByHost_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &reservationServiceGetFutureActiveReservationsByHostClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ReservationService_GetFutureActiveReservationsByHostClient interface {
-	Recv() (*Reservation, error)
-	grpc.ClientStream
-}
-
-type reservationServiceGetFutureActiveReservationsByHostClient struct {
-	grpc.ClientStream
-}
-
-func (x *reservationServiceGetFutureActiveReservationsByHostClient) Recv() (*Reservation, error) {
-	m := new(Reservation)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations must embed UnimplementedReservationServiceServer
 // for forward compatibility
 type ReservationServiceServer interface {
 	GetReservationById(context.Context, *RequestReservationById) (*Reservation, error)
 	GetReservationsByAccommodationId(*RequestReservationsByAccommodationId, ReservationService_GetReservationsByAccommodationIdServer) error
-	GetActiveReservationsByUser(*RequestUserId, ReservationService_GetActiveReservationsByUserServer) error
-	GetFutureActiveReservationsByHost(*RequestUserId, ReservationService_GetFutureActiveReservationsByHostServer) error
 	mustEmbedUnimplementedReservationServiceServer()
 }
 
@@ -168,12 +98,6 @@ func (UnimplementedReservationServiceServer) GetReservationById(context.Context,
 }
 func (UnimplementedReservationServiceServer) GetReservationsByAccommodationId(*RequestReservationsByAccommodationId, ReservationService_GetReservationsByAccommodationIdServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetReservationsByAccommodationId not implemented")
-}
-func (UnimplementedReservationServiceServer) GetActiveReservationsByUser(*RequestUserId, ReservationService_GetActiveReservationsByUserServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetActiveReservationsByUser not implemented")
-}
-func (UnimplementedReservationServiceServer) GetFutureActiveReservationsByHost(*RequestUserId, ReservationService_GetFutureActiveReservationsByHostServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetFutureActiveReservationsByHost not implemented")
 }
 func (UnimplementedReservationServiceServer) mustEmbedUnimplementedReservationServiceServer() {}
 
@@ -227,48 +151,6 @@ func (x *reservationServiceGetReservationsByAccommodationIdServer) Send(m *Reser
 	return x.ServerStream.SendMsg(m)
 }
 
-func _ReservationService_GetActiveReservationsByUser_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(RequestUserId)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ReservationServiceServer).GetActiveReservationsByUser(m, &reservationServiceGetActiveReservationsByUserServer{stream})
-}
-
-type ReservationService_GetActiveReservationsByUserServer interface {
-	Send(*Reservation) error
-	grpc.ServerStream
-}
-
-type reservationServiceGetActiveReservationsByUserServer struct {
-	grpc.ServerStream
-}
-
-func (x *reservationServiceGetActiveReservationsByUserServer) Send(m *Reservation) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _ReservationService_GetFutureActiveReservationsByHost_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(RequestUserId)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ReservationServiceServer).GetFutureActiveReservationsByHost(m, &reservationServiceGetFutureActiveReservationsByHostServer{stream})
-}
-
-type ReservationService_GetFutureActiveReservationsByHostServer interface {
-	Send(*Reservation) error
-	grpc.ServerStream
-}
-
-type reservationServiceGetFutureActiveReservationsByHostServer struct {
-	grpc.ServerStream
-}
-
-func (x *reservationServiceGetFutureActiveReservationsByHostServer) Send(m *Reservation) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -285,16 +167,6 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetReservationsByAccommodationId",
 			Handler:       _ReservationService_GetReservationsByAccommodationId_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "GetActiveReservationsByUser",
-			Handler:       _ReservationService_GetActiveReservationsByUser_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "GetFutureActiveReservationsByHost",
-			Handler:       _ReservationService_GetFutureActiveReservationsByHost_Handler,
 			ServerStreams: true,
 		},
 	},

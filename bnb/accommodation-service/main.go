@@ -22,7 +22,10 @@ func ginSetup() {
 
 	r.Group("/accommodation")
 	r.POST("/", controllers.CreateAccommodation)
+	r.GET("/", controllers.GetAllAccommodations)
 	r.PUT("/", controllers.UpdateAccommodation)
+	r.PUT("/price", controllers.UpdatePriceInterval)
+	r.PUT("/availability", controllers.UpdateAvailabilityInterval)
 
 	r.Run(":8080")
 }

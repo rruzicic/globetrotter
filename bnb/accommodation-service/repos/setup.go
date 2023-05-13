@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var acommodationsCollection *mongo.Collection
+var accommodationsCollection *mongo.Collection
 
 var client *mongo.Client
 
@@ -17,7 +17,7 @@ func Connect() {
 	if err != nil {
 		log.Panic("Could not connect to MongoDB")
 	}
-	acommodationsCollection = client.Database("bnb-accommodations").Collection("accommodations")
+	accommodationsCollection = client.Database("bnb-accommodations").Collection("accommodations")
 
 	// TODO: add uniqueness to needed fields
 }

@@ -14,22 +14,10 @@ message Reservation{
     float totalPrice = 7;
 }
 
-message RequestReservationById{
-    string id = 1;
-}
-
-message RequestReservationsByAccommodationId{
-    string id = 1;
-}
-
 message RequestUserId{
     string id = 1;
 }
-
 service ReservationService {
-    rpc GetReservationById(RequestReservationById) returns (Reservation) {}
-    rpc GetReservationsByAccommodationId(RequestReservationsByAccommodationId) returns (stream Reservation) {}
     rpc GetActiveReservationsByUser(RequestUserId) returns (stream Reservation) {}
     rpc GetFutureActiveReservationsByHost(RequestUserId) returns (stream Reservation) {}
 }
-

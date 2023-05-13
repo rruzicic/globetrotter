@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
 	"google.golang.org/grpc"
@@ -15,12 +16,7 @@ type AccommodationServiceServer struct {
 	pb.UnimplementedAccommodationServiceServer
 }
 
-func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, req *pb.RequestAccommodationById) (*pb.Accommodation, error) {
-	accommodation, err := repos.GetAccommodationById(req.GetId())
-	if err != nil {
-		log.Panic("Could not get accommodation with id", req.GetId())
-	}
-
+func buildGRPCAccommodation(accommodation models.Accommodation) pb.Accommodation {
 	var reservation_ids []string
 	for _, id := range accommodation.Reservations {
 		reservation_ids = append(reservation_ids, id.Hex())
@@ -31,7 +27,7 @@ func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, r
 		commodations = append(commodations, string(commodation))
 	}
 
-	grpc_accommodation := pb.Accommodation{
+	return pb.Accommodation{
 		Reservations:          reservation_ids,
 		Name:                  accommodation.Name,
 		Country:               accommodation.Location.Country,
@@ -49,9 +45,36 @@ func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, r
 		PriceForPerson:        accommodation.PriceForPerson,
 		User:                  accommodation.User.Hex(),
 		AutoApprove:           accommodation.AutoApprove,
+		Id:                    accommodation.Id.Hex(),
+	}
+}
+
+func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, req *pb.RequestAccommodationById) (*pb.Accommodation, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetId())
+	if err != nil {
+		log.Panic("Could not get accommodation with id", req.GetId())
+		return nil, err
 	}
 
+	grpc_accommodation := buildGRPCAccommodation(*accommodation)
+
 	return &grpc_accommodation, nil
+}
+
+func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAccommodationByHostId, stream pb.AccommodationService_GetAccommodationByHostIdServer) error {
+	accommodations, err := repos.GetAccommodationsByHostId(req.GetId())
+	if err != nil {
+		log.Panic("Could not get accommodations for host id: ", req.GetId())
+	}
+
+	for _, accommodation := range accommodations {
+		grpc_accommodation := buildGRPCAccommodation(accommodation)
+		if err := stream.Send(&grpc_accommodation); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func InitServer() {

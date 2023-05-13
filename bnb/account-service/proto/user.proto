@@ -26,6 +26,7 @@ message User {
 
     float rating = 15;
     int32 ratingNum = 16;
+    int32 cancellationsCounter = 17;
 }
 
 message UserSignUpRequest {
@@ -63,15 +64,16 @@ message UserRequestId { string id = 1; }
 message UserRequestEmail { string email = 1; }
 message TokenRequest { string token = 1; }
 message UserResponse { User user = 1; }
-message IsValidToken { bool isValid = 1; }
+message BooleanReturn { bool boolean = 1;}
 
 service UserService {
     rpc RegisterHost(UserSignUpRequest) returns (UserResponse) {}
     rpc RegisterGuest(UserSignUpRequest) returns (UserResponse) {}
-    rpc VerifyToken(TokenRequest) returns (IsValidToken) {}
+    rpc VerifyToken(TokenRequest) returns (BooleanReturn) {}
     rpc GetUserById(UserRequestId) returns (UserResponse) {}
     rpc GetUserByEmail(UserRequestEmail) returns (UserResponse) {}
     rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}
     rpc UpdateUser(UserUpdateRequest) returns (UserResponse) {}
     rpc DeleteUser(UserRequestId) returns (UserResponse) {}
+    rpc IncrementCancellationsCounter(UserRequestId) returns (UserResponse) {}
 }

@@ -20,8 +20,6 @@ func CreateReservation(reservation models.Reservation) error {
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
-	//TODO:Provera da li je taj smestaj vec rezervisan u to vreme. grpc metoda od Accomodation servisa da vrati sve rezervacije za taj smestaj ovde.
-
 	_, err := reservationCollection.InsertOne(context.TODO(), reservation)
 
 	if err != nil {
@@ -80,6 +78,36 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return reservations, nil
 }
 
+func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
+	acc_id, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Panic("Could not get accommodation id from id: ", id)
+		return nil, err
+	}
+
+	var reservations []models.Reservation
+	filter := bson.M{"accommodation_id": bson.M{"$eq": acc_id}}
+	cursor, err := reservationCollection.Find(context.TODO(), filter)
+	if err != nil {
+		log.Panic("Could not get reservations from accommodation id")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var reservation models.Reservation
+		err := cursor.Decode(&reservation)
+
+		if err != nil {
+			log.Panic("Could not unmarshall reservation on cursor")
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation)
+	}
+
+	return reservations, nil
+}
+
 func DeleteReservation(id string) error {
 	reservation_id, err := primitive.ObjectIDFromHex(id)
 
@@ -90,7 +118,7 @@ func DeleteReservation(id string) error {
 	currentTime := time.Now()
 	reservation, _ := GetReservationById(id)
 
-	if currentTime.After(reservation.StartDate.Add(time.Hour * 24 * -1)) {
+	if currentTime.After(reservation.DateInterval.Start.Add(time.Hour * 24 * -1)) {
 		log.Print("You cannot cancel a reservation less than one day in advance")
 		return &CustomError{}
 	}
@@ -101,7 +129,30 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
-	//TODO: Povecati brojac otkazanih rezervacija u useru. grpc metoda prema Ratku
+	return nil
+}
+
+func UpdateReservation(reservation models.Reservation) error {
+	reservation.ModifiedOn = int(time.Now().Unix())
+
+	objID, err := primitive.ObjectIDFromHex(reservation.Id.Hex())
+	if err != nil {
+		log.Panic("Could not convert reservation hex to id")
+		return err
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": objID}}
+	update := bson.M{"$set": bson.M{
+		"date_interval": reservation.DateInterval,
+		"num_of_guests": reservation.NumOfGuests,
+		"is_approved":   reservation.IsApproved,
+	},
+	}
+
+	if _, err := reservationCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+		log.Panic("Could not update reservation")
+		return err
+	}
 
 	return nil
 }
