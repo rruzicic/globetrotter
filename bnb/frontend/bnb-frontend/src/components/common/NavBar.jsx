@@ -24,6 +24,11 @@ const NavBar = () => {
                     Account
                 </Button>
             </Link>
+            <Link to={'/myAccommodation'}>
+                <Button variant="contained" color="secondary">
+                    Accommodations
+                </Button>
+            </Link>
         </Box>
     );
 }

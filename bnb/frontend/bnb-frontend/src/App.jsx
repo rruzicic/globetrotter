@@ -8,6 +8,7 @@ import Layout from '../src/components/common/Layout'
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 import AccountPage from './pages/AccountPage';
+import AccommodationManagementPage from './pages/AccommodationManagementPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path={'/login'} element={<LoginPage />} />
             <Route path={'/register'} element={<RegistrationPage />} />
             <Route path={'/account'} element={<AccountPage />} />
+            <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
