@@ -53,6 +53,21 @@ func UpdateUser(user models.User) (*models.User, error) {
 
 func DeleteUser(id primitive.ObjectID) bool {
 	// TODO: implement
+
+	// check if user exists
+	// check user role
+
+	// if user role == GUEST
+	// then
+	// if GetActiveReservationsByUser(userId) == 0
+	// delete user
+	// else throw err
+
+	// if user role == HOST
+	// then
+	// if GetFutureActiveReservationsByHost(userId) == 0
+	// delete user
+	// else throw err
 	return false
 }
 
