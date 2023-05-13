@@ -48,6 +48,10 @@ func (s *server) DeleteUser(ctx context.Context, in *pb.UserRequestId) (*pb.User
 	return nil, nil
 }
 
+func (s *server) IncrementCancellationsCounter(ctx context.Context, in *pb.UserRequestId) (*pb.UserResponse, error) {
+	return nil, nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {

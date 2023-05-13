@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
@@ -52,23 +53,35 @@ func UpdateUser(user models.User) (*models.User, error) {
 }
 
 func DeleteUser(id primitive.ObjectID) error {
-	// TODO: implement
 	user, err := GetById(id)
 	if err != nil {
 		return err
 	}
 
 	if user.Role == models.GuestRole {
-		// if GetActiveReservationsByUser(userId) == 0
-		// delete user
-		// else throw err
+		reservations, err := grpcclient.GetActiveReservationsByUser(id.String())
+		if err != nil {
+			return err
+		}
+		if len(reservations) == 0 {
+			repos.DeleteUser(user.Id.String())
+			return nil
+		}
+		return errors.New("there are active reservations for user")
 	}
 
 	if user.Role == models.HostRole {
-		// if GetFutureActiveReservationsByHost(userId) == 0
-		// delete user
-		// else throw err
+		reservations, err := grpcclient.GetFutureActiveReservationsByHost(id.String())
+		if err != nil {
+			return err
+		}
+		if len(reservations) == 0 {
+			repos.DeleteUser(user.Id.String())
+			return nil
+		}
+		return errors.New("there are active reservations for user")
 	}
+	return errors.New("role name invalid")
 }
 
 func verifyPassword(dbPassword string, dtoPassword string) bool {
