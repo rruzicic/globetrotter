@@ -32,6 +32,7 @@ export const AuthContextProvider = ({ children }) => {
 
     const loginHandler = (token) => {
         setToken(token);
+        console.log('here');
         localStorage.setItem("bnb_jwt", token);
     };
 

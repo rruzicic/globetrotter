@@ -7,6 +7,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/account-service/controllers"
 	grpcserver "github.com/rruzicic/globetrotter/bnb/account-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
+	"github.com/rruzicic/globetrotter/bnb/account-service/middlewares"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 )
 
@@ -21,6 +22,7 @@ func ginSetup() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
 	public := r.Group("/user")

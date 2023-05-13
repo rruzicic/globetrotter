@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Grid, Typography, Button, Box } from "@mui/material";
+import { Grid, Typography, Button } from "@mui/material";
 import RequestCard from "../components/accommodationManagement/RequestCard";
 import AuthContext from "../config/authContext";
 import ImageGallery from 'react-image-gallery';
@@ -123,18 +123,26 @@ const AccommodationInfoPage = () => {
                     </>
                 )
             }
-
-            <Grid container spacing={2} mt={4}>
-                {
-                    requests && authCtx.isHost() && requests.map((request) => {
-                        return (
-                            <Grid item xs={12}>
-                                <RequestCard requestId={request.requestId} accept={acceptReservation} decline={declineReservation} userId={request.userId} startDate={request.startDate} endDate={request.endDate} guestNumber={request.numberOfGuests} />
-                            </Grid>
-                        )
-                    })
-                }
-            </Grid>
+            {
+                requests && authCtx.isHost() && (
+                    <>
+                        <Typography variant="h4" mt={4}>
+                            Reservation requests
+                        </Typography>
+                        <Grid container spacing={2} mt={4}>
+                            {
+                                requests.map((request) => {
+                                    return (
+                                        <Grid item xs={12}>
+                                            <RequestCard requestId={request.requestId} accept={acceptReservation} decline={declineReservation} userId={request.userId} startDate={request.startDate} endDate={request.endDate} guestNumber={request.numberOfGuests} />
+                                        </Grid>
+                                    )
+                                })
+                            }
+                        </Grid>
+                    </>
+                )
+            }
             {
                 authCtx.isHost() && (
                     <Grid item xs={12} mt={4}>

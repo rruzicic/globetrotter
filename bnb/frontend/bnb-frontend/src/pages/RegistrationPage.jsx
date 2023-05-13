@@ -12,7 +12,7 @@ let emailRegex = new RegExp(REGEX.EMAIL)
 
 const RegistrationPage = () => {
     const navigate = useNavigate()
-    
+
     const validate = (values) => {
         let returnObject = {}
         if (!values.firstName) {
@@ -50,7 +50,10 @@ const RegistrationPage = () => {
     }
 
     const onSubmit = (data) => {
-        axios.post(`${CONSTANTS.GATEWAY}/user/register`, data)
+        const { confirmPassword, ...newData } = data;
+        newData.zip = parseInt(newData.zip);
+
+        axios.post(`${CONSTANTS.GATEWAY}/user/register/guest`, newData)
             .catch((err) => {
                 console.log(err);
                 return

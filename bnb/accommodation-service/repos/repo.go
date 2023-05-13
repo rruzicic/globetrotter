@@ -118,3 +118,58 @@ func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 
 	return accommodations, nil
 }
+
+func SearchAccomodation(cityName string, guestNum int, startDate time.Time, endDate time.Time) ([]models.Accommodation, error) {
+	startOfDay := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, time.UTC)
+	endOfDay := startOfDay.Add(24 * time.Hour)
+	startOfDay1 := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 0, 0, 0, 0, time.UTC)
+	endOfDay1 := startOfDay1.Add(24 * time.Hour)
+
+	filter := bson.M{
+		"city": bson.M{"$regex": cityName, "$options": "i"},
+	}
+	if guestNum != 0 {
+		filter["$and"] = append(filter["$and"].([]bson.M), bson.M{"guests": bson.M{"$gt": guestNum}})
+	}
+
+	if !startDate.IsZero() || !endDate.IsZero() {
+		andClauses := make([]bson.M, 0)
+
+		if !startDate.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"start": bson.M{
+					"$gte": startOfDay,
+					"$lte": endOfDay,
+				},
+			})
+		}
+
+		if !endDate.IsZero() {
+			andClauses = append(andClauses, bson.M{
+				"end": bson.M{
+					"$gte": startOfDay1,
+					"$lte": endOfDay1,
+				},
+			})
+		}
+
+		andClauses = append(andClauses, bson.M{
+			"city":   bson.M{"$regex": cityName, "$options": "i"},
+			"guests": bson.M{"$gt": guestNum},
+		})
+
+		filter["$and"] = andClauses
+	}
+
+	cursor, err := accommodationsCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var accommodations []models.Accommodation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return nil, err
+	}
+
+	return accommodations, nil
+}

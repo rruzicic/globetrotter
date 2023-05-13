@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/controllers"
 	grpcserver "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_server"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/middlewares"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 )
 
@@ -18,6 +19,7 @@ func ginSetup() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
 	r.Group("/reservation")
