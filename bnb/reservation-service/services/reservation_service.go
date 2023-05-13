@@ -8,8 +8,32 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 )
 
-func CreateReservation(reservation models.Reservation) error {
-	return repos.CreateReservation(reservation)
+func CreateReservation(reservation models.Reservation) (bool, error) {
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		return false, err
+	}
+
+	// check if there are overlapping active reservations
+	for _, reservation_id := range accommodation.Reservations {
+		existing_reservation, err := repos.GetReservationById(reservation_id)
+		if err != nil {
+			return false, err
+		}
+
+		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && existing_reservation.IsApproved == true {
+			return false, nil
+		}
+	}
+
+	// Check if autoaccept
+	if accommodation.AutoApprove == true {
+		reservation.IsApproved = true
+	} else {
+		reservation.IsApproved = false
+	}
+
+	return true, repos.CreateReservation(reservation)
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -69,5 +93,7 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 }
 
 func DeleteReservation(id string) error {
+	//TODO: Povecati brojac otkazanih rezervacija u useru. grpc metoda prema Ratku
+
 	return repos.DeleteReservation(id)
 }

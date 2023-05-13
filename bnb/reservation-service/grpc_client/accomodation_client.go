@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"google.golang.org/grpc"
 )
 
@@ -19,6 +19,19 @@ func connectToAccomodationService() (*grpc.ClientConn, error) {
 	}
 
 	return conn, nil
+}
+
+func GetAccommodationById(id string) (*pb.Accommodation, error) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	accommodation, err := client.GetAccommodationById(context.Background(), &pb.RequestAccommodationById{Id: id})
+	if err != nil {
+		log.Panic("Could not get accommodation by id from accommodation service. Error: ", err)
+		return nil, err
+	}
+
+	return accommodation, err
 }
 
 func GetAccommodationByHostId(id string) ([](*pb.Accommodation), error) {

@@ -13,12 +13,18 @@ func CreateReservation(ctx *gin.Context) {
 		return
 	}
 
-	if err := services.CreateReservation(reservation); err != nil {
+	retval, err := services.CreateReservation(reservation)
+	if err != nil {
 		ctx.JSON(500, "Server Error")
 		return
 	}
 
-	ctx.JSON(201, "Reservation Created")
+	if retval == true {
+		ctx.JSON(201, "Reservation Created")
+		return
+	}
+
+	ctx.JSON(500, "Server Error")
 }
 
 func GetReservationById(ctx *gin.Context) {
