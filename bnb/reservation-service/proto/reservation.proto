@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/rruzicic/globetrotter/bnb/reservation-service/pb";
+import "google/protobuf/timestamp.proto";
+
+message Reservation{
+    // model
+    string id = 1;
+    google.protobuf.Timestamp created_on = 2;
+    google.protobuf.Timestamp modified_on = 3;
+    google.protobuf.Timestamp deleted_on = 4;
+
+    string accommodationId = 5;
+    string userId = 6;
+    string startDate = 7;
+    string endDate = 8;
+    int32 numOfGuests = 9;
+    bool isApproved = 10;
+}
+
+message RequestReservationById{
+    string id = 1;
+}
+
+message RequestReservationsByAccommodationId{
+    string id = 1;
+}
+
+service ReservationService {
+    rpc GetReservationById(RequestReservationById) returns (Reservation) {}
+    rpc GetReservationsByAccommodationId(RequestReservationsByAccommodationId) returns (stream Reservation) {}
+}
+
