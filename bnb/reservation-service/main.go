@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	grpcserver "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/controllers"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 )
 
 func main() {
 	repos.Connect()
+	grpcserver.InitServer()
 	ginSetup()
 	repos.Disconnect()
 }

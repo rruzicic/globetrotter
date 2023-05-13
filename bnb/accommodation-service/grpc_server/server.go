@@ -19,6 +19,7 @@ func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, r
 	accommodation, err := repos.GetAccommodationById(req.GetId())
 	if err != nil {
 		log.Panic("Could not get accommodation with id", req.GetId())
+		return nil, err
 	}
 
 	var reservation_ids []string
