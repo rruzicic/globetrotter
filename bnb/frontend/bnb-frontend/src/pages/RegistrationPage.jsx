@@ -1,11 +1,18 @@
-import { Button, Container} from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { Form } from "react-final-form";
 import REGEX from "../regex";
 import RegistrationForm from "../components/registration/RegistrationForm";
+import CONSTANTS from "../config/constants";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { useContext } from "react";
+import AuthContext from "../config/authContext";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
 const RegistrationPage = () => {
+    const navigate = useNavigate()
+    
     const validate = (values) => {
         let returnObject = {}
         if (!values.firstName) {
@@ -42,8 +49,18 @@ const RegistrationPage = () => {
         return returnObject
     }
 
-    const onSubmit = (values) => {
-        console.log(values);
+    const onSubmit = (data) => {
+        axios.post(`${CONSTANTS.GATEWAY}/user/register`, data)
+            .catch((err) => {
+                console.log(err);
+                return
+            })
+            .then((response) => {
+                if (response !== undefined) {
+                    console.log(response);
+                    navigate('/login')
+                }
+            })
     }
 
     return (

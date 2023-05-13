@@ -37,7 +37,7 @@ func userToUserResponse(user *models.User) *pb.UserResponse {
 			SuperHost:            user.SuperHost,
 			Rating:               user.Rating,
 			RatingNum:            int32(user.RatingNum),
-			CancellationsCounter: int32(user.CancellatonsCounter),
+			CancellationsCounter: int32(user.CancellationsCounter),
 		},
 	}
 }

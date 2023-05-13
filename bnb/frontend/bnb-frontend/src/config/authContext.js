@@ -12,7 +12,7 @@ const AuthContext = createContext({
 })
 
 export const AuthContextProvider = ({ children }) => {
-    const initialToken = localStorage.getItem("flights_jwt")
+    const initialToken = localStorage.getItem("bnb_jwt")
     const [token, setToken] = useState(initialToken)
     const isLoggedIn = !!token
 
@@ -32,27 +32,27 @@ export const AuthContextProvider = ({ children }) => {
 
     const loginHandler = (token) => {
         setToken(token);
-        localStorage.setItem("flights_jwt", token);
+        localStorage.setItem("bnb_jwt", token);
     };
 
     const logoutHandler = () => {
         setToken(null);
-        localStorage.removeItem("flights_jwt");
+        localStorage.removeItem("bnb_jwt");
     };
 
     const isUserHandler = () => {
         if (token == null) return null;
-        if (jwt_decode(localStorage.getItem("flights_jwt")).role === "USER") return true;
+        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "USER") return true;
         return false;
     }
     const isHostHandler = () => {
         if (token == null) return null;
-        if (jwt_decode(localStorage.getItem("flights_jwt")).role === "HOST") return true;
+        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "HOST") return true;
         return false;
     }
 
     const userEmailHandler = () => {
-        return jwt_decode(localStorage.getItem("flights_jwt")).email
+        return jwt_decode(localStorage.getItem("bnb_jwt")).email
     }
 
     const contextValue = {

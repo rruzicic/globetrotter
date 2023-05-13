@@ -89,7 +89,7 @@ func IncrementCancellationsCounter(userId primitive.ObjectID) (*models.User, err
 	if err != nil {
 		return &models.User{}, err
 	}
-	user.CancellatonsCounter++
+	user.CancellationsCounter++
 	user, err = UpdateUser(*user)
 	if err != nil {
 		return &models.User{}, err

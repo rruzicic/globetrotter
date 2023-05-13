@@ -1,14 +1,32 @@
 import { Form } from "react-final-form";
-import { Grid, Container, Button } from "@mui/material";
+import { Container, Button } from "@mui/material";
 import LoginForm from "../components/login/LoginForm";
 import REGEX from "../regex";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import CONSTANTS from "../config/constants";
+import { useContext } from "react";
+import AuthContext from "../config/authContext";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
 const LoginPage = () => {
+    const navigate = useNavigate()
+    const authCtx = useContext(AuthContext)
 
     const onSubmit = (data) => {
-        console.log(data);
+        axios.post(`${CONSTANTS.GATEWAY}/user/login`, data)
+            .catch((err) => {
+                console.log(err);
+                return
+            })
+            .then((response) => {
+                if (response !== undefined) {
+                    // authCtx.login(response.data.data)
+                    console.log(response);
+                    navigate('/')
+                }
+            })
     }
     const validate = (values) => {
         let returnObject = {}
