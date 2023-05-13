@@ -1,29 +1,28 @@
 package main
 
 import (
-	"context"
-	"log"
-	"time"
-
-	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/bnb/accommodation-service/controllers"
+	grpc_server "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_server"
+	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
 )
 
 func main() {
-	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	repos.Connect()
+	grpc_server.InitServer()
+	ginSetup()
+	repos.Disconnect()
+}
 
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
+func ginSetup() {
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.NoRoute()
 
-	defer conn.Close()
-	c := pb.NewUserServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := c.GetUserById(ctx, &pb.UserRequestId{Id: "asdas"})
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
-	}
-	log.Printf("Greeting: %s", r.GetUser().FirstName)
+	r.Group("/accommodation")
+	r.POST("/", controllers.CreateAccommodation)
+	r.PUT("/", controllers.UpdateAccommodation)
+
+	r.Run(":8080")
 }
