@@ -2,21 +2,15 @@ syntax = "proto3";
 
 package pb;
 option go_package = "github.com/rruzicic/globetrotter/bnb/reservation-service/pb";
-import "google/protobuf/timestamp.proto";
 
 message Reservation{
-    // model
-    string id = 1;
-    google.protobuf.Timestamp created_on = 2;
-    google.protobuf.Timestamp modified_on = 3;
-    google.protobuf.Timestamp deleted_on = 4;
-
-    string accommodationId = 5;
-    string userId = 6;
-    string startDate = 7;
-    string endDate = 8;
-    int32 numOfGuests = 9;
-    bool isApproved = 10;
+    string accommodationId = 1;
+    string userId = 2;
+    string startDate = 3;
+    string endDate = 4;
+    int32 numOfGuests = 5;
+    bool isApproved = 6;
+    float totalPrice = 7;
 }
 
 message RequestReservationById{

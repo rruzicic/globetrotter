@@ -11,4 +11,5 @@ type Reservation struct {
 	DateInterval    TimeInterval        `json:"dateInterval" bson:"date_interval"`
 	NumOfGuests     int                 `json:"numOfGuests" bson:"num_of_guests"`
 	IsApproved      bool                `json:"isApproved" bson:"is_approved"`
+	TotalPrice      float32             `json:"totalPrice" bson:"total_price"`
 }
