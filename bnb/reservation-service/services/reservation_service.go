@@ -94,8 +94,10 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 }
 
 func DeleteReservation(id string) error {
-	//TODO: Povecati brojac otkazanih rezervacija u useru. grpc metoda prema Ratku
-
+	_, err := grpcclient.IncrementCancellationsCounter(id)
+	if err != nil {
+		return err
+	}
 	return repos.DeleteReservation(id)
 }
 

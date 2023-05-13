@@ -18,6 +18,8 @@ func connectToAccomodationService() (*grpc.ClientConn, error) {
 		return nil, err
 	}
 
+	defer conn.Close()
+
 	return conn, nil
 }
 
@@ -30,6 +32,8 @@ func GetAccommodationById(id string) (*pb.Accommodation, error) {
 		log.Panic("Could not get accommodation by id from accommodation service. Error: ", err)
 		return nil, err
 	}
+
+	defer conn.Close()
 
 	return accommodation, err
 }
