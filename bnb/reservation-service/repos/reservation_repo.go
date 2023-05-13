@@ -131,3 +131,28 @@ func DeleteReservation(id string) error {
 
 	return nil
 }
+
+func UpdateReservation(reservation models.Reservation) error {
+	reservation.ModifiedOn = int(time.Now().Unix())
+
+	objID, err := primitive.ObjectIDFromHex(reservation.Id.Hex())
+	if err != nil {
+		log.Panic("Could not convert reservation hex to id")
+		return err
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": objID}}
+	update := bson.M{"$set": bson.M{
+		"date_interval": reservation.DateInterval,
+		"num_of_guests": reservation.NumOfGuests,
+		"is_approved":   reservation.IsApproved,
+	},
+	}
+
+	if _, err := reservationCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+		log.Panic("Could not update reservation")
+		return err
+	}
+
+	return nil
+}
