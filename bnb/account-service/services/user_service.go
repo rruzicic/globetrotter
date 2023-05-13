@@ -84,6 +84,19 @@ func DeleteUser(id primitive.ObjectID) error {
 	return errors.New("role name invalid")
 }
 
+func IncrementCancellationsCounter(userId primitive.ObjectID) (*models.User, error) {
+	user, err := GetById(userId)
+	if err != nil {
+		return &models.User{}, err
+	}
+	user.CancellatonsCounter++
+	user, err = UpdateUser(*user)
+	if err != nil {
+		return &models.User{}, err
+	}
+	return user, nil
+}
+
 func verifyPassword(dbPassword string, dtoPassword string) bool {
 	return dbPassword == dtoPassword
 }
