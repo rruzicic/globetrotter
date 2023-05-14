@@ -1,7 +1,23 @@
 import { Container } from "@mui/material";
 import MyReservationCard from "../components/myReservations/MyReservationCard";
+import { axiosInstance } from "../config/interceptor"
+import AuthContext from "../config/authContext"
+import { useContext, useEffect } from "react";
+import CONSTANTS from "../config/constants";
 
 const MyReservationsPage = () => {
+    const authCtx = useContext(AuthContext)
+
+    useEffect(() => {
+        axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .then((response) => {
+                console.log(response.data.id);
+                // axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/user/${response.data.id}`)
+                //     .then((data) => {
+                //         console.log(data);
+                //     })
+            })
+    }, [])
 
     const reservations = [
         {
@@ -51,7 +67,7 @@ const MyReservationsPage = () => {
     }
 
     return (
-        <Container sx={{marginTop: '2rem'}}>
+        <Container sx={{ marginTop: '2rem' }}>
             {
                 reservations.map((reservation) => {
                     return (<MyReservationCard key={reservation.reservationId} reservationId={reservation.reservationId} handleCancel={handleCancel} objectId={reservation.objectId} start={reservation.start} end={reservation.end} guestNum={reservation.guestNum} totalPrice={reservation.totalPrice} objectName={reservation.objectId} image={reservation.image} />)

@@ -10,7 +10,6 @@ const AuthContext = createContext({
     isUser: () => { },
     isHost: () => { },
     userEmail: () => { },
-    userId: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -32,7 +31,7 @@ export const AuthContextProvider = ({ children }) => {
     }
     checkTokenExpiration()
 
-    const loginHandler = (token) => {
+    const loginHandler = async (token) => {
         setToken(token);
         localStorage.setItem("bnb_jwt", token);
     };
@@ -57,13 +56,6 @@ export const AuthContextProvider = ({ children }) => {
         return jwt_decode(localStorage.getItem("bnb_jwt")).email
     }
 
-    const userIdHandler = () => {
-        axiosInstance.get(`http://localhost:4000/user/email/${userEmailHandler()}`)
-            .then((response) => {
-                return response.data.id;
-            })
-    }
-
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -72,7 +64,6 @@ export const AuthContextProvider = ({ children }) => {
         login: loginHandler,
         logout: logoutHandler,
         userEmail: userEmailHandler,
-        userId: userIdHandler
     };
 
     return (
