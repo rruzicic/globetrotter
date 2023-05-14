@@ -7,11 +7,11 @@ import (
 
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func connectToAccomodationService() (*grpc.ClientConn, error) {
-	var opts []grpc.DialOption
-	conn, err := grpc.Dial("accomodation-service:50051", opts)
+	conn, err := grpc.Dial("accomodation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Fatalf("Could not connect to reservation service")
