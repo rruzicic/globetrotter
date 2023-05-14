@@ -10,7 +10,7 @@ import (
 )
 
 func CreateAccommodation(ctx *gin.Context) {
-	var accommodation models.Accommodation
+	var accommodation dtos.CreateAccommodationDTO
 	if err := ctx.ShouldBindJSON(&accommodation); err != nil {
 		ctx.JSON(400, "Bad Request")
 		return

@@ -8,9 +8,30 @@ import (
 	grpcclient "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateAccommodation(accommodation models.Accommodation) error {
+func CreateAccommodation(accommodationDTO dtos.CreateAccommodationDTO) error {
+	user_id, err := primitive.ObjectIDFromHex(accommodationDTO.User)
+	if err != nil {
+		log.Panic("Could not get user id from accommodation dto user")
+		return err
+	}
+
+	accommodation := models.Accommodation{
+		Reservations:          []*primitive.ObjectID{},
+		Name:                  accommodationDTO.Name,
+		Location:              accommodationDTO.Location,
+		AvailableCommodations: accommodationDTO.AvailableCommodations,
+		Photos:                accommodationDTO.Photos,
+		Guests:                accommodationDTO.Guests,
+		Availability:          models.TimeInterval{},
+		UnitPrice:             models.Price{},
+		PriceForPerson:        false,
+		User:                  &user_id,
+		AutoApprove:           accommodationDTO.AutoApprove,
+	}
+
 	if err := repos.CreateAccommodation(accommodation); err != nil {
 		return err
 	}
@@ -52,6 +73,7 @@ func UpdatePriceInterval(updatePriceDTO dtos.UpdatePriceDTO) (bool, error) {
 	}
 
 	accommodation.UnitPrice = price
+	accommodation.PriceForPerson = updatePriceDTO.PriceForPerson
 	if err := UpdateAccommodation(*accommodation); err != nil {
 		log.Panic("Could not update accommodation with new price. Error: ", err)
 		return false, err
