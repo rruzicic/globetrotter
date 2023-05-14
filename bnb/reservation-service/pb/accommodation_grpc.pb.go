@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccommodationServiceClient interface {
+	TestConnection(ctx context.Context, in *TestMessage, opts ...grpc.CallOption) (*TestMessage, error)
 	GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error)
 	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
 }
@@ -32,6 +33,15 @@ type accommodationServiceClient struct {
 
 func NewAccommodationServiceClient(cc grpc.ClientConnInterface) AccommodationServiceClient {
 	return &accommodationServiceClient{cc}
+}
+
+func (c *accommodationServiceClient) TestConnection(ctx context.Context, in *TestMessage, opts ...grpc.CallOption) (*TestMessage, error) {
+	out := new(TestMessage)
+	err := c.cc.Invoke(ctx, "/pb.AccommodationService/TestConnection", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *accommodationServiceClient) GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error) {
@@ -79,6 +89,7 @@ func (x *accommodationServiceGetAccommodationByHostIdClient) Recv() (*Accommodat
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
 type AccommodationServiceServer interface {
+	TestConnection(context.Context, *TestMessage) (*TestMessage, error)
 	GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error)
 	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
 	mustEmbedUnimplementedAccommodationServiceServer()
@@ -88,6 +99,9 @@ type AccommodationServiceServer interface {
 type UnimplementedAccommodationServiceServer struct {
 }
 
+func (UnimplementedAccommodationServiceServer) TestConnection(context.Context, *TestMessage) (*TestMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestConnection not implemented")
+}
 func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationById not implemented")
 }
@@ -105,6 +119,24 @@ type UnsafeAccommodationServiceServer interface {
 
 func RegisterAccommodationServiceServer(s grpc.ServiceRegistrar, srv AccommodationServiceServer) {
 	s.RegisterService(&AccommodationService_ServiceDesc, srv)
+}
+
+func _AccommodationService_TestConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).TestConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AccommodationService/TestConnection",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).TestConnection(ctx, req.(*TestMessage))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AccommodationService_GetAccommodationById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -153,6 +185,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.AccommodationService",
 	HandlerType: (*AccommodationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "TestConnection",
+			Handler:    _AccommodationService_TestConnection_Handler,
+		},
 		{
 			MethodName: "GetAccommodationById",
 			Handler:    _AccommodationService_GetAccommodationById_Handler,

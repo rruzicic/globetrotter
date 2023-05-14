@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
 )
 
@@ -118,4 +121,10 @@ func GetReservationsByAccommodationId(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, reservations)
+}
+
+func TestConnection(ctx *gin.Context) {
+	id := ctx.Param("msg")
+	log.Print(id)
+	grpcclient.TestConnection(id)
 }
