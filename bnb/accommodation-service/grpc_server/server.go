@@ -78,7 +78,7 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 }
 
 func InitServer() {
-	listen, err := net.Listen("tcp", "localhost:50051")
+	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatal("Accommodation service failed to listen. Error: ", err)
 	}

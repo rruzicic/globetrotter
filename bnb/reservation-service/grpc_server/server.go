@@ -68,7 +68,7 @@ func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.Req
 }
 
 func InitServer() {
-	listen, err := net.Listen("tcp", "localhost:50051")
+	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatal("Reservation service failed to listen. Error: ", err)
 	}
