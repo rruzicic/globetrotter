@@ -1,40 +1,26 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AccommodationCard from "../components/accommodationManagement/AccomodationCard";
 import { Box, Grid, Button, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Link } from "react-router-dom";
+import { axiosInstance } from "../config/interceptor"
+import CONSTANTS from "../config/constants"
+import AuthContext from "../config/authContext";
 
 const AccommodationManagementPage = () => {
     const [objects, setObjects] = useState([])
+    const authCtx = useContext(AuthContext)
 
     useEffect(() => {
-        //TODO: get hosts objects and setObjects
-        setObjects([
-            {
-                id: 1,
-                name: 'Village home',
-                location: 'Zlatibor',
-                image: '/home.jpg'
-            },
-            {
-                id: 2,
-                name: 'Mountain home',
-                location: 'Tara',
-                image: '/home.jpg'
-            },
-            {
-                id: 3,
-                name: 'Costal home',
-                location: 'Nice',
-                image: '/home.jpg'
-            },
-            {
-                id: 4,
-                name: 'City home',
-                location: 'NYC',
-                image: '/home.jpg'
-            }
-        ])
+        axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .then((response) => {
+                console.log(response.data.id);
+                axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/host/${response.data.id}`)
+                    .then((response) => {
+                        console.log(response);
+                        setObjects(response.data)
+                    })
+            })
     }, [])
 
     const styles = {
@@ -71,7 +57,7 @@ const AccommodationManagementPage = () => {
                         <Grid item xs={4} sx={styles.grid} key={object.id}>
                             <Link to={`/accommodationInfo/${object.id}`}>
                                 <Box sx={styles.card}>
-                                    <AccommodationCard name={object.name} location={object.location} image={object.image} />
+                                    <AccommodationCard name={object.name} location={object.location.city} />
                                 </Box>
                             </Link>
                         </Grid>

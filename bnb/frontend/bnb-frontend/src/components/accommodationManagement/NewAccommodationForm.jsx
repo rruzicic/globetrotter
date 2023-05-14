@@ -72,7 +72,7 @@ const NewAccommodationForm = () => {
                     Address information:
                 </Typography>
                 <Divider variant='fullWidth' sx={{ borderColor: theme.palette.primary.dark, width: '100%' }} />
-                <Grid item xs={12} sm={10}>
+                <Grid item xs={12} sm={5}>
                     <TextField
                         autoComplete='off'
                         fullWidth
@@ -80,6 +80,16 @@ const NewAccommodationForm = () => {
                         margin="normal"
                         name="street"
                         label="Street Name"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                    <TextField
+                        autoComplete='off'
+                        fullWidth
+                        required
+                        margin="normal"
+                        name="city"
+                        label="City"
                     />
                 </Grid>
                 <Grid item xs={12} sm={2}>

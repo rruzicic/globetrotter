@@ -5,7 +5,7 @@ const AccommodationCard = ({ name, location, image }) => {
         <Card sx={{ width: 345 }}>
             <CardMedia
                 sx={{ height: 140 }}
-                image={image}
+                image='/home.jpg'
                 title={name}
             />
             <CardContent>

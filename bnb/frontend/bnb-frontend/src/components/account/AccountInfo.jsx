@@ -1,14 +1,27 @@
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid, Typography, Button, Stack } from "@mui/material";
 import theme from "../../theme";
+import {useNavigate} from "react-router"
+import { useContext } from "react";
+import AuthContext from "../../config/authContext";
 
-const AccountInfo = ({setUpdate, userInfo}) => {
-
+const AccountInfo = ({ setUpdate, userInfo }) => {
+    const navigate = useNavigate()
+    const authCtx = useContext(AuthContext)
     const handleChangeState = () => {
         setUpdate(true)
+    }
+    const handleDeleteAccount = () => {
+        //TODO: call api to delete
+        console.log(userInfo);
+        authCtx.logout()
+        navigate('/')
     }
 
     return (
         <Grid container spacing={2} justifyContent={"center"} mt={4}>
+            <Grid item xs={12} sx={{ display: 'grid', placeItems: 'center' }}>
+                <img src="/account.png" alt="account" height={'300px'} width={'auto'} />
+            </Grid>
             {
                 userInfo && (
                     <>
@@ -51,10 +64,15 @@ const AccountInfo = ({setUpdate, userInfo}) => {
                 )
             }
 
-            <Grid item xs={12} sx={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-                <Button variant="contained" color="primary" onClick={handleChangeState}>
-                    Change info
-                </Button>
+            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <Stack direction={"row"} spacing={4}>
+                    <Button variant="contained" color="primary" onClick={handleChangeState}>
+                        Change info
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={handleDeleteAccount}>
+                        Delete Account
+                    </Button>
+                </Stack>
             </Grid>
         </Grid>
     );
