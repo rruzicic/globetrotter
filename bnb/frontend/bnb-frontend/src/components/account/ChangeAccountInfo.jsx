@@ -1,11 +1,13 @@
-import { Button, Container } from "@mui/material";
+import { Button, Container, Stack } from "@mui/material";
 import { Form } from "react-final-form";
 import REGEX from "../../regex";
 import ChangeAccountInfoForm from "./ChangeAccountInfoForm";
+import { axiosInstance } from "../../config/interceptor";
+import CONSTANTS from "../../config/constants";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
-const ChangeAccountInfo = ({setUpdate, userInfo}) => {
+const ChangeAccountInfo = ({ setUpdate, userInfo }) => {
     const validate = (values) => {
         let returnObject = {}
         if (!values.firstName) {
@@ -43,10 +45,22 @@ const ChangeAccountInfo = ({setUpdate, userInfo}) => {
     }
 
     const onSubmit = (values) => {
-        console.log(values);
-        setUpdate(false)
+        const { role, cancellationsCounter, confirmPassword, createdOn, deletedOn, modifiedOn, rating, ratingNum, superHost, ...newValues } = values
+        axiosInstance.post(`${CONSTANTS.GATEWAY}/user/update`, newValues)
+            .catch((error) => {
+                console.log(error);
+                return
+            })
+            .then((response) => {
+                // console.log(response);
+            })
+            setUpdate(false)
+            window.location.reload();
     }
 
+    const handleCancel = () => {
+        setUpdate(false)
+    }
 
     return (
         <>
@@ -58,9 +72,14 @@ const ChangeAccountInfo = ({setUpdate, userInfo}) => {
                     <form onSubmit={handleSubmit} noValidate>
                         <Container sx={{ display: 'grid', placeItems: 'center', width: '90%' }}>
                             <ChangeAccountInfoForm />
-                            <Button variant="contained" color="primary" type='submit'>
-                                Submit
-                            </Button>
+                            <Stack direction={"row"} spacing={4}>
+                                <Button variant="contained" color="primary" type='submit'>
+                                    Submit
+                                </Button>
+                                <Button variant="contained" color="primary" onClick={handleCancel}>
+                                    Cancel
+                                </Button>
+                            </Stack>
                         </Container>
                     </form>)}
             >

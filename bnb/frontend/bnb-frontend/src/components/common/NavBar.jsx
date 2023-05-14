@@ -12,11 +12,15 @@ const NavBar = () => {
                     Home
                 </Button>
             </Link>
-            <Link to={'/account'}>
-                <Button variant="contained" color="secondary">
-                    Account
-                </Button>
-            </Link>
+            {
+                authCtx.isLoggedIn && (
+                    <Link to={'/account'}>
+                        <Button variant="contained" color="secondary">
+                            Account
+                        </Button>
+                    </Link>
+                )
+            }
             {
                 authCtx.isHost() && (
                     <Link to={'/myAccommodation'}>

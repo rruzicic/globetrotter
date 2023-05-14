@@ -10,7 +10,7 @@ const createAxiosInstance = (contentType) => {
 
   instance.interceptors.request.use(
     async (config) => {
-      const token = localStorage.getItem('flights_jwt');
+      const token = localStorage.getItem('bnb_jwt');
       if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
