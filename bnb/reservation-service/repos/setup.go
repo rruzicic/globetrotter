@@ -13,7 +13,7 @@ var reservationCollection *mongo.Collection
 var client *mongo.Client
 
 func Connect() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://127.0.0.1:27100"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://mongo"))
 	if err != nil {
 		log.Panic("Could not connect to MongoDB")
 	}

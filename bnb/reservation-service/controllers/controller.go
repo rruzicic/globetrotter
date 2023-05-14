@@ -12,6 +12,7 @@ import (
 func CreateReservation(ctx *gin.Context) {
 	var reservationDTO dtos.CreateReservationDTO
 	if err := ctx.ShouldBindJSON(&reservationDTO); err != nil {
+		log.Print(err.Error())
 		ctx.JSON(400, "Bad Request")
 		return
 	}
