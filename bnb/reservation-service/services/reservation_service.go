@@ -129,11 +129,29 @@ func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) 
 }
 
 func DeleteReservation(id string) error {
-	_, err := grpcclient.IncrementCancellationsCounter(id)
+	reservation, err := repos.GetReservationById(id)
 	if err != nil {
+		log.Print(err.Error())
 		return err
 	}
-	return repos.DeleteReservation(id)
+	if err := repos.DeleteReservation(id); err != nil {
+		log.Print(err.Error())
+		return err
+	}
+
+	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
+	if err != nil {
+		log.Print(res)
+		return err
+	}
+
+	boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
+	if err != nil {
+		log.Print(boolAns, err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func ApproveReservation(id string) error {

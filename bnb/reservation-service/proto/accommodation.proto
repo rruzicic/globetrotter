@@ -60,4 +60,5 @@ service AccommodationService {
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
     rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
     rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (BoolAnswer) {}
+    rpc RemoveReservationFromAccommodation(AddReservationToAccommodationRequest) returns (BoolAnswer) {}
 }
