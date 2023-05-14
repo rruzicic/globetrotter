@@ -73,7 +73,7 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return repos.GetReservationsByUserId(id)
 }
 
-func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
+/*func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	reservations, err := GetReservationsByHostId(id)
 	if err != nil {
 		return []models.Reservation{}, nil
@@ -85,14 +85,15 @@ func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) 
 		}
 	}
 	return futureApprovedReservations, nil
-}
+}*/
 
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
 	return repos.GetActiveReservationsByUser(id)
 }
 
-func GetReservationsByHostId(id string) ([]models.Reservation, error) {
+func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	accomodations, err := grpcclient.GetAccommodationByHostId(id)
+	//log.Println("accomodations for given host id: ", accomodations)
 	if err != nil {
 		return []models.Reservation{}, err
 	}
@@ -103,7 +104,7 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 			return []models.Reservation{}, err
 		}
 		for _, reservation := range reservations {
-			if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
+			if reservation.DateInterval.DateIsBefore(time.Now()) && reservation.IsApproved {
 				futureApprovedReservations = append(futureApprovedReservations, reservation)
 			}
 		}
