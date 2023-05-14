@@ -12,6 +12,7 @@ import AccommodationManagementPage from './pages/AccommodationManagementPage';
 import NewAccommodationPage from './pages/NewAccommodationPage';
 import AccommodationInfoPage from './pages/AccommodationInfoPage';
 import "react-image-gallery/styles/css/image-gallery.css";
+import MyReservationsPage from './pages/MyReservationsPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
             <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
             <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
+            <Route path={'/myReservations'} element={<MyReservationsPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

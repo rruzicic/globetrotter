@@ -62,14 +62,14 @@ services:
     depends_on:
       - mongo
 
-  flights-backend:
-    build: './flights/backend'
-    ports:
-      - '8080:8080'
-    volumes:
-      - './flights/backend:/go/src/app'
-    depends_on:
-      - mongo
+  # flights-backend:
+  #   build: './flights/backend'
+  #   ports:
+  #     - '8080:8080'
+  #   volumes:
+  #     - './flights/backend:/go/src/app'
+  #   depends_on:
+  #     - mongo
 
   mongo:
     image: 'mongo:latest'

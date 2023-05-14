@@ -60,7 +60,6 @@ const RegistrationPage = () => {
             })
             .then((response) => {
                 if (response !== undefined) {
-                    console.log(response);
                     navigate('/login')
                 }
             })

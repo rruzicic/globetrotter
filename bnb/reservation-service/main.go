@@ -25,7 +25,7 @@ func ginSetup() {
 	r.Group("/reservation")
 	r.POST("/", controllers.CreateReservation)
 	r.GET("/:id", controllers.GetReservationById)
-	r.GET("/user/:id", controllers.GetReservationsByUserId)
+	r.GET("/korisnik/:id", controllers.GetReservationsByUserId)
 	r.DELETE("/:id", controllers.DeleteReservation)
 	r.POST("/approve/:id", controllers.ApproveReservation)
 	r.POST("/reject/:id", controllers.RejectReservation)

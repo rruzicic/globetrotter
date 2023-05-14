@@ -1,5 +1,6 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext } from "react";
+import { axiosInstance } from "./interceptor";
 
 const AuthContext = createContext({
     token: "",
@@ -8,7 +9,7 @@ const AuthContext = createContext({
     logout: () => { },
     isUser: () => { },
     isHost: () => { },
-    userEmail: () => { }
+    userEmail: () => { },
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -30,9 +31,8 @@ export const AuthContextProvider = ({ children }) => {
     }
     checkTokenExpiration()
 
-    const loginHandler = (token) => {
+    const loginHandler = async (token) => {
         setToken(token);
-        console.log('here');
         localStorage.setItem("bnb_jwt", token);
     };
 
@@ -43,7 +43,7 @@ export const AuthContextProvider = ({ children }) => {
 
     const isUserHandler = () => {
         if (token == null) return null;
-        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "USER") return true;
+        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "GUEST") return true;
         return false;
     }
     const isHostHandler = () => {
@@ -63,7 +63,7 @@ export const AuthContextProvider = ({ children }) => {
         isHost: isHostHandler,
         login: loginHandler,
         logout: logoutHandler,
-        userEmail: userEmailHandler
+        userEmail: userEmailHandler,
     };
 
     return (
