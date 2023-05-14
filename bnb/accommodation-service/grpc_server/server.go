@@ -65,6 +65,7 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 	accommodations, err := repos.GetAccommodationsByHostId(req.GetId())
 	if err != nil {
 		log.Panic("Could not get accommodations for host id: ", req.GetId())
+		return err
 	}
 
 	for _, accommodation := range accommodations {
@@ -78,7 +79,7 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 }
 
 func InitServer() {
-	listen, err := net.Listen("tcp", "localhost:50051")
+	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatal("Accommodation service failed to listen. Error: ", err)
 	}

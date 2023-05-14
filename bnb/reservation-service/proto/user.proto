@@ -29,19 +29,6 @@ message User {
     int32 cancellationsCounter = 17;
 }
 
-message UserSignUpRequest {
-    string firstName = 1;
-    string lastName = 2;
-    string email = 3;
-    string password = 4;
-    string role = 5;
-
-    string country = 6;
-    string street = 7;
-    string streetNum = 8;
-    int32 zipCode = 9;
-}
-
 message UserUpdateRequest {
     string id = 1;
     optional string firstName = 2;
@@ -62,18 +49,19 @@ message UserRequestPagination {
 }
 message UserRequestId { string id = 1; }
 message UserRequestEmail { string email = 1; }
-message TokenRequest { string token = 1; }
+message TokenRequest { 
+    string token = 1; 
+    string role = 2;
+}
 message UserResponse { User user = 1; }
 message BooleanReturn { bool boolean = 1;}
 
 service UserService {
-    rpc RegisterHost(UserSignUpRequest) returns (UserResponse) {}
-    rpc RegisterGuest(UserSignUpRequest) returns (UserResponse) {}
-    rpc VerifyToken(TokenRequest) returns (BooleanReturn) {}
     rpc GetUserById(UserRequestId) returns (UserResponse) {}
     rpc GetUserByEmail(UserRequestEmail) returns (UserResponse) {}
-    rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}
-    rpc UpdateUser(UserUpdateRequest) returns (UserResponse) {}
-    rpc DeleteUser(UserRequestId) returns (UserResponse) {}
+    rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}        // not implemented
+    rpc UpdateUser(UserUpdateRequest) returns (UserResponse) {}                 // not implemented
+    rpc DeleteUser(UserRequestId) returns (UserResponse) {}                     // not implemented
     rpc IncrementCancellationsCounter(UserRequestId) returns (UserResponse) {}
+    rpc VerifyToken(TokenRequest) returns (BooleanReturn) {}
 }
