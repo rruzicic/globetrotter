@@ -29,8 +29,8 @@ func GetActiveReservationsByUser(id string) ([](*pb.Reservation), error) {
 	var reservations [](*pb.Reservation)
 	stream, err := client.GetActiveReservationsByUser(context.Background(), &pb.RequestUserId{Id: id})
 	if err != nil {
-		log.Println("Could not get stream for reservations by user id, error: ", err.Error())
-		return nil, err
+		//log.Println("Could not get stream for reservations by user id, error: ", err.Error())
+		return []*pb.Reservation{}, nil
 	}
 
 	for {
@@ -57,8 +57,8 @@ func GetFutureActiveReservationsByHost(id string) ([](*pb.Reservation), error) {
 	var reservations [](*pb.Reservation)
 	stream, err := client.GetFutureActiveReservationsByHost(context.Background(), &pb.RequestUserId{Id: id})
 	if err != nil {
-		log.Println("Could not get stream for reservations by user id, error: ", err.Error())
-		return nil, err
+		//log.Println("Could not get stream for reservations by user id, error: ", err.Error())
+		return []*pb.Reservation{}, err
 	}
 
 	for {
