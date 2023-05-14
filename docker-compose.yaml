@@ -12,7 +12,7 @@ services:
       - reservation-service
       - search-service
 
-  accomodation-service:
+  accommodation-service:
     build: './bnb/accommodation-service'
     ports:
       - '8081:8080'
