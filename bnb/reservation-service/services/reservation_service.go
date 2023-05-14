@@ -37,6 +37,19 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 		return nil, err
 	}
 
+	accommodation_availability := models.TimeInterval{Start: accommodation.AvailabilityStartDate.AsTime(), End: accommodation.AvailabilityEndDate.AsTime()}
+	if !accommodation_availability.OtherIntervalIsDuring(reservation.DateInterval) {
+		err := errors.New("Reservation date isn't during accommodations' availability")
+		log.Print(err.Error())
+		return nil, err
+	}
+
+	if accommodation.Guests < int32(reservationDTO.NumOfGuests) {
+		err := errors.New("Number of guests greater than accommodations' capacity")
+		log.Print(err.Error())
+		return nil, err
+	}
+
 	if accommodation.PriceForPerson {
 		reservation.TotalPrice = float32(reservation.NumOfGuests) * accommodation.Amount
 	} else {
@@ -51,7 +64,7 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 			return nil, err
 		}
 
-		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && existing_reservation.IsApproved == true {
+		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && (existing_reservation.IsApproved == true) {
 			err := errors.New("Reservation exists in that time")
 			log.Print(err.Error())
 			return nil, err
