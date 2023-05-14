@@ -16,7 +16,6 @@ const AccountPage = () => {
                 return
             })
             .then((response) => {
-                console.log(response);
                 setUserInfo(response.data)
             })
     }, [])

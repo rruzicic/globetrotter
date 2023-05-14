@@ -2,6 +2,8 @@ import { Button, Container, Stack } from "@mui/material";
 import { Form } from "react-final-form";
 import REGEX from "../../regex";
 import ChangeAccountInfoForm from "./ChangeAccountInfoForm";
+import { axiosInstance } from "../../config/interceptor";
+import CONSTANTS from "../../config/constants";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
@@ -43,8 +45,17 @@ const ChangeAccountInfo = ({ setUpdate, userInfo }) => {
     }
 
     const onSubmit = (values) => {
-        console.log(values);
-        setUpdate(false)
+        const { role, cancellationsCounter, confirmPassword, createdOn, deletedOn, modifiedOn, rating, ratingNum, superHost, ...newValues } = values
+        axiosInstance.post(`${CONSTANTS.GATEWAY}/user/update`, newValues)
+            .catch((error) => {
+                console.log(error);
+                return
+            })
+            .then((response) => {
+                // console.log(response);
+            })
+            setUpdate(false)
+            window.location.reload();
     }
 
     const handleCancel = () => {
