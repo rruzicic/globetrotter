@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Grid, Typography, Button, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Stack, Divider } from "@mui/material";
+import { Grid, Typography, Button, Dialog, DialogTitle, DialogContent, TextField, Stack } from "@mui/material";
 import RequestCard from "../components/accommodationManagement/RequestCard";
 import AuthContext from "../config/authContext";
 import ImageGallery from 'react-image-gallery';
 import theme from "../theme";
 import { axiosInstance } from "../config/interceptor";
 import CONSTANTS from "../config/constants";
-import { Link } from "react-router-dom"
 
 const AccommodationInfoPage = () => {
     const { id } = useParams()
@@ -64,7 +63,6 @@ const AccommodationInfoPage = () => {
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${id}`)
             .then((response) => {
-                console.log(response);
                 setObjectInfo(response.data)
             })
         setRequests(
@@ -105,26 +103,33 @@ const AccommodationInfoPage = () => {
     }
     //TODO: hit endpoint
     const submitPriceChange = () => {
-        console.log({
+        let dto = {
             accommodationId: id,
-            newPrice: price,
+            newPrice: parseFloat(price),
             newInterval: {
                 start: new Date(startDate).toISOString(),
                 end: new Date(endDate).toISOString()
             },
             priceForPerson: isSinglePerson
-        });
+        }
+        axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/price`, dto)
+            .then((response) => {
+                handleOpen()
+            })
     }
     const submitAvailabilityChange = () => {
-        console.log({
+        let dto = {
             accommodationId: id,
             timeInterval: {
                 start: new Date(aStartDate).toISOString(),
                 end: new Date(aEndDate).toISOString(),
-            },
-        });
+            }
+        }
+        axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/availability`, dto)
+            .then((response) => {
+                handleOpen()
+            })
     }
-
     return (
         <>
 
