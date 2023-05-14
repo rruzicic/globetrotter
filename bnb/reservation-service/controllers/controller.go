@@ -28,7 +28,7 @@ func CreateReservation(ctx *gin.Context) {
 }
 
 func GetReservationById(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -44,7 +44,7 @@ func GetReservationById(ctx *gin.Context) {
 }
 
 func GetReservationsByUserId(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -60,7 +60,7 @@ func GetReservationsByUserId(ctx *gin.Context) {
 }
 
 func DeleteReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -75,7 +75,7 @@ func DeleteReservation(ctx *gin.Context) {
 }
 
 func ApproveReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -90,7 +90,7 @@ func ApproveReservation(ctx *gin.Context) {
 }
 
 func RejectReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -105,7 +105,7 @@ func RejectReservation(ctx *gin.Context) {
 }
 
 func GetReservationsByAccommodationId(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return

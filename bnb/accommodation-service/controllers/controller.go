@@ -106,7 +106,7 @@ func SearchAccomodation(ctx *gin.Context) {
 }
 
 func GetAccommodationsByHostId(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
