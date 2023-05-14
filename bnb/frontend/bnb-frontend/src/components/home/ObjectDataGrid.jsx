@@ -9,8 +9,8 @@ const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [locationSP, setLocationSP] = useState()
-    const [guestNumberSP, setGuestNumberSP] = useState()
+    const [locationSP, setLocationSP] = useState('')
+    const [guestNumberSP, setGuestNumberSP] = useState('')
     const [startDateSP, setStartDateSP] = useState()
     const [endDateSP, setEndDateSP] = useState()
     const [objects, setObjects] = useState(null)
@@ -63,11 +63,14 @@ const ObjectDataGrid = () => {
             label: 'User Action',
         }
     ]
-
+    // localhost:4000/accommodation/search?cityName=&guestNum=0&startDate=2023-01-01&endDate=2023-12-01
     const search = () => {
-        //TODO: call API for search
-        axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/`)
-            .then((response) => {
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/search?cityName=${locationSP ? locationSP : " "}&guestNum=${guestNumberSP ? parseInt(guestNumberSP) : " "}&startDate=${startDateSP}&endDate=${endDateSP}`)
+        .catch((err) => {
+            console.log(err);
+            return
+        })    
+        .then((response) => {
                 console.log(response);
                 setObjects(response.data)
             })
@@ -177,7 +180,7 @@ const ObjectDataGrid = () => {
                                                         {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)}>
+                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)} disabled={authCtx.isHost()}>
                                                             Book!
                                                         </Button>
                                                     </TableCell>

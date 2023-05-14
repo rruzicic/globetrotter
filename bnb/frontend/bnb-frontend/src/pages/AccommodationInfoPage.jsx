@@ -65,43 +65,30 @@ const AccommodationInfoPage = () => {
             .then((response) => {
                 setObjectInfo(response.data)
             })
-        setRequests(
-            [{
-                userId: '1',
-                requestId: '1',
-                startDate: new Date(),
-                endDate: new Date(),
-                numberOfGuests: 8
-            },
-            {
-                userId: '2',
-                requestId: '2',
-                startDate: new Date(),
-                endDate: new Date(),
-                numberOfGuests: 4
-            },
-            {
-                userId: '3',
-                requestId: '3',
-                startDate: new Date(),
-                endDate: new Date(),
-                numberOfGuests: 6
-            }]
-        )
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}`)
+            .then((response) => {
+                console.log(response.data);
+                setRequests(response.data)
+            })
     }, [])
 
     const acceptReservation = (id) => {
-        //TODO: send to BE
+        axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/approve/${id}`)
+            .then((response) => {
+                window.location.reload()
+            })
         console.log('Accepted ' + id);
     }
     const declineReservation = (id) => {
-        //TODO: send to BE
+        axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/reject/${id}`)
+            .then((response) => {
+                window.location.reload()
+            })
         console.log('Declined ' + id);
     }
     const handleOpen = () => {
         setOpen((prev) => !prev)
     }
-    //TODO: hit endpoint
     const submitPriceChange = () => {
         let dto = {
             accommodationId: id,
@@ -120,7 +107,7 @@ const AccommodationInfoPage = () => {
     const submitAvailabilityChange = () => {
         let dto = {
             accommodationId: id,
-            timeInterval: {
+            newInterval: {
                 start: new Date(aStartDate).toISOString(),
                 end: new Date(aEndDate).toISOString(),
             }
@@ -228,7 +215,16 @@ const AccommodationInfoPage = () => {
                                     requests.map((request) => {
                                         return (
                                             <Grid item xs={12}>
-                                                <RequestCard requestId={request.requestId} accept={acceptReservation} decline={declineReservation} userId={request.userId} startDate={request.startDate} endDate={request.endDate} guestNumber={request.numberOfGuests} />
+                                                <RequestCard
+                                                    requestId={request.id}
+                                                    accept={acceptReservation}
+                                                    decline={declineReservation}
+                                                    userId={request.userId}
+                                                    startDate={request.dateInterval.start}
+                                                    endDate={request.dateInterval.end}
+                                                    guestNumber={request.numOfGuests}
+                                                    isApproved={request.isApproved} />
+
                                             </Grid>
                                         )
                                     })
