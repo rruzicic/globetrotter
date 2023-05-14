@@ -52,7 +52,7 @@ func buildGRPCAccommodation(accommodation models.Accommodation) pb.Accommodation
 func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, req *pb.RequestAccommodationById) (*pb.Accommodation, error) {
 	accommodation, err := repos.GetAccommodationById(req.GetId())
 	if err != nil {
-		log.Panic("Could not get accommodation with id", req.GetId())
+		log.Println("Could not get accommodation with id", req.GetId(), ", error: ", err.Error())
 		return nil, err
 	}
 
@@ -64,7 +64,7 @@ func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, r
 func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAccommodationByHostId, stream pb.AccommodationService_GetAccommodationByHostIdServer) error {
 	accommodations, err := repos.GetAccommodationsByHostId(req.GetId())
 	if err != nil {
-		log.Panic("Could not get accommodations for host id: ", req.GetId())
+		log.Println("Could not get accommodations for host id: ", req.GetId(), ", error: ", err.Error())
 		return err
 	}
 
@@ -81,7 +81,7 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatal("Accommodation service failed to listen. Error: ", err)
+		log.Println("Accommodation service failed to listen. Error: ", err.Error())
 	}
 
 	server := grpc.NewServer()
@@ -89,6 +89,6 @@ func InitServer() {
 
 	log.Println("Accommodation gRPC server listening..")
 	if err := server.Serve(listen); err != nil {
-		log.Fatal("Could not start Accommodation gRPC Server. Error: ", err)
+		log.Println("Could not start Accommodation gRPC Server. Error: ", err.Error())
 	}
 }

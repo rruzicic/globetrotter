@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"strconv"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/dtos"
@@ -92,12 +92,12 @@ func SearchAccomodation(ctx *gin.Context) {
 	guestNum := ctx.DefaultQuery("guestNum", "")
 	startDate := ctx.DefaultQuery("startDate", "")
 	endDate := ctx.DefaultQuery("endDate", "")
-	guests, err := strconv.Atoi(guestNum)
-	if err != nil {
-		ctx.JSON(400, err.Error())
+	if startDate == "" || endDate == "" {
+		ctx.JSON(400, "Start date and end date do not exist")
 		return
 	}
-	searchResult, err := services.SearchAccomodation(cityName, guests, startDate, endDate)
+	log.Println(cityName, guestNum, startDate, endDate)
+	searchResult, err := services.SearchAccomodation(cityName, guestNum, startDate, endDate)
 	if err != nil {
 		ctx.JSON(400, err.Error())
 		return
