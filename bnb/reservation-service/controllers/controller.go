@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -17,18 +18,13 @@ func CreateReservation(ctx *gin.Context) {
 		return
 	}
 
-	retval, err := services.CreateReservation(reservationDTO)
+	reservation, err := services.CreateReservation(reservationDTO)
 	if err != nil {
-		ctx.JSON(500, "Server Error")
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
 		return
 	}
 
-	if retval == true {
-		ctx.JSON(201, "Reservation Created")
-		return
-	}
-
-	ctx.JSON(500, "Server Error")
+	ctx.JSON(201, reservation)
 }
 
 func GetReservationById(ctx *gin.Context) {
@@ -128,4 +124,27 @@ func TestConnection(ctx *gin.Context) {
 	id := ctx.Param("msg")
 	log.Print(id)
 	grpcclient.TestConnection(id)
+}
+
+func AddReservationToAccommodation(ctx *gin.Context) {
+	accommodation_id := ctx.Param("acc_id")
+	if accommodation_id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	reservation_id := ctx.Param("res_id")
+	if reservation_id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	boolAns, err := grpcclient.AddReservationToAccommodation(accommodation_id, reservation_id)
+	if err != nil {
+		log.Panic("Error adding reservation to accommodation. Error: ", err.Error())
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
+		return
+	}
+
+	ctx.JSON(200, boolAns)
 }

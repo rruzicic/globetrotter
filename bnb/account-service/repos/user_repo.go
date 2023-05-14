@@ -81,14 +81,8 @@ func UpdateUser(user models.User) (*models.User, error) {
 	return &updatedUser, nil
 }
 
-func DeleteUser(id string) error {
-	userId, err := primitive.ObjectIDFromHex(id)
-
-	if err != nil {
-		log.Print("Could not get id from hex string: ", id)
-	}
-
-	filter := bson.M{"_id": bson.M{"$eq": userId}}
+func DeleteUser(id primitive.ObjectID) error {
+	filter := bson.M{"_id": bson.M{"$eq": id}}
 	if _, err := usersCollection.DeleteOne(context.TODO(), filter); err != nil {
 		log.Print("Could not delete user with hex id", id)
 		return err

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -11,15 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateReservation(reservationDTO dtos.CreateReservationDTO) (bool, error) {
+func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reservation, error) {
 	acc_id, err := primitive.ObjectIDFromHex(reservationDTO.AccommodationId)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	user_id, err := primitive.ObjectIDFromHex(reservationDTO.UserId)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	reservation := models.Reservation{
@@ -33,7 +34,20 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (bool, error) {
 
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
-		return false, err
+		return nil, err
+	}
+
+	accommodation_availability := models.TimeInterval{Start: accommodation.AvailabilityStartDate.AsTime(), End: accommodation.AvailabilityEndDate.AsTime()}
+	if !accommodation_availability.OtherIntervalIsDuring(reservation.DateInterval) {
+		err := errors.New("Reservation date isn't during accommodations' availability")
+		log.Print(err.Error())
+		return nil, err
+	}
+
+	if accommodation.Guests < int32(reservationDTO.NumOfGuests) {
+		err := errors.New("Number of guests greater than accommodations' capacity")
+		log.Print(err.Error())
+		return nil, err
 	}
 
 	if accommodation.PriceForPerson {
@@ -47,11 +61,13 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (bool, error) {
 	for _, reservation_id := range accommodation.Reservations {
 		existing_reservation, err := repos.GetReservationById(reservation_id)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 
-		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && existing_reservation.IsApproved == true {
-			return false, nil
+		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && (existing_reservation.IsApproved == true) {
+			err := errors.New("Reservation exists in that time")
+			log.Print(err.Error())
+			return nil, err
 		}
 	}
 
@@ -62,7 +78,7 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (bool, error) {
 		reservation.IsApproved = false
 	}
 
-	return true, repos.CreateReservation(reservation)
+	return repos.CreateReservation(reservation)
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -73,7 +89,7 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return repos.GetReservationsByUserId(id)
 }
 
-func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
+/*func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	reservations, err := GetReservationsByHostId(id)
 	if err != nil {
 		return []models.Reservation{}, nil
@@ -85,14 +101,15 @@ func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) 
 		}
 	}
 	return futureApprovedReservations, nil
-}
+}*/
 
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
 	return repos.GetActiveReservationsByUser(id)
 }
 
-func GetReservationsByHostId(id string) ([]models.Reservation, error) {
+func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	accomodations, err := grpcclient.GetAccommodationByHostId(id)
+	//log.Println("accomodations for given host id: ", accomodations)
 	if err != nil {
 		return []models.Reservation{}, err
 	}
@@ -103,7 +120,7 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 			return []models.Reservation{}, err
 		}
 		for _, reservation := range reservations {
-			if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
+			if reservation.DateInterval.DateIsBefore(time.Now()) && reservation.IsApproved {
 				futureApprovedReservations = append(futureApprovedReservations, reservation)
 			}
 		}

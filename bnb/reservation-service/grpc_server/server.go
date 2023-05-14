@@ -61,7 +61,7 @@ func (s *ReservationServiceServer) GetReservationsByAccommodationId(req *pb.Requ
 func (s *ReservationServiceServer) GetActiveReservationsByUser(req *pb.RequestUserId, stream pb.ReservationService_GetActiveReservationsByUserServer) error {
 	reservations, err := services.GetActiveReservationsByUser(req.GetId())
 	if err != nil {
-		log.Panic("Could not get reservations for user id: ", req.GetId())
+		log.Println("Could not get reservations for user id: ", req.GetId())
 		return err
 	}
 
@@ -81,7 +81,7 @@ func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.Req
 		log.Panic("Could not get future active reservations by host with id: ", req.GetId())
 		return err
 	}
-
+	//log.Println("IM HEREEEEEEEEE", reservations)
 	for _, reservation := range reservations {
 		grpc_reservation := buildGRPCReservation(reservation)
 		if err := stream.Send(&grpc_reservation); err != nil {

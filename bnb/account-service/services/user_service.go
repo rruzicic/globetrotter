@@ -59,24 +59,24 @@ func DeleteUser(id primitive.ObjectID) error {
 	}
 
 	if user.Role == models.GuestRole {
-		reservations, err := grpcclient.GetActiveReservationsByUser(id.String())
+		reservations, err := grpcclient.GetActiveReservationsByUser(id.Hex())
 		if err != nil {
 			return err
 		}
 		if len(reservations) == 0 {
-			repos.DeleteUser(user.Id.String())
+			repos.DeleteUser(id)
 			return nil
 		}
 		return errors.New("there are active reservations for user")
 	}
 
 	if user.Role == models.HostRole {
-		reservations, err := grpcclient.GetFutureActiveReservationsByHost(id.String())
+		reservations, err := grpcclient.GetFutureActiveReservationsByHost(id.Hex())
 		if err != nil {
 			return err
 		}
 		if len(reservations) == 0 {
-			repos.DeleteUser(user.Id.String())
+			repos.DeleteUser(id)
 			return nil
 		}
 		return errors.New("there are active reservations for user")

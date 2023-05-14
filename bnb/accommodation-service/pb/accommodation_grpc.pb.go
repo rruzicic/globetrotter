@@ -25,6 +25,7 @@ type AccommodationServiceClient interface {
 	TestConnection(ctx context.Context, in *TestMessage, opts ...grpc.CallOption) (*TestMessage, error)
 	GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error)
 	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
+	AddReservationToAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
 }
 
 type accommodationServiceClient struct {
@@ -85,6 +86,15 @@ func (x *accommodationServiceGetAccommodationByHostIdClient) Recv() (*Accommodat
 	return m, nil
 }
 
+func (c *accommodationServiceClient) AddReservationToAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error) {
+	out := new(BoolAnswer)
+	err := c.cc.Invoke(ctx, "/pb.AccommodationService/AddReservationToAccommodation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -92,6 +102,7 @@ type AccommodationServiceServer interface {
 	TestConnection(context.Context, *TestMessage) (*TestMessage, error)
 	GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error)
 	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
+	AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -107,6 +118,9 @@ func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Cont
 }
 func (UnimplementedAccommodationServiceServer) GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetAccommodationByHostId not implemented")
+}
+func (UnimplementedAccommodationServiceServer) AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddReservationToAccommodation not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -178,6 +192,24 @@ func (x *accommodationServiceGetAccommodationByHostIdServer) Send(m *Accommodati
 	return x.ServerStream.SendMsg(m)
 }
 
+func _AccommodationService_AddReservationToAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddReservationToAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).AddReservationToAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AccommodationService/AddReservationToAccommodation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).AddReservationToAccommodation(ctx, req.(*AddReservationToAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +224,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccommodationById",
 			Handler:    _AccommodationService_GetAccommodationById_Handler,
+		},
+		{
+			MethodName: "AddReservationToAccommodation",
+			Handler:    _AccommodationService_AddReservationToAccommodation_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
