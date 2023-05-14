@@ -95,7 +95,7 @@ func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.Req
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatal("Reservation service failed to listen. Error: ", err)
+		log.Panic("Reservation service failed to listen. Error: ", err)
 	}
 
 	server := grpc.NewServer()
@@ -103,6 +103,6 @@ func InitServer() {
 
 	log.Println("Reservation gRPC server listening..")
 	if err := server.Serve(listen); err != nil {
-		log.Fatal("Could not start Reservation gRPC Server. Error: ", err)
+		log.Panic("Could not start Reservation gRPC Server. Error: ", err)
 	}
 }

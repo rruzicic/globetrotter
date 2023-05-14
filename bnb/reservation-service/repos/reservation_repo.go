@@ -80,6 +80,38 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return reservations, nil
 }
 
+func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
+	userId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get user id from string: ", id)
+		return nil, err
+	}
+
+	reservations := []models.Reservation{}
+	filter := bson.M{"user_id": bson.M{"$eq": userId}, "is_approved": bson.M{"$eq": true}}
+	cursor, err := reservationCollection.Find(context.TODO(), filter)
+
+	if err != nil {
+		log.Print("Could not get reservation")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var reservation models.Reservation
+		err := cursor.Decode(&reservation)
+
+		if err != nil {
+			log.Print("Could not unmarshall reservation on cursor")
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation)
+	}
+
+	return reservations, nil
+}
+
 func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
 	acc_id, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
