@@ -1,23 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AccountInfo from "../components/account/AccountInfo";
 import ChangeAccountInfo from "../components/account/ChangeAccountInfo";
+import { axiosInstance } from "../config/interceptor";
+import CONSTANTS from "../config/constants"
+import AuthContext from "../config/authContext"
 
 const AccountPage = () => {
     const [update, setUpdate] = useState(false)
     const [userInfo, setUserInfo] = useState()
+    const authCtx = useContext(AuthContext)
     useEffect(() => {
-        //fetch user info and set state
-        setUserInfo(
-            {
-                firstName: 'Nikola',
-                lastName: 'Grbovic',
-                email: 'kwicknik1@gmail.com',
-                street: 'Balzakova',
-                streetNum: '64',
-                zip: 21000,
-                country: 'Srbija'
-            }
-        )
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.log(error);
+                return
+            })
+            .then((response) => {
+                console.log(response);
+                setUserInfo(response.data)
+            })
     }, [])
 
     return (

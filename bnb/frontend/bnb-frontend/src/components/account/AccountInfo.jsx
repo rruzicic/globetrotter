@@ -17,14 +17,17 @@ const AccountInfo = ({setUpdate, userInfo}) => {
                                 User info
                             </Typography>
                             <Grid container>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     First name: {userInfo.firstName}
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     Last name: {userInfo.lastName}
                                 </Grid>
                                 <Grid item xs={12}>
                                     Email: {userInfo.email}
+                                </Grid>
+                                <Grid item xs={12}>
+                                    Role: {userInfo.role}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -33,11 +36,8 @@ const AccountInfo = ({setUpdate, userInfo}) => {
                                 Location info
                             </Typography>
                             <Grid container>
-                                <Grid item xs={8}>
-                                    Street name: {userInfo.street}
-                                </Grid>
-                                <Grid item xs={4}>
-                                    Street number: {userInfo.streetNum}
+                                <Grid item xs={12}>
+                                    Street: {userInfo.street} {userInfo.streetNum}
                                 </Grid>
                                 <Grid item xs={12}>
                                     ZIP Code: {userInfo.zip}

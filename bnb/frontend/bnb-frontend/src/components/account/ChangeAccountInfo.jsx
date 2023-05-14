@@ -1,11 +1,11 @@
-import { Button, Container } from "@mui/material";
+import { Button, Container, Stack } from "@mui/material";
 import { Form } from "react-final-form";
 import REGEX from "../../regex";
 import ChangeAccountInfoForm from "./ChangeAccountInfoForm";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
-const ChangeAccountInfo = ({setUpdate, userInfo}) => {
+const ChangeAccountInfo = ({ setUpdate, userInfo }) => {
     const validate = (values) => {
         let returnObject = {}
         if (!values.firstName) {
@@ -47,6 +47,9 @@ const ChangeAccountInfo = ({setUpdate, userInfo}) => {
         setUpdate(false)
     }
 
+    const handleCancel = () => {
+        setUpdate(false)
+    }
 
     return (
         <>
@@ -58,9 +61,14 @@ const ChangeAccountInfo = ({setUpdate, userInfo}) => {
                     <form onSubmit={handleSubmit} noValidate>
                         <Container sx={{ display: 'grid', placeItems: 'center', width: '90%' }}>
                             <ChangeAccountInfoForm />
-                            <Button variant="contained" color="primary" type='submit'>
-                                Submit
-                            </Button>
+                            <Stack direction={"row"} spacing={4}>
+                                <Button variant="contained" color="primary" type='submit'>
+                                    Submit
+                                </Button>
+                                <Button variant="contained" color="primary" onClick={handleCancel}>
+                                    Cancel
+                                </Button>
+                            </Stack>
                         </Container>
                     </form>)}
             >
