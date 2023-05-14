@@ -128,3 +128,13 @@ func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 
 	return accommodations, nil
 }
+
+func GetAccommodationById(id string) (*models.Accommodation, error) {
+	accommodation, err := repos.GetAccommodationById(id)
+	if err != nil {
+		log.Panic("Could not get accommodation by id: ", id)
+		return nil, err
+	}
+
+	return accommodation, nil
+}

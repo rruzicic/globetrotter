@@ -120,3 +120,19 @@ func GetAccommodationsByHostId(ctx *gin.Context) {
 
 	ctx.JSON(200, accommodations)
 }
+
+func GetAccommodationById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	accommodation, err := services.GetAccommodationById(id)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, accommodation)
+}
