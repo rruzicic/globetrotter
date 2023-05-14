@@ -1,6 +1,8 @@
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from '../../config/interceptor'
+import CONSTANTS from '../../config/constants'
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -63,40 +65,47 @@ const ObjectDataGrid = () => {
 
     const search = () => {
         //TODO: call API for search
-        setObjects([
-            {
-                id: 1,
-                name: 'Village House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara',
-                image: '/home.jpg'
-            },
-            {
-                id: 2,
-                name: 'Mountain House',
-                priceNight: 15,
-                priceTotal: 75,
-                location: 'Tara',
-                image: '/home1.jpg'
-            },
-            {
-                id: 3,
-                name: 'City House',
-                priceNight: 30,
-                priceTotal: 150,
-                location: 'Tara',
-                image: '/home2.jpg'
-            },
-            {
-                id: 4,
-                name: 'Beach House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara',
-                image: '/home1.jpg'
-            },
-        ])
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/`)
+            .then((response) => {
+                console.log(response);
+                setObjects(response.data)
+            })
+
+
+        // setObjects([
+        //     {
+        //         id: 1,
+        //         name: 'Village House',
+        //         priceNight: 25,
+        //         priceTotal: 125,
+        //         location: 'Tara',
+        //         image: '/home.jpg'
+        //     },
+        //     {
+        //         id: 2,
+        //         name: 'Mountain House',
+        //         priceNight: 15,
+        //         priceTotal: 75,
+        //         location: 'Tara',
+        //         image: '/home1.jpg'
+        //     },
+        //     {
+        //         id: 3,
+        //         name: 'City House',
+        //         priceNight: 30,
+        //         priceTotal: 150,
+        //         location: 'Tara',
+        //         image: '/home2.jpg'
+        //     },
+        //     {
+        //         id: 4,
+        //         name: 'Beach House',
+        //         priceNight: 25,
+        //         priceTotal: 125,
+        //         location: 'Tara',
+        //         image: '/home1.jpg'
+        //     },
+        // ])
         console.log({
             startDate: startDateSP,
             endDate: endDateSP,
@@ -167,19 +176,19 @@ const ObjectDataGrid = () => {
                                             return (
                                                 <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
                                                     <TableCell>
-                                                        <img src={object.image} alt={object.name} height={'60px'} width={'auto'}/>
+                                                        <img src='/home.jpg' alt={object.name} height={'60px'} width={'auto'} />
                                                     </TableCell>
                                                     <TableCell>
                                                         {object.name}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.location}
+                                                        {object.location.city}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.priceNight}
+                                                        {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.priceTotal}
+                                                        {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
                                                         <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)}>
