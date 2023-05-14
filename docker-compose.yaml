@@ -7,7 +7,7 @@ services:
       - '4000:4000'
     depends_on:
       - account-service
-      - accomodation-service
+      - accommodation-service
       - feedback-service
       - reservation-service
       - search-service
