@@ -16,7 +16,9 @@ func (m *CustomError) Error() string {
 	return "Cannot cancel a reservation less than one day in advance error"
 }
 
-func CreateReservation(reservation models.Reservation) error {
+func CreateReservation(reservation models.Reservation) (*models.Reservation, error) {
+	obj_id := primitive.NewObjectIDFromTimestamp(time.Now())
+	reservation.Id = &obj_id
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
@@ -24,9 +26,9 @@ func CreateReservation(reservation models.Reservation) error {
 
 	if err != nil {
 		log.Print("Could not create reservation! err: ", err.Error())
-		return err
+		return nil, err
 	}
-	return nil
+	return &reservation, nil
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {

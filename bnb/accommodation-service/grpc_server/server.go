@@ -8,6 +8,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -81,6 +82,28 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 func (s *AccommodationServiceServer) TestConnection(ctx context.Context, req *pb.TestMessage) (*pb.TestMessage, error) {
 	log.Print("Hello from accommodation service, message is: ", req.GetMsg())
 	return req, nil
+}
+
+func (s *AccommodationServiceServer) AddReservationToAccommodation(ctx context.Context, req *pb.AddReservationToAccommodationRequest) (*pb.BoolAnswer, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetAccommodationId())
+	if err != nil {
+		log.Panic("Could not get accommodation by id: ", req.GetAccommodationId())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	primitive_res_id, err := primitive.ObjectIDFromHex(req.GetReservationId())
+	if err != nil {
+		log.Panic("Could not get id from reservation id. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+	accommodation.Reservations = append(accommodation.Reservations, &primitive_res_id)
+	if err := repos.UpdateAccommodation(*accommodation); err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	log.Print("Hello from add reservation serverside")
+	return &pb.BoolAnswer{Answer: true}, nil
 }
 
 func InitServer() {

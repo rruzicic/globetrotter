@@ -64,6 +64,21 @@ func GetAccommodationByHostId(id string) ([](*pb.Accommodation), error) {
 	return accomodations, nil
 }
 
+func AddReservationToAccommodation(acc_id string, res_id string) (*pb.BoolAnswer, error) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	boolAns, err := client.AddReservationToAccommodation(context.TODO(), &pb.AddReservationToAccommodationRequest{AccommodationId: acc_id, ReservationId: res_id})
+	if err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return boolAns, err
+	}
+
+	defer conn.Close()
+
+	return boolAns, nil
+}
+
 func TestConnection(msg string) {
 	conn, _ := connectToAccomodationService()
 	client := pb.NewAccommodationServiceClient(conn)
