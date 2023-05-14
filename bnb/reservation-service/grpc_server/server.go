@@ -8,6 +8,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -58,11 +59,35 @@ func (s *ReservationServiceServer) GetReservationsByAccommodationId(req *pb.Requ
 }
 
 func (s *ReservationServiceServer) GetActiveReservationsByUser(req *pb.RequestUserId, stream pb.ReservationService_GetActiveReservationsByUserServer) error {
+	reservations, err := services.GetActiveReservationsByUser(req.GetId())
+	if err != nil {
+		log.Panic("Could not get reservations for user id: ", req.GetId())
+		return err
+	}
+
+	for _, reservation := range reservations {
+		grpc_reservation := buildGRPCReservation(reservation)
+		if err := stream.Send(&grpc_reservation); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
 
 func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.RequestUserId, stream pb.ReservationService_GetFutureActiveReservationsByHostServer) error {
+	reservations, err := services.GetFutureActiveReservationsByHost(req.GetId())
+	if err != nil {
+		log.Panic("Could not get future active reservations by host with id: ", req.GetId())
+		return err
+	}
+
+	for _, reservation := range reservations {
+		grpc_reservation := buildGRPCReservation(reservation)
+		if err := stream.Send(&grpc_reservation); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

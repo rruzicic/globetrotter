@@ -65,6 +65,7 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 	accommodations, err := repos.GetAccommodationsByHostId(req.GetId())
 	if err != nil {
 		log.Panic("Could not get accommodations for host id: ", req.GetId())
+		return err
 	}
 
 	for _, accommodation := range accommodations {
