@@ -126,8 +126,8 @@ func SearchAccomodation(cityName string, guestNum int, startDate time.Time, endD
 	}
 	filter := bson.M{
 		"location.city":      bson.M{"$regex": cityName, "$options": "i"},
-		"availability.start": bson.M{"$gte": startDate},
-		"availability.end":   bson.M{"$lte": endDate},
+		"availability.start": bson.M{"$lte": startDate},
+		"availability.end":   bson.M{"$gte": endDate},
 		"guests":             bson.M{"$gte": guestNum},
 	}
 
