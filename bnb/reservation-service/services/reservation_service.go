@@ -88,17 +88,7 @@ func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) 
 }
 
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
-	reservations, err := repos.GetReservationsByUserId(id)
-	if err != nil {
-		return []models.Reservation{}, err
-	}
-	var activeReservations []models.Reservation
-	for _, reservation := range reservations {
-		if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
-			activeReservations = append(activeReservations, reservation)
-		}
-	}
-	return activeReservations, nil
+	return repos.GetActiveReservationsByUser(id)
 }
 
 func GetReservationsByHostId(id string) ([]models.Reservation, error) {
