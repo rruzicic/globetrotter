@@ -18,7 +18,7 @@ services:
       - '8081:8080'
       - '50051:50051'
     volumes:
-      - './bnb/account-service:/go/src/app'
+      - './bnb/accommodation-service:/go/src/app'
     depends_on:
       - mongo
 
