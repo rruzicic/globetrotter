@@ -96,13 +96,43 @@ func (s *AccommodationServiceServer) AddReservationToAccommodation(ctx context.C
 		log.Panic("Could not get id from reservation id. Error: ", err.Error())
 		return &pb.BoolAnswer{Answer: false}, err
 	}
+
 	accommodation.Reservations = append(accommodation.Reservations, &primitive_res_id)
 	if err := repos.UpdateAccommodation(*accommodation); err != nil {
 		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
 		return &pb.BoolAnswer{Answer: false}, err
 	}
 
-	log.Print("Hello from add reservation serverside")
+	return &pb.BoolAnswer{Answer: true}, nil
+}
+
+func (s *AccommodationServiceServer) RemoveReservationFromAccommodation(ctx context.Context, req *pb.AddReservationToAccommodationRequest) (*pb.BoolAnswer, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetAccommodationId())
+	if err != nil {
+		log.Panic("Could not get accommodation by id: ", req.GetAccommodationId())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	primitive_res_id, err := primitive.ObjectIDFromHex(req.GetReservationId())
+	if err != nil {
+		log.Panic("Could not get id from reservation id. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	i := 0
+	for index, res_id := range accommodation.Reservations {
+		if primitive_res_id == *res_id {
+			i = index
+			break
+		}
+	}
+
+	accommodation.Reservations = append(accommodation.Reservations[:i], accommodation.Reservations[i+1:]...)
+	if err := repos.UpdateAccommodation(*accommodation); err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
 	return &pb.BoolAnswer{Answer: true}, nil
 }
 

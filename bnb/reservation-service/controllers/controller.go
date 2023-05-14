@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ func CreateReservation(ctx *gin.Context) {
 
 	reservation, err := services.CreateReservation(reservationDTO)
 	if err != nil {
-		ctx.JSON(500, "Server Error")
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
 		return
 	}
 
@@ -141,7 +142,7 @@ func AddReservationToAccommodation(ctx *gin.Context) {
 	boolAns, err := grpcclient.AddReservationToAccommodation(accommodation_id, reservation_id)
 	if err != nil {
 		log.Panic("Error adding reservation to accommodation. Error: ", err.Error())
-		ctx.JSON(500, "Server Error")
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
 		return
 	}
 

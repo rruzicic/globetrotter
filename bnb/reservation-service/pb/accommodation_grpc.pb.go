@@ -26,6 +26,7 @@ type AccommodationServiceClient interface {
 	GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error)
 	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
 	AddReservationToAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
+	RemoveReservationFromAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
 }
 
 type accommodationServiceClient struct {
@@ -95,6 +96,15 @@ func (c *accommodationServiceClient) AddReservationToAccommodation(ctx context.C
 	return out, nil
 }
 
+func (c *accommodationServiceClient) RemoveReservationFromAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error) {
+	out := new(BoolAnswer)
+	err := c.cc.Invoke(ctx, "/pb.AccommodationService/RemoveReservationFromAccommodation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -103,6 +113,7 @@ type AccommodationServiceServer interface {
 	GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error)
 	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
 	AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
+	RemoveReservationFromAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -121,6 +132,9 @@ func (UnimplementedAccommodationServiceServer) GetAccommodationByHostId(*Request
 }
 func (UnimplementedAccommodationServiceServer) AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddReservationToAccommodation not implemented")
+}
+func (UnimplementedAccommodationServiceServer) RemoveReservationFromAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveReservationFromAccommodation not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -210,6 +224,24 @@ func _AccommodationService_AddReservationToAccommodation_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_RemoveReservationFromAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddReservationToAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).RemoveReservationFromAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AccommodationService/RemoveReservationFromAccommodation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).RemoveReservationFromAccommodation(ctx, req.(*AddReservationToAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +260,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddReservationToAccommodation",
 			Handler:    _AccommodationService_AddReservationToAccommodation_Handler,
+		},
+		{
+			MethodName: "RemoveReservationFromAccommodation",
+			Handler:    _AccommodationService_RemoveReservationFromAccommodation_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

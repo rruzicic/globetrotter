@@ -2,75 +2,47 @@ import { Container } from "@mui/material";
 import MyReservationCard from "../components/myReservations/MyReservationCard";
 import { axiosInstance } from "../config/interceptor"
 import AuthContext from "../config/authContext"
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import CONSTANTS from "../config/constants";
 
 const MyReservationsPage = () => {
     const authCtx = useContext(AuthContext)
+    const [data, setData] = useState(null)
 
     useEffect(() => {
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
             .then((response) => {
-                console.log(response.data.id);
-                // axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/user/${response.data.id}`)
-                //     .then((data) => {
-                //         console.log(data);
-                //     })
+                axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/user/${response.data.id}`)
+                    .then((ret) => {
+                        setData(ret.data)
+                        console.log(ret.data);
+                    })
             })
     }, [])
 
-    const reservations = [
-        {
-            reservationId: '1',
-            objectId: '1',
-            start: new Date(),
-            end: new Date(),
-            guestNum: '8',
-            totalPrice: '120',
-            objectName: "Village home",
-            image: '/home.jpg'
-        },
-        {
-            reservationId: '2',
-            objectId: '2',
-            start: new Date(),
-            end: new Date(),
-            guestNum: '8',
-            totalPrice: '120',
-            objectName: "Village home",
-            image: '/home1.jpg'
-        },
-        {
-            reservationId: '3',
-            objectId: '3',
-            start: new Date(),
-            end: new Date(),
-            guestNum: '8',
-            totalPrice: '120',
-            objectName: "Village home",
-            image: '/home2.jpg'
-        },
-        {
-            reservationId: '4',
-            objectId: '4',
-            start: new Date(),
-            end: new Date(),
-            guestNum: '8',
-            totalPrice: '120',
-            objectName: "Village home",
-            image: '/home.jpg'
-        },
-    ]
-
     const handleCancel = (id) => {
-        console.log('Cancel res with id ' + id);
+        axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${id}`)
+            .then((response) => {
+                console.log(response);
+            })
     }
 
     return (
         <Container sx={{ marginTop: '2rem' }}>
             {
-                reservations.map((reservation) => {
-                    return (<MyReservationCard key={reservation.reservationId} reservationId={reservation.reservationId} handleCancel={handleCancel} objectId={reservation.objectId} start={reservation.start} end={reservation.end} guestNum={reservation.guestNum} totalPrice={reservation.totalPrice} objectName={reservation.objectId} image={reservation.image} />)
+                data && data.map((reservation) => {
+                    return (
+                        <MyReservationCard key={reservation.id}
+                            reservationId={reservation.id}
+                            handleCancel={handleCancel}
+                            objectId={reservation.accommodationId}
+                            start={reservation.dateInterval.start}
+                            end={reservation.dateInterval.end}
+                            guestNum={reservation.numOfGuests}
+                            totalPrice={reservation.totalPrice}
+                            status={reservation.isApproved}
+                            image='/home.jpg' />
+                    )
                 })
             }
         </Container>
