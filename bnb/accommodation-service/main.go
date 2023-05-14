@@ -10,8 +10,8 @@ import (
 
 func main() {
 	repos.Connect()
+	go ginSetup()
 	grpc_server.InitServer()
-	ginSetup()
 	repos.Disconnect()
 }
 
