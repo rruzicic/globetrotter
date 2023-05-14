@@ -2,18 +2,18 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
 )
 
 func CreateReservation(ctx *gin.Context) {
-	var reservation models.Reservation
-	if err := ctx.ShouldBindJSON(&reservation); err != nil {
+	var reservationDTO dtos.CreateReservationDTO
+	if err := ctx.ShouldBindJSON(&reservationDTO); err != nil {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
 
-	retval, err := services.CreateReservation(reservation)
+	retval, err := services.CreateReservation(reservationDTO)
 	if err != nil {
 		ctx.JSON(500, "Server Error")
 		return

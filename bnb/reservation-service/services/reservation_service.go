@@ -4,15 +4,43 @@ import (
 	"log"
 	"time"
 
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateReservation(reservation models.Reservation) (bool, error) {
+func CreateReservation(reservationDTO dtos.CreateReservationDTO) (bool, error) {
+	acc_id, err := primitive.ObjectIDFromHex(reservationDTO.AccommodationId)
+	if err != nil {
+		return false, err
+	}
+
+	user_id, err := primitive.ObjectIDFromHex(reservationDTO.UserId)
+	if err != nil {
+		return false, err
+	}
+
+	reservation := models.Reservation{
+		AccommodationId: &acc_id,
+		UserId:          &user_id,
+		DateInterval:    reservationDTO.DateInterval,
+		NumOfGuests:     reservationDTO.NumOfGuests,
+		IsApproved:      false,
+		TotalPrice:      0.0,
+	}
+
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
 		return false, err
+	}
+
+	if accommodation.PriceForPerson {
+		reservation.TotalPrice = float32(reservation.NumOfGuests) * accommodation.Amount
+	} else {
+		total_days := reservation.DateInterval.Start.Sub(reservation.DateInterval.End).Hours() / 24
+		reservation.TotalPrice = float32(total_days) * accommodation.Amount
 	}
 
 	// check if there are overlapping active reservations
