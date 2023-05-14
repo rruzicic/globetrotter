@@ -1,11 +1,11 @@
-import { Button, Container } from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import { Form } from "react-final-form";
 import REGEX from "../regex";
 import RegistrationForm from "../components/registration/RegistrationForm";
 import CONSTANTS from "../config/constants";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AuthContext from "../config/authContext";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
@@ -52,8 +52,7 @@ const RegistrationPage = () => {
     const onSubmit = (data) => {
         const { confirmPassword, ...newData } = data;
         newData.zip = parseInt(newData.zip);
-
-        axios.post(`${CONSTANTS.GATEWAY}/user/register/guest`, newData)
+        axios.post(`${CONSTANTS.GATEWAY}/user/register/${role ? 'host' : 'guest'}`, newData)
             .catch((err) => {
                 console.error(err);
                 return
@@ -65,6 +64,11 @@ const RegistrationPage = () => {
             })
     }
 
+    const [role, setRole] = useState(false)
+    const handleRole = () => {
+        setRole((prev) => !prev)
+    }
+
     return (
         <>
             <Form
@@ -74,6 +78,12 @@ const RegistrationPage = () => {
                     <form onSubmit={handleSubmit} noValidate>
                         <Container sx={{ display: 'grid', placeItems: 'center', width: '90%' }}>
                             <RegistrationForm />
+                            <Stack direction={"row"}>
+                                <Typography variant="h6">
+                                    I'm a host:
+                                </Typography>
+                                <input type="checkbox" onChange={handleRole} />
+                            </Stack>
                             <Button variant="contained" color="primary" type='submit'>
                                 Submit
                             </Button>

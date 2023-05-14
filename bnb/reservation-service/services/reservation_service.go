@@ -53,7 +53,7 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 	if accommodation.PriceForPerson {
 		reservation.TotalPrice = float32(reservation.NumOfGuests) * accommodation.Amount
 	} else {
-		total_days := reservation.DateInterval.Start.Sub(reservation.DateInterval.End).Hours() / 24
+		total_days := reservation.DateInterval.End.Sub(reservation.DateInterval.Start).Hours() / 24
 		reservation.TotalPrice = float32(total_days) * accommodation.Amount
 	}
 

@@ -54,12 +54,6 @@ const ObjectDataGrid = () => {
             id: '4',
             align: 'left',
             minWidth: '150px',
-            label: 'Total price',
-        },
-        {
-            id: '5',
-            align: 'left',
-            minWidth: '150px',
             label: 'User Action',
         }
     ]
@@ -119,6 +113,14 @@ const ObjectDataGrid = () => {
                 dto.userId = response.data.id
                 axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/`, dto)
                     .then((response) => {
+                        axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}/reservation/${response.data.id}`)
+                            .catch((e) => {
+                                console.error(e)
+                                return
+                            })
+                            .then((response) => {
+                                console.log(response);
+                            })
                     })
             })
     }
@@ -166,9 +168,6 @@ const ObjectDataGrid = () => {
                                                     </TableCell>
                                                     <TableCell>
                                                         {object.location.city}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
                                                         {object.unitPrice.amount.toString()}

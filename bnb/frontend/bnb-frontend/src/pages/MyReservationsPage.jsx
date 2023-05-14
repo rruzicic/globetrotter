@@ -26,7 +26,6 @@ const MyReservationsPage = () => {
                     })
             })
     }, [])
-
     const handleCancel = (id) => {
         axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${id}`)
             .catch((error) => {
@@ -34,6 +33,7 @@ const MyReservationsPage = () => {
                 return
             })
             .then((response) => {
+                window.location.reload()
             })
     }
 

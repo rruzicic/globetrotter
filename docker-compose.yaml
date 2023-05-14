@@ -8,11 +8,12 @@ services:
     depends_on:
       - account-service
       - accommodation-service
-      - feedback-service
+      # - feedback-service
       - reservation-service
-      - search-service
+      # - search-service
 
   accommodation-service:
+    restart: on-failure:3
     build: './bnb/accommodation-service'
     ports:
       - '8081:8080'
@@ -23,6 +24,7 @@ services:
       - mongo
 
   account-service:
+      restart: on-failure:3
       build: './bnb/account-service'
       ports:
         - '8082:8080'
@@ -32,17 +34,19 @@ services:
       depends_on:
         - mongo
 
-  feedback-service:
-    build: './bnb/feedback-service'
-    ports:
-      - '8083:8080'
-      - '50053:50051'
-    volumes:
-      - './bnb/feedback-service:/go/src/app'
-    depends_on:
-      - mongo
+  # feedback-service:
+  #   restart: on-failure:3
+  #   build: './bnb/feedback-service'
+  #   ports:
+  #     - '8083:8080'
+  #     - '50053:50051'
+  #   volumes:
+  #     - './bnb/feedback-service:/go/src/app'
+  #   depends_on:
+  #     - mongo
 
   reservation-service:
+    restart: on-failure:3
     build: './bnb/reservation-service'
     ports:
       - '8084:8080'
@@ -52,15 +56,16 @@ services:
     depends_on:
       - mongo
     
-  search-service:
-    build: './bnb/search-service'
-    ports:
-      - '8085:8080'
-      - '50055:50051'
-    volumes:
-      - './bnb/search-service:/go/src/app'
-    depends_on:
-      - mongo
+  # search-service:
+  #   restart: on-failure:3
+  #   build: './bnb/search-service'
+  #   ports:
+  #     - '8085:8080'
+  #     - '50055:50051'
+  #   volumes:
+  #     - './bnb/search-service:/go/src/app'
+  #   depends_on:
+  #     - mongo
 
   # flights-backend:
   #   build: './flights/backend'
