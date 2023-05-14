@@ -1,5 +1,6 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext } from "react";
+import { axiosInstance } from "./interceptor";
 
 const AuthContext = createContext({
     token: "",
@@ -8,7 +9,8 @@ const AuthContext = createContext({
     logout: () => { },
     isUser: () => { },
     isHost: () => { },
-    userEmail: () => { }
+    userEmail: () => { },
+    userId: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -32,7 +34,6 @@ export const AuthContextProvider = ({ children }) => {
 
     const loginHandler = (token) => {
         setToken(token);
-        console.log('here');
         localStorage.setItem("bnb_jwt", token);
     };
 
@@ -43,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
 
     const isUserHandler = () => {
         if (token == null) return null;
-        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "USER") return true;
+        if (jwt_decode(localStorage.getItem("bnb_jwt")).role === "GUEST") return true;
         return false;
     }
     const isHostHandler = () => {
@@ -56,6 +57,13 @@ export const AuthContextProvider = ({ children }) => {
         return jwt_decode(localStorage.getItem("bnb_jwt")).email
     }
 
+    const userIdHandler = () => {
+        axiosInstance.get(`http://localhost:4000/user/email/${userEmailHandler()}`)
+            .then((response) => {
+                return response.data.id;
+            })
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -63,7 +71,8 @@ export const AuthContextProvider = ({ children }) => {
         isHost: isHostHandler,
         login: loginHandler,
         logout: logoutHandler,
-        userEmail: userEmailHandler
+        userEmail: userEmailHandler,
+        userId: userIdHandler
     };
 
     return (

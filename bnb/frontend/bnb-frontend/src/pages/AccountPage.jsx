@@ -9,6 +9,7 @@ const AccountPage = () => {
     const [update, setUpdate] = useState(false)
     const [userInfo, setUserInfo] = useState()
     const authCtx = useContext(AuthContext)
+
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/user/email/${authCtx.userEmail()}`)
             .catch((error) => {
@@ -16,7 +17,6 @@ const AccountPage = () => {
                 return
             })
             .then((response) => {
-                console.log(response);
                 setUserInfo(response.data)
             })
     }, [])

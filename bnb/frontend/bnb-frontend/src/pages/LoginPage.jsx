@@ -23,7 +23,6 @@ const LoginPage = () => {
             .then((response) => {
                 if (response !== undefined) {
                     authCtx.login(response.data)
-                    console.log(response.data);
                     navigate('/')
                 }
             })
