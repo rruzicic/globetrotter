@@ -22,15 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	RegisterHost(ctx context.Context, in *UserSignUpRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	RegisterGuest(ctx context.Context, in *UserSignUpRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	VerifyToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*BooleanReturn, error)
 	GetUserById(ctx context.Context, in *UserRequestId, opts ...grpc.CallOption) (*UserResponse, error)
 	GetUserByEmail(ctx context.Context, in *UserRequestEmail, opts ...grpc.CallOption) (*UserResponse, error)
 	GetUsers(ctx context.Context, in *UserRequestPagination, opts ...grpc.CallOption) (UserService_GetUsersClient, error)
 	UpdateUser(ctx context.Context, in *UserUpdateRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	DeleteUser(ctx context.Context, in *UserRequestId, opts ...grpc.CallOption) (*UserResponse, error)
 	IncrementCancellationsCounter(ctx context.Context, in *UserRequestId, opts ...grpc.CallOption) (*UserResponse, error)
+	VerifyToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*BooleanReturn, error)
 }
 
 type userServiceClient struct {
@@ -39,33 +37,6 @@ type userServiceClient struct {
 
 func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
-}
-
-func (c *userServiceClient) RegisterHost(ctx context.Context, in *UserSignUpRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/pb.UserService/RegisterHost", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) RegisterGuest(ctx context.Context, in *UserSignUpRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/pb.UserService/RegisterGuest", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) VerifyToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*BooleanReturn, error) {
-	out := new(BooleanReturn)
-	err := c.cc.Invoke(ctx, "/pb.UserService/VerifyToken", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *userServiceClient) GetUserById(ctx context.Context, in *UserRequestId, opts ...grpc.CallOption) (*UserResponse, error) {
@@ -145,19 +116,26 @@ func (c *userServiceClient) IncrementCancellationsCounter(ctx context.Context, i
 	return out, nil
 }
 
+func (c *userServiceClient) VerifyToken(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*BooleanReturn, error) {
+	out := new(BooleanReturn)
+	err := c.cc.Invoke(ctx, "/pb.UserService/VerifyToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	RegisterHost(context.Context, *UserSignUpRequest) (*UserResponse, error)
-	RegisterGuest(context.Context, *UserSignUpRequest) (*UserResponse, error)
-	VerifyToken(context.Context, *TokenRequest) (*BooleanReturn, error)
 	GetUserById(context.Context, *UserRequestId) (*UserResponse, error)
 	GetUserByEmail(context.Context, *UserRequestEmail) (*UserResponse, error)
 	GetUsers(*UserRequestPagination, UserService_GetUsersServer) error
 	UpdateUser(context.Context, *UserUpdateRequest) (*UserResponse, error)
 	DeleteUser(context.Context, *UserRequestId) (*UserResponse, error)
 	IncrementCancellationsCounter(context.Context, *UserRequestId) (*UserResponse, error)
+	VerifyToken(context.Context, *TokenRequest) (*BooleanReturn, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -165,15 +143,6 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) RegisterHost(context.Context, *UserSignUpRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterHost not implemented")
-}
-func (UnimplementedUserServiceServer) RegisterGuest(context.Context, *UserSignUpRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterGuest not implemented")
-}
-func (UnimplementedUserServiceServer) VerifyToken(context.Context, *TokenRequest) (*BooleanReturn, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
-}
 func (UnimplementedUserServiceServer) GetUserById(context.Context, *UserRequestId) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
@@ -192,6 +161,9 @@ func (UnimplementedUserServiceServer) DeleteUser(context.Context, *UserRequestId
 func (UnimplementedUserServiceServer) IncrementCancellationsCounter(context.Context, *UserRequestId) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IncrementCancellationsCounter not implemented")
 }
+func (UnimplementedUserServiceServer) VerifyToken(context.Context, *TokenRequest) (*BooleanReturn, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
+}
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -203,60 +175,6 @@ type UnsafeUserServiceServer interface {
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
-}
-
-func _UserService_RegisterHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserSignUpRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).RegisterHost(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.UserService/RegisterHost",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).RegisterHost(ctx, req.(*UserSignUpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_RegisterGuest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserSignUpRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).RegisterGuest(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.UserService/RegisterGuest",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).RegisterGuest(ctx, req.(*UserSignUpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).VerifyToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.UserService/VerifyToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).VerifyToken(ctx, req.(*TokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -370,6 +288,24 @@ func _UserService_IncrementCancellationsCounter_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).VerifyToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserService/VerifyToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).VerifyToken(ctx, req.(*TokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -377,18 +313,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "RegisterHost",
-			Handler:    _UserService_RegisterHost_Handler,
-		},
-		{
-			MethodName: "RegisterGuest",
-			Handler:    _UserService_RegisterGuest_Handler,
-		},
-		{
-			MethodName: "VerifyToken",
-			Handler:    _UserService_VerifyToken_Handler,
-		},
 		{
 			MethodName: "GetUserById",
 			Handler:    _UserService_GetUserById_Handler,
@@ -408,6 +332,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IncrementCancellationsCounter",
 			Handler:    _UserService_IncrementCancellationsCounter_Handler,
+		},
+		{
+			MethodName: "VerifyToken",
+			Handler:    _UserService_VerifyToken_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
