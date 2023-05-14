@@ -16,7 +16,7 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 
 	_, err := accommodationsCollection.InsertOne(context.TODO(), accommodation)
 	if err != nil {
-		log.Panic("Could not save Accommodation because: ", err.Error())
+		log.Println("Could not save Accommodation because: ", err.Error())
 		return err
 	}
 	return nil
@@ -27,14 +27,14 @@ func GetAllAccommodations() ([]models.Accommodation, error) {
 	cursor, err := accommodationsCollection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
-		log.Panic("Could not get all accommodations")
+		log.Println("Could not get all accommodations")
 		return nil, err
 	}
 
 	for cursor.Next(context.TODO()) {
 		var accommodation models.Accommodation
 		if err := cursor.Decode(&accommodation); err != nil {
-			log.Panic("Could not decode accommodation from cursor")
+			log.Println("Could not decode accommodation from cursor")
 			return nil, err
 		}
 
@@ -49,7 +49,7 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 
 	objID, err := primitive.ObjectIDFromHex(accommodation.Id.Hex())
 	if err != nil {
-		log.Panic("Could not convert accommodation hex to id")
+		log.Println("Could not convert accommodation hex to id")
 		return err
 	}
 
@@ -65,8 +65,8 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 	},
 	}
 
-	if _, err := accommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
-		log.Panic("Could not update accommodation")
+	if _, err := accommodationsCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		log.Println("Could not update accommodation")
 		return err
 	}
 
@@ -76,7 +76,7 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 func GetAccommodationById(id string) (*models.Accommodation, error) {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Panic("Could not convert accommodation hex to id")
+		log.Println("Could not convert accommodation hex to id")
 		return nil, err
 	}
 
@@ -92,7 +92,7 @@ func GetAccommodationById(id string) (*models.Accommodation, error) {
 func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 	host_id, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Panic("Could not get user id from hex: ", id)
+		log.Println("Could not get user id from hex: ", id)
 		return nil, err
 	}
 
@@ -100,7 +100,7 @@ func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 	filter := bson.M{"user": bson.M{"$eq": host_id}}
 	cursor, err := accommodationsCollection.Find(context.TODO(), filter)
 	if err != nil {
-		log.Panic("Could not get cursor for accommodations. Error: ", err)
+		log.Println("Could not get cursor for accommodations. Error: ", err)
 		return nil, err
 	}
 
@@ -109,7 +109,7 @@ func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 		err := cursor.Decode(&accommodation)
 
 		if err != nil {
-			log.Panic("Could not decode accommodation from cursor. Error: ", err)
+			log.Println("Could not decode accommodation from cursor. Error: ", err)
 			return nil, err
 		}
 
@@ -120,54 +120,24 @@ func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
 }
 
 func SearchAccomodation(cityName string, guestNum int, startDate time.Time, endDate time.Time) ([]models.Accommodation, error) {
-	startOfDay := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, time.UTC)
-	endOfDay := startOfDay.Add(24 * time.Hour)
-	startOfDay1 := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 0, 0, 0, 0, time.UTC)
-	endOfDay1 := startOfDay1.Add(24 * time.Hour)
-
+	minTime := time.Time{}
+	if endDate == minTime {
+		endDate = time.Unix(1<<63-62135596801, 999999999)
+	}
 	filter := bson.M{
-		"city": bson.M{"$regex": cityName, "$options": "i"},
-	}
-	if guestNum != 0 {
-		filter["$and"] = append(filter["$and"].([]bson.M), bson.M{"guests": bson.M{"$gt": guestNum}})
-	}
-
-	if !startDate.IsZero() || !endDate.IsZero() {
-		andClauses := make([]bson.M, 0)
-
-		if !startDate.IsZero() {
-			andClauses = append(andClauses, bson.M{
-				"start": bson.M{
-					"$gte": startOfDay,
-					"$lte": endOfDay,
-				},
-			})
-		}
-
-		if !endDate.IsZero() {
-			andClauses = append(andClauses, bson.M{
-				"end": bson.M{
-					"$gte": startOfDay1,
-					"$lte": endOfDay1,
-				},
-			})
-		}
-
-		andClauses = append(andClauses, bson.M{
-			"city":   bson.M{"$regex": cityName, "$options": "i"},
-			"guests": bson.M{"$gt": guestNum},
-		})
-
-		filter["$and"] = andClauses
+		"location.city":      bson.M{"$regex": cityName, "$options": "i"},
+		"availability.start": bson.M{"$gte": startDate},
+		"availability.end":   bson.M{"$lte": endDate},
+		"guests":             bson.M{"$gte": guestNum},
 	}
 
-	cursor, err := accommodationsCollection.Find(context.Background(), filter)
+	cursor, err := accommodationsCollection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}
 
 	var accommodations []models.Accommodation
-	if err := cursor.All(context.Background(), &accommodations); err != nil {
+	if err := cursor.All(context.TODO(), &accommodations); err != nil {
 		return nil, err
 	}
 

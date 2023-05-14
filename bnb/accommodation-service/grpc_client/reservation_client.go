@@ -15,7 +15,7 @@ func connectToReservationService() (*grpc.ClientConn, error) {
 	conn, err := grpc.Dial("reservation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
-		log.Fatalf("Could not connect to reservation service")
+		log.Panicf("Could not connect to reservation service")
 		return nil, err
 	}
 

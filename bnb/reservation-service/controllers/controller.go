@@ -1,14 +1,18 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
 )
 
 func CreateReservation(ctx *gin.Context) {
 	var reservationDTO dtos.CreateReservationDTO
 	if err := ctx.ShouldBindJSON(&reservationDTO); err != nil {
+		log.Print(err.Error())
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -118,4 +122,10 @@ func GetReservationsByAccommodationId(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, reservations)
+}
+
+func TestConnection(ctx *gin.Context) {
+	id := ctx.Param("msg")
+	log.Print(id)
+	grpcclient.TestConnection(id)
 }

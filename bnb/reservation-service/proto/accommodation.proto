@@ -42,7 +42,12 @@ message RequestAccommodationByHostId {
     string id = 1;
 }
 
+message TestMessage {
+    string msg = 1;
+}
+
 service AccommodationService {
+    rpc TestConnection(TestMessage) returns (TestMessage) {}
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
     rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
 }

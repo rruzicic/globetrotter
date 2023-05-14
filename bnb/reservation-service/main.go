@@ -29,6 +29,7 @@ func ginSetup() {
 	res.DELETE("/:id", controllers.DeleteReservation)
 	res.POST("/approve/:id", controllers.ApproveReservation)
 	res.POST("/reject/:id", controllers.RejectReservation)
+	res.GET("/test/:msg", controllers.TestConnection)
 
 	r.Run(":8080")
 }

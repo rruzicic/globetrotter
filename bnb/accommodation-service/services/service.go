@@ -2,6 +2,7 @@ package services
 
 import (
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/dtos"
@@ -106,8 +107,9 @@ func UpdateAvailabilityInterval(updateAvailabilityDTO dtos.UpdateAvailabilityDTO
 	return true, nil
 }
 
-func SearchAccomodation(cityName string, guestNum int, startDate string, endDate string) ([]models.Accommodation, error) {
+func SearchAccomodation(cityName string, guestNum string, startDate string, endDate string) ([]models.Accommodation, error) {
 	format := "2006-01-02"
+	guests := 0
 	startTime, err := time.Parse(format, startDate)
 	if err != nil {
 		return []models.Accommodation{}, err
@@ -116,7 +118,11 @@ func SearchAccomodation(cityName string, guestNum int, startDate string, endDate
 	if err != nil {
 		return []models.Accommodation{}, err
 	}
-	return repos.SearchAccomodation(cityName, guestNum, startTime, endTime)
+	guests, err = strconv.Atoi(guestNum)
+	if err != nil {
+		return []models.Accommodation{}, err
+	}
+	return repos.SearchAccomodation(cityName, guests, startTime, endTime)
 }
 
 func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
