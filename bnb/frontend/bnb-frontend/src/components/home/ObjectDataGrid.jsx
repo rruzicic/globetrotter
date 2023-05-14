@@ -1,8 +1,9 @@
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from '../../config/interceptor'
 import CONSTANTS from '../../config/constants'
+import AuthContext from "../../config/authContext";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -70,42 +71,6 @@ const ObjectDataGrid = () => {
                 console.log(response);
                 setObjects(response.data)
             })
-
-
-        // setObjects([
-        //     {
-        //         id: 1,
-        //         name: 'Village House',
-        //         priceNight: 25,
-        //         priceTotal: 125,
-        //         location: 'Tara',
-        //         image: '/home.jpg'
-        //     },
-        //     {
-        //         id: 2,
-        //         name: 'Mountain House',
-        //         priceNight: 15,
-        //         priceTotal: 75,
-        //         location: 'Tara',
-        //         image: '/home1.jpg'
-        //     },
-        //     {
-        //         id: 3,
-        //         name: 'City House',
-        //         priceNight: 30,
-        //         priceTotal: 150,
-        //         location: 'Tara',
-        //         image: '/home2.jpg'
-        //     },
-        //     {
-        //         id: 4,
-        //         name: 'Beach House',
-        //         priceNight: 25,
-        //         priceTotal: 125,
-        //         location: 'Tara',
-        //         image: '/home1.jpg'
-        //     },
-        // ])
         console.log({
             startDate: startDateSP,
             endDate: endDateSP,
@@ -113,6 +78,8 @@ const ObjectDataGrid = () => {
             guestNumber: guestNumberSP
         });
     }
+
+    const authCtx = useContext(AuthContext)
 
     const handleLocationChange = (event) => {
         setLocationSP(event.target.value)
@@ -137,7 +104,26 @@ const ObjectDataGrid = () => {
 
     const handleBook = (id, event) => {
         event.stopPropagation()
-        console.log('Sent request for object with id: ' + id);
+        let dto = {
+            accommodationId: id,
+            userId: "",
+            dateInterval: {
+                start: new Date(startDateSP).toISOString(),
+                end: new Date(endDateSP).toISOString()
+            },
+            numOfGuests: parseInt(guestNumberSP),
+            totalPrice: 0
+        }
+        axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .then((response) => {
+                console.log(response.data.id);
+                dto.userId = response.data.id
+                console.log(dto);
+                axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/`, dto)
+                    .then((response) => {
+                        console.log(response);
+                    })
+            })
     }
 
     return (
