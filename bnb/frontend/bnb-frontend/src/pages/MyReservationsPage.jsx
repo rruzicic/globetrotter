@@ -26,7 +26,6 @@ const MyReservationsPage = () => {
                     })
             })
     }, [])
-    //TODO: 1.9
     const handleCancel = (id) => {
         axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${id}`)
             .catch((error) => {

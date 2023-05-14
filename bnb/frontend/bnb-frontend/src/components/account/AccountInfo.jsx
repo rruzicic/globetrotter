@@ -12,7 +12,6 @@ const AccountInfo = ({ setUpdate, userInfo }) => {
     const handleChangeState = () => {
         setUpdate(true)
     }
-    //TODO: 1.4
     const handleDeleteAccount = () => {
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
             .catch((error) => {

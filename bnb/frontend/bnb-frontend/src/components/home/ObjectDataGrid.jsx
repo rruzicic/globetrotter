@@ -104,7 +104,6 @@ const ObjectDataGrid = () => {
             numOfGuests: parseInt(guestNumberSP),
             totalPrice: 0
         }
-        //TODO: 1.7
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
             .catch((error) => {
                 console.error(error)

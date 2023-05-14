@@ -52,7 +52,6 @@ const RegistrationPage = () => {
     const onSubmit = (data) => {
         const { confirmPassword, ...newData } = data;
         newData.zip = parseInt(newData.zip);
-        //TODO: 1.1
         axios.post(`${CONSTANTS.GATEWAY}/user/register/${role ? 'host' : 'guest'}`, newData)
             .catch((err) => {
                 console.error(err);
