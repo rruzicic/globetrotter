@@ -6,6 +6,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/account-service/services"
@@ -40,12 +41,6 @@ func userToUserResponse(user *models.User) *pb.UserResponse {
 			CancellationsCounter: int32(user.CancellationsCounter),
 		},
 	}
-}
-
-// implement the methods from proto file here
-func (s *server) CreateUser(ctx context.Context, in *pb.UserSignUpRequest) (*pb.UserResponse, error) {
-	// TODO: implement
-	return nil, nil
 }
 
 func (s *server) GetUserById(ctx context.Context, in *pb.UserRequestId) (*pb.UserResponse, error) {
@@ -94,6 +89,10 @@ func (s *server) IncrementCancellationsCounter(ctx context.Context, in *pb.UserR
 		return &pb.UserResponse{}, err
 	}
 	return userToUserResponse(user), nil
+}
+
+func (s *server) VerifyToken(ctx context.Context, in *pb.TokenRequest) (*pb.BooleanReturn, error) {
+	return &pb.BooleanReturn{Boolean: jwt.IsTokenValid(in.Token, in.Role)}, nil
 }
 
 func InitServer() {

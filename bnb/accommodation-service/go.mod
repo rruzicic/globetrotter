@@ -3,7 +3,7 @@ module github.com/rruzicic/globetrotter/bnb/accommodation-service
 go 1.20
 
 require (
-	google.golang.org/grpc v1.54.0
+	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
 
@@ -40,10 +40,10 @@ require (
 
 require (
 	github.com/gin-gonic/gin v1.9.0
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	go.mongodb.org/mongo-driver v1.11.6
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
+	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
 )
