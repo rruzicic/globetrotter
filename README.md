@@ -22,11 +22,17 @@ type Accommodation struct {
 ```
 Account model
 ```go
-type Model struct {
-	Id         *primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	CreatedOn  int                 `json:"createdOn" bson:"created_on"`
-	ModifiedOn int                 `json:"modifiedOn" bson:"modified_on"`
-	DeletedOn  int                 `json:"deletedOn" bson:"deleted_on"`
+type User struct {
+	Model                `bson:",inline"`
+	FirstName            string `json:"firstName" bson:"first_name"`
+	LastName             string `json:"lastName" bson:"last_name"`
+	EMail                string `json:"email" bson:"email"`
+	Password             string `json:"password" bson:"password"`
+	Role                 string `json:"role" bson:"role"`
+	SuperHost            bool   `json:"superHost" bson:"super_host"`
+	CancellationsCounter int    `json:"cancellationsCounter" bson:"cancellations_counter"`
+	RatingStatus
+	Address
 }
 ```
 
