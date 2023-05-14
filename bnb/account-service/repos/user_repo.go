@@ -15,9 +15,6 @@ func CreateUser(user models.User) (*models.User, error) {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
 
-	if _, err := GetUserByEmail(user.EMail); err != nil {
-		return &models.User{}, err
-	}
 	_, err := usersCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
