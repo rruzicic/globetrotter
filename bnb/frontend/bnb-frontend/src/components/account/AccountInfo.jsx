@@ -1,8 +1,10 @@
 import { Grid, Typography, Button, Stack } from "@mui/material";
 import theme from "../../theme";
-import {useNavigate} from "react-router"
+import { useNavigate } from "react-router"
 import { useContext } from "react";
 import AuthContext from "../../config/authContext";
+import { axiosInstance } from "../../config/interceptor";
+import CONSTANTS from "../../config/constants";
 
 const AccountInfo = ({ setUpdate, userInfo }) => {
     const navigate = useNavigate()
@@ -10,10 +12,24 @@ const AccountInfo = ({ setUpdate, userInfo }) => {
     const handleChangeState = () => {
         setUpdate(true)
     }
+    //TODO: 1.4
     const handleDeleteAccount = () => {
-        //TODO: call api to delete
-        console.log(userInfo);
-        authCtx.logout()
+        axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
+            .then((response) => {
+                axiosInstance.delete(`${CONSTANTS.GATEWAY}/user/delete/${response.data.id}`)
+                    .catch((e) => {
+                        console.error(e)
+                        return
+                    })
+                    .then((response) => {
+                        authCtx.logout()
+                    })
+            })
+
         navigate('/')
     }
 
