@@ -173,3 +173,13 @@ func RejectReservation(id string) error {
 	reservation.IsApproved = false
 	return repos.UpdateReservation(*reservation)
 }
+
+func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
+	reservations, err := repos.GetReservationsByAccommodationId(id)
+	if err != nil {
+		log.Panic("Could not get reservations by accommodation id: ", id)
+		return nil, err
+	}
+
+	return reservations, err
+}

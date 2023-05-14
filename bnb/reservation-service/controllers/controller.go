@@ -103,3 +103,19 @@ func RejectReservation(ctx *gin.Context) {
 
 	ctx.JSON(200, "Reservation Rejected")
 }
+
+func GetReservationsByAccommodationId(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	reservations, err := services.GetReservationsByAccommodationId(id)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, reservations)
+}
