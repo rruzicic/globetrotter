@@ -65,7 +65,7 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 	},
 	}
 
-	if _, err := accommodationsCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := accommodationsCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Println("Could not update accommodation")
 		return err
 	}

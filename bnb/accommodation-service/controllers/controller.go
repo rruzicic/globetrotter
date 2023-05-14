@@ -64,6 +64,7 @@ func UpdatePriceInterval(ctx *gin.Context) {
 
 	if retval == true {
 		ctx.JSON(200, "Accommodation price updated")
+		return
 	}
 
 	ctx.JSON(500, "Could not update price")
@@ -73,15 +74,18 @@ func UpdateAvailabilityInterval(ctx *gin.Context) {
 	var dto dtos.UpdateAvailabilityDTO
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
 		ctx.JSON(400, "Bad Request")
+		return
 	}
 
 	retval, err := services.UpdateAvailabilityInterval(dto)
 	if err != nil {
 		ctx.JSON(500, "Server Error")
+		return
 	}
 
 	if retval == true {
 		ctx.JSON(200, "Accommodation availability updated")
+		return
 	}
 
 	ctx.JSON(500, "Could not update availability")

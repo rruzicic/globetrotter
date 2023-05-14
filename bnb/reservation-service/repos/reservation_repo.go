@@ -149,7 +149,7 @@ func UpdateReservation(reservation models.Reservation) error {
 	},
 	}
 
-	if _, err := reservationCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := reservationCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Panic("Could not update reservation")
 		return err
 	}
