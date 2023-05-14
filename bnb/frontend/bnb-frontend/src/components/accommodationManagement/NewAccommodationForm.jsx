@@ -3,7 +3,18 @@ import { TextField } from 'mui-rff';
 import theme from '../../theme'
 
 
-const NewAccommodationForm = () => {
+const NewAccommodationForm = ({ setArray }) => {
+
+    const handleImage = (element) => {
+        var file = element.target.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            console.log('RESULT', reader.result)
+            setArray([reader.result])
+        }
+        reader.readAsDataURL(file);
+    }
+
     return (
         <>
             <Grid container spacing={1}>
@@ -48,6 +59,7 @@ const NewAccommodationForm = () => {
                         <input
                             type="file"
                             hidden
+                            onChange={handleImage}
                         />
                     </Button>
                 </Grid>
@@ -72,7 +84,7 @@ const NewAccommodationForm = () => {
                     Address information:
                 </Typography>
                 <Divider variant='fullWidth' sx={{ borderColor: theme.palette.primary.dark, width: '100%' }} />
-                <Grid item xs={12} sm={10}>
+                <Grid item xs={12} sm={5}>
                     <TextField
                         autoComplete='off'
                         fullWidth
@@ -80,6 +92,16 @@ const NewAccommodationForm = () => {
                         margin="normal"
                         name="street"
                         label="Street Name"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                    <TextField
+                        autoComplete='off'
+                        fullWidth
+                        required
+                        margin="normal"
+                        name="city"
+                        label="City"
                     />
                 </Grid>
                 <Grid item xs={12} sm={2}>

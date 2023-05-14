@@ -1,34 +1,34 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/gin-gonic/gin"
-	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
 )
 
 func CreateReservation(ctx *gin.Context) {
-	var reservation models.Reservation
-	if err := ctx.ShouldBindJSON(&reservation); err != nil {
+	var reservationDTO dtos.CreateReservationDTO
+	if err := ctx.ShouldBindJSON(&reservationDTO); err != nil {
+		log.Print(err.Error())
 		ctx.JSON(400, "Bad Request")
 		return
 	}
 
-	retval, err := services.CreateReservation(reservation)
+	reservation, err := services.CreateReservation(reservationDTO)
 	if err != nil {
-		ctx.JSON(500, "Server Error")
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
 		return
 	}
 
-	if retval == true {
-		ctx.JSON(201, "Reservation Created")
-		return
-	}
-
-	ctx.JSON(500, "Server Error")
+	ctx.JSON(201, reservation)
 }
 
 func GetReservationById(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -44,7 +44,7 @@ func GetReservationById(ctx *gin.Context) {
 }
 
 func GetReservationsByUserId(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -60,7 +60,7 @@ func GetReservationsByUserId(ctx *gin.Context) {
 }
 
 func DeleteReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -75,7 +75,7 @@ func DeleteReservation(ctx *gin.Context) {
 }
 
 func ApproveReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -90,7 +90,7 @@ func ApproveReservation(ctx *gin.Context) {
 }
 
 func RejectReservation(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("id")
 	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -102,4 +102,49 @@ func RejectReservation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, "Reservation Rejected")
+}
+
+func GetReservationsByAccommodationId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	reservations, err := services.GetReservationsByAccommodationId(id)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, reservations)
+}
+
+func TestConnection(ctx *gin.Context) {
+	id := ctx.Param("msg")
+	log.Print(id)
+	grpcclient.TestConnection(id)
+}
+
+func AddReservationToAccommodation(ctx *gin.Context) {
+	accommodation_id := ctx.Param("acc_id")
+	if accommodation_id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	reservation_id := ctx.Param("res_id")
+	if reservation_id == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	boolAns, err := grpcclient.AddReservationToAccommodation(accommodation_id, reservation_id)
+	if err != nil {
+		log.Panic("Error adding reservation to accommodation. Error: ", err.Error())
+		ctx.JSON(500, fmt.Sprintf("Server Error. Error: %s", err.Error()))
+		return
+	}
+
+	ctx.JSON(200, boolAns)
 }

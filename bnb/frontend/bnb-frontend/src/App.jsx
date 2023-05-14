@@ -12,23 +12,26 @@ import AccommodationManagementPage from './pages/AccommodationManagementPage';
 import NewAccommodationPage from './pages/NewAccommodationPage';
 import AccommodationInfoPage from './pages/AccommodationInfoPage';
 import "react-image-gallery/styles/css/image-gallery.css";
+import MyReservationsPage from './pages/MyReservationsPage';
+
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path={'/'} element={<HomePage />} />
-            <Route path={'/login'} element={<LoginPage />} />
-            <Route path={'/register'} element={<RegistrationPage />} />
-            <Route path={'/account'} element={<AccountPage />} />
-            <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
-            <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
-            <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path={'/'} element={<HomePage />} />
+              <Route path={'/login'} element={<LoginPage />} />
+              <Route path={'/register'} element={<RegistrationPage />} />
+              <Route path={'/account'} element={<AccountPage />} />
+              <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
+              <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
+              <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
+              <Route path={'/myReservations'} element={<MyReservationsPage />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
     </ThemeProvider>
   );
 }

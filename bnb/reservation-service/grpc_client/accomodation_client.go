@@ -11,14 +11,12 @@ import (
 )
 
 func connectToAccomodationService() (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial("accomodation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("accommodation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
-		log.Fatalf("Could not connect to reservation service")
+		log.Panic("Could not connect to reservation service. Error: ", err.Error())
 		return nil, err
 	}
-
-	defer conn.Close()
 
 	return conn, nil
 }
@@ -64,4 +62,47 @@ func GetAccommodationByHostId(id string) ([](*pb.Accommodation), error) {
 	defer conn.Close()
 
 	return accomodations, nil
+}
+
+func AddReservationToAccommodation(acc_id string, res_id string) (*pb.BoolAnswer, error) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	boolAns, err := client.AddReservationToAccommodation(context.TODO(), &pb.AddReservationToAccommodationRequest{AccommodationId: acc_id, ReservationId: res_id})
+	if err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return boolAns, err
+	}
+
+	defer conn.Close()
+
+	return boolAns, nil
+}
+
+func RemoveReservationFromAccommodation(acc_id string, res_id string) (*pb.BoolAnswer, error) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	boolAns, err := client.RemoveReservationFromAccommodation(context.Background(), &pb.AddReservationToAccommodationRequest{AccommodationId: acc_id, ReservationId: res_id})
+	if err != nil {
+		log.Panic("Could not remove reservation to accommodation. Error: ", err.Error())
+		return boolAns, err
+	}
+
+	defer conn.Close()
+
+	return boolAns, nil
+}
+
+func TestConnection(msg string) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	log.Print(msg)
+	_, err := client.TestConnection(context.Background(), &pb.TestMessage{Msg: msg})
+	if err != nil {
+		log.Print(err.Error())
+	}
+
+	defer conn.Close()
 }

@@ -16,7 +16,9 @@ func (m *CustomError) Error() string {
 	return "Cannot cancel a reservation less than one day in advance error"
 }
 
-func CreateReservation(reservation models.Reservation) error {
+func CreateReservation(reservation models.Reservation) (*models.Reservation, error) {
+	obj_id := primitive.NewObjectIDFromTimestamp(time.Now())
+	reservation.Id = &obj_id
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
@@ -24,9 +26,9 @@ func CreateReservation(reservation models.Reservation) error {
 
 	if err != nil {
 		log.Print("Could not create reservation! err: ", err.Error())
-		return err
+		return nil, err
 	}
-	return nil
+	return &reservation, nil
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -56,6 +58,38 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 
 	reservations := []models.Reservation{}
 	filter := bson.M{"user_id": bson.M{"$eq": userId}}
+	cursor, err := reservationCollection.Find(context.TODO(), filter)
+
+	if err != nil {
+		log.Print("Could not get reservation")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var reservation models.Reservation
+		err := cursor.Decode(&reservation)
+
+		if err != nil {
+			log.Print("Could not unmarshall reservation on cursor")
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation)
+	}
+
+	return reservations, nil
+}
+
+func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
+	userId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get user id from string: ", id)
+		return nil, err
+	}
+
+	reservations := []models.Reservation{}
+	filter := bson.M{"user_id": bson.M{"$eq": userId}, "is_approved": bson.M{"$eq": true}}
 	cursor, err := reservationCollection.Find(context.TODO(), filter)
 
 	if err != nil {
@@ -149,7 +183,7 @@ func UpdateReservation(reservation models.Reservation) error {
 	},
 	}
 
-	if _, err := reservationCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := reservationCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Panic("Could not update reservation")
 		return err
 	}

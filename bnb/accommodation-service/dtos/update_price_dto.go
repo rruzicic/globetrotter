@@ -6,4 +6,5 @@ type UpdatePriceDTO struct {
 	AccommodationId string              `json:"accommodationId"`
 	NewPrice        float32             `json:"newPrice"`
 	NewInterval     models.TimeInterval `json:"newInterval"`
+	PriceForPerson  bool                `json:"priceForPerson"`
 }

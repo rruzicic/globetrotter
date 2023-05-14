@@ -10,8 +10,8 @@ import (
 
 func main() {
 	repos.Connect()
+	go ginSetup()
 	grpcserver.InitServer()
-	ginSetup()
 	repos.Disconnect()
 }
 
@@ -22,13 +22,16 @@ func ginSetup() {
 	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
-	r.Group("/reservation")
-	r.POST("/", controllers.CreateReservation)
-	r.GET("/:id", controllers.GetReservationById)
-	r.GET("/user/:id", controllers.GetReservationsByUserId)
-	r.DELETE("/:id", controllers.DeleteReservation)
-	r.POST("/approve/:id", controllers.ApproveReservation)
-	r.POST("/reject/:id", controllers.RejectReservation)
+	res := r.Group("/reservation")
+	res.POST("/", controllers.CreateReservation)
+	res.GET("/:id", controllers.GetReservationById)
+	res.GET("/accommodation/:id", controllers.GetReservationsByAccommodationId)
+	res.GET("/user/:id", controllers.GetReservationsByUserId)
+	res.DELETE("/:id", controllers.DeleteReservation)
+	res.POST("/approve/:id", controllers.ApproveReservation)
+	res.POST("/reject/:id", controllers.RejectReservation)
+	res.POST("/accommodation/:acc_id/reservation/:res_id", controllers.AddReservationToAccommodation)
+	res.GET("/test/:msg", controllers.TestConnection)
 
 	r.Run(":8080")
 }

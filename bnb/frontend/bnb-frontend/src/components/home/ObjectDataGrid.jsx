@@ -1,13 +1,16 @@
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from '../../config/interceptor'
+import CONSTANTS from '../../config/constants'
+import AuthContext from "../../config/authContext";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [locationSP, setLocationSP] = useState()
-    const [guestNumberSP, setGuestNumberSP] = useState()
+    const [locationSP, setLocationSP] = useState('')
+    const [guestNumberSP, setGuestNumberSP] = useState('')
     const [startDateSP, setStartDateSP] = useState()
     const [endDateSP, setEndDateSP] = useState()
     const [objects, setObjects] = useState(null)
@@ -60,50 +63,19 @@ const ObjectDataGrid = () => {
             label: 'User Action',
         }
     ]
-
+    // localhost:4000/accommodation/search?cityName=&guestNum=0&startDate=2023-01-01&endDate=2023-12-01
     const search = () => {
-        //TODO: call API for search
-        setObjects([
-            {
-                id: 1,
-                name: 'Village House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara',
-                image: '/home.jpg'
-            },
-            {
-                id: 2,
-                name: 'Mountain House',
-                priceNight: 15,
-                priceTotal: 75,
-                location: 'Tara',
-                image: '/home1.jpg'
-            },
-            {
-                id: 3,
-                name: 'City House',
-                priceNight: 30,
-                priceTotal: 150,
-                location: 'Tara',
-                image: '/home2.jpg'
-            },
-            {
-                id: 4,
-                name: 'Beach House',
-                priceNight: 25,
-                priceTotal: 125,
-                location: 'Tara',
-                image: '/home1.jpg'
-            },
-        ])
-        console.log({
-            startDate: startDateSP,
-            endDate: endDateSP,
-            location: locationSP,
-            guestNumber: guestNumberSP
-        });
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/search?cityName=${locationSP ? locationSP : " "}&guestNum=${guestNumberSP ? parseInt(guestNumberSP) : " "}&startDate=${startDateSP}&endDate=${endDateSP}`)
+            .catch((err) => {
+                console.error(err);
+                return
+            })
+            .then((response) => {
+                setObjects(response.data)
+            })
     }
+
+    const authCtx = useContext(AuthContext)
 
     const handleLocationChange = (event) => {
         setLocationSP(event.target.value)
@@ -128,7 +100,27 @@ const ObjectDataGrid = () => {
 
     const handleBook = (id, event) => {
         event.stopPropagation()
-        console.log('Sent request for object with id: ' + id);
+        let dto = {
+            accommodationId: id,
+            userId: "",
+            dateInterval: {
+                start: new Date(startDateSP).toISOString(),
+                end: new Date(endDateSP).toISOString()
+            },
+            numOfGuests: parseInt(guestNumberSP),
+            totalPrice: 0
+        }
+        axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
+            .then((response) => {
+                dto.userId = response.data.id
+                axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/`, dto)
+                    .then((response) => {
+                    })
+            })
     }
 
     return (
@@ -167,22 +159,22 @@ const ObjectDataGrid = () => {
                                             return (
                                                 <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
                                                     <TableCell>
-                                                        <img src={object.image} alt={object.name} height={'60px'} width={'auto'}/>
+                                                        <img src='/home.jpg' alt={object.name} height={'60px'} width={'auto'} />
                                                     </TableCell>
                                                     <TableCell>
                                                         {object.name}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.location}
+                                                        {object.location.city}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.priceNight}
+                                                        {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {object.priceTotal}
+                                                        {object.unitPrice.amount.toString()}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)}>
+                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)} disabled={authCtx.isHost()}>
                                                             Book!
                                                         </Button>
                                                     </TableCell>

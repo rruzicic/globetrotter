@@ -31,6 +31,15 @@ const NavBar = () => {
                 )
             }
             {
+                authCtx.isUser() && (
+                    <Link to={'/myReservations'}>
+                        <Button variant="contained" color="secondary">
+                            Reservations
+                        </Button>
+                    </Link>
+                )
+            }
+            {
                 !authCtx.isLoggedIn ? (
                     <>
                         <Link to={'/login'}>

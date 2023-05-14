@@ -8,6 +8,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -52,7 +53,7 @@ func buildGRPCAccommodation(accommodation models.Accommodation) pb.Accommodation
 func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, req *pb.RequestAccommodationById) (*pb.Accommodation, error) {
 	accommodation, err := repos.GetAccommodationById(req.GetId())
 	if err != nil {
-		log.Panic("Could not get accommodation with id", req.GetId())
+		log.Println("Could not get accommodation with id", req.GetId(), ", error: ", err.Error())
 		return nil, err
 	}
 
@@ -64,7 +65,8 @@ func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, r
 func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAccommodationByHostId, stream pb.AccommodationService_GetAccommodationByHostIdServer) error {
 	accommodations, err := repos.GetAccommodationsByHostId(req.GetId())
 	if err != nil {
-		log.Panic("Could not get accommodations for host id: ", req.GetId())
+		log.Println("Could not get accommodations for host id: ", req.GetId(), ", error: ", err.Error())
+		return err
 	}
 
 	for _, accommodation := range accommodations {
@@ -77,10 +79,67 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 	return nil
 }
 
-func InitServer() {
-	listen, err := net.Listen("tcp", "localhost:50051")
+func (s *AccommodationServiceServer) TestConnection(ctx context.Context, req *pb.TestMessage) (*pb.TestMessage, error) {
+	log.Print("Hello from accommodation service, message is: ", req.GetMsg())
+	return req, nil
+}
+
+func (s *AccommodationServiceServer) AddReservationToAccommodation(ctx context.Context, req *pb.AddReservationToAccommodationRequest) (*pb.BoolAnswer, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetAccommodationId())
 	if err != nil {
-		log.Fatal("Accommodation service failed to listen. Error: ", err)
+		log.Panic("Could not get accommodation by id: ", req.GetAccommodationId())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	primitive_res_id, err := primitive.ObjectIDFromHex(req.GetReservationId())
+	if err != nil {
+		log.Panic("Could not get id from reservation id. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	accommodation.Reservations = append(accommodation.Reservations, &primitive_res_id)
+	if err := repos.UpdateAccommodation(*accommodation); err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	return &pb.BoolAnswer{Answer: true}, nil
+}
+
+func (s *AccommodationServiceServer) RemoveReservationFromAccommodation(ctx context.Context, req *pb.AddReservationToAccommodationRequest) (*pb.BoolAnswer, error) {
+	accommodation, err := repos.GetAccommodationById(req.GetAccommodationId())
+	if err != nil {
+		log.Panic("Could not get accommodation by id: ", req.GetAccommodationId())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	primitive_res_id, err := primitive.ObjectIDFromHex(req.GetReservationId())
+	if err != nil {
+		log.Panic("Could not get id from reservation id. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	i := 0
+	for index, res_id := range accommodation.Reservations {
+		if primitive_res_id == *res_id {
+			i = index
+			break
+		}
+	}
+
+	accommodation.Reservations = append(accommodation.Reservations[:i], accommodation.Reservations[i+1:]...)
+	if err := repos.UpdateAccommodation(*accommodation); err != nil {
+		log.Panic("Could not add reservation to accommodation. Error: ", err.Error())
+		return &pb.BoolAnswer{Answer: false}, err
+	}
+
+	return &pb.BoolAnswer{Answer: true}, nil
+}
+
+func InitServer() {
+	listen, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Println("Accommodation service failed to listen. Error: ", err.Error())
 	}
 
 	server := grpc.NewServer()
@@ -88,6 +147,6 @@ func InitServer() {
 
 	log.Println("Accommodation gRPC server listening..")
 	if err := server.Serve(listen); err != nil {
-		log.Fatal("Could not start Accommodation gRPC Server. Error: ", err)
+		log.Println("Could not start Accommodation gRPC Server. Error: ", err.Error())
 	}
 }

@@ -55,12 +55,11 @@ const RegistrationPage = () => {
 
         axios.post(`${CONSTANTS.GATEWAY}/user/register/guest`, newData)
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 return
             })
             .then((response) => {
                 if (response !== undefined) {
-                    console.log(response);
                     navigate('/login')
                 }
             })

@@ -1,29 +1,73 @@
 package services
 
 import (
+	"errors"
 	"log"
 	"time"
 
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateReservation(reservation models.Reservation) (bool, error) {
+func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reservation, error) {
+	acc_id, err := primitive.ObjectIDFromHex(reservationDTO.AccommodationId)
+	if err != nil {
+		return nil, err
+	}
+
+	user_id, err := primitive.ObjectIDFromHex(reservationDTO.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	reservation := models.Reservation{
+		AccommodationId: &acc_id,
+		UserId:          &user_id,
+		DateInterval:    reservationDTO.DateInterval,
+		NumOfGuests:     reservationDTO.NumOfGuests,
+		IsApproved:      false,
+		TotalPrice:      0.0,
+	}
+
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
-		return false, err
+		return nil, err
+	}
+
+	accommodation_availability := models.TimeInterval{Start: accommodation.AvailabilityStartDate.AsTime(), End: accommodation.AvailabilityEndDate.AsTime()}
+	if !accommodation_availability.OtherIntervalIsDuring(reservation.DateInterval) {
+		err := errors.New("Reservation date isn't during accommodations' availability")
+		log.Print(err.Error())
+		return nil, err
+	}
+
+	if accommodation.Guests < int32(reservationDTO.NumOfGuests) {
+		err := errors.New("Number of guests greater than accommodations' capacity")
+		log.Print(err.Error())
+		return nil, err
+	}
+
+	if accommodation.PriceForPerson {
+		reservation.TotalPrice = float32(reservation.NumOfGuests) * accommodation.Amount
+	} else {
+		total_days := reservation.DateInterval.Start.Sub(reservation.DateInterval.End).Hours() / 24
+		reservation.TotalPrice = float32(total_days) * accommodation.Amount
 	}
 
 	// check if there are overlapping active reservations
 	for _, reservation_id := range accommodation.Reservations {
 		existing_reservation, err := repos.GetReservationById(reservation_id)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 
-		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && existing_reservation.IsApproved == true {
-			return false, nil
+		if existing_reservation.DateInterval.OtherIntervalOverlaps(reservation.DateInterval) && (existing_reservation.IsApproved == true) {
+			err := errors.New("Reservation exists in that time")
+			log.Print(err.Error())
+			return nil, err
 		}
 	}
 
@@ -34,7 +78,7 @@ func CreateReservation(reservation models.Reservation) (bool, error) {
 		reservation.IsApproved = false
 	}
 
-	return true, repos.CreateReservation(reservation)
+	return repos.CreateReservation(reservation)
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -45,7 +89,7 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return repos.GetReservationsByUserId(id)
 }
 
-func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
+/*func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	reservations, err := GetReservationsByHostId(id)
 	if err != nil {
 		return []models.Reservation{}, nil
@@ -57,24 +101,15 @@ func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) 
 		}
 	}
 	return futureApprovedReservations, nil
-}
+}*/
 
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
-	reservations, err := repos.GetReservationsByUserId(id)
-	if err != nil {
-		return []models.Reservation{}, err
-	}
-	var activeReservations []models.Reservation
-	for _, reservation := range reservations {
-		if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
-			activeReservations = append(activeReservations, reservation)
-		}
-	}
-	return activeReservations, nil
+	return repos.GetActiveReservationsByUser(id)
 }
 
-func GetReservationsByHostId(id string) ([]models.Reservation, error) {
+func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	accomodations, err := grpcclient.GetAccommodationByHostId(id)
+	//log.Println("accomodations for given host id: ", accomodations)
 	if err != nil {
 		return []models.Reservation{}, err
 	}
@@ -85,7 +120,7 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 			return []models.Reservation{}, err
 		}
 		for _, reservation := range reservations {
-			if reservation.DateInterval.DateIsAfter(time.Now()) && reservation.IsApproved {
+			if reservation.DateInterval.DateIsBefore(time.Now()) && reservation.IsApproved {
 				futureApprovedReservations = append(futureApprovedReservations, reservation)
 			}
 		}
@@ -94,11 +129,29 @@ func GetReservationsByHostId(id string) ([]models.Reservation, error) {
 }
 
 func DeleteReservation(id string) error {
-	_, err := grpcclient.IncrementCancellationsCounter(id)
+	reservation, err := repos.GetReservationById(id)
 	if err != nil {
+		log.Print(err.Error())
 		return err
 	}
-	return repos.DeleteReservation(id)
+	if err := repos.DeleteReservation(id); err != nil {
+		log.Print(err.Error())
+		return err
+	}
+
+	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
+	if err != nil {
+		log.Print(res)
+		return err
+	}
+
+	boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
+	if err != nil {
+		log.Print(boolAns, err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func ApproveReservation(id string) error {
@@ -144,4 +197,14 @@ func RejectReservation(id string) error {
 
 	reservation.IsApproved = false
 	return repos.UpdateReservation(*reservation)
+}
+
+func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
+	reservations, err := repos.GetReservationsByAccommodationId(id)
+	if err != nil {
+		log.Panic("Could not get reservations by accommodation id: ", id)
+		return nil, err
+	}
+
+	return reservations, err
 }

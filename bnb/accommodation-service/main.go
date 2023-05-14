@@ -10,8 +10,8 @@ import (
 
 func main() {
 	repos.Connect()
+	go ginSetup()
 	grpc_server.InitServer()
-	ginSetup()
 	repos.Disconnect()
 }
 
@@ -22,13 +22,15 @@ func ginSetup() {
 	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
-	r.Group("/accommodation")
-	r.POST("/", controllers.CreateAccommodation)
-	r.GET("/", controllers.GetAllAccommodations)
-	r.PUT("/", controllers.UpdateAccommodation)
-	r.PUT("/price", controllers.UpdatePriceInterval)
-	r.PUT("/availability", controllers.UpdateAvailabilityInterval)
-	r.GET("/search", controllers.SearchAccomodation)
+	acc := r.Group("/accommodation")
+	acc.POST("/", controllers.CreateAccommodation)
+	acc.GET("/", controllers.GetAllAccommodations)
+	acc.PUT("/", controllers.UpdateAccommodation)
+	acc.PUT("/price", controllers.UpdatePriceInterval)
+	acc.PUT("/availability", controllers.UpdateAvailabilityInterval)
+	acc.GET("/search", controllers.SearchAccomodation)
+	acc.GET("/host/:id", controllers.GetAccommodationsByHostId)
+	acc.GET("/:id", controllers.GetAccommodationById)
 
 	r.Run(":8080")
 }
