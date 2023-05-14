@@ -30,6 +30,7 @@ func ginSetup() {
 	acc.PUT("/availability", controllers.UpdateAvailabilityInterval)
 	acc.GET("/search", controllers.SearchAccomodation)
 	acc.GET("/host/:id", controllers.GetAccommodationsByHostId)
+	acc.GET("/:id", controllers.GetAccommodationById)
 
 	r.Run(":8080")
 }
