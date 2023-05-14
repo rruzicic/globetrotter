@@ -78,6 +78,11 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 	return nil
 }
 
+func (s *AccommodationServiceServer) TestConnection(ctx context.Context, req *pb.TestMessage) (*pb.TestMessage, error) {
+	log.Print("Hello from accommodation service, message is: ", req.GetMsg())
+	return req, nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
