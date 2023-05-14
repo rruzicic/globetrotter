@@ -1,26 +1,75 @@
 version: '3.3'
 services:
-  flights_backend:
-    container_name: 'flights_backend'
-    build: './flights/backend'
-      #context: ./
-      #dockerfile: './flights/backend/Dockerfile'
-    ports:
-      - '8080:8080'
-    volumes:
-      - './flights/backend:/go/src/app'
-    depends_on:
-      - 'mongo'
 
-  flights_frontend: 
-    container_name: 'flights_frontend'
-    build: './flights/frontend'
-    volumes:
-      - './flights/frontend:/react-app'
-    depends_on:
-      - 'flights_backend'
+  nginx:
+    build: './bnb/nginx'
     ports:
-      - "3000:3000"
+      - '4000:4000'
+    depends_on:
+      - account-service
+      - accommodation-service
+      - feedback-service
+      - reservation-service
+      - search-service
+
+  accommodation-service:
+    build: './bnb/accommodation-service'
+    ports:
+      - '8081:8080'
+      - '50051:50051'
+    volumes:
+      - './bnb/accommodation-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  account-service:
+      build: './bnb/account-service'
+      ports:
+        - '8082:8080'
+        - '50052:50051'
+      volumes:
+        - './bnb/account-service:/go/src/app'
+      depends_on:
+        - mongo
+
+  feedback-service:
+    build: './bnb/feedback-service'
+    ports:
+      - '8083:8080'
+      - '50053:50051'
+    volumes:
+      - './bnb/feedback-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  reservation-service:
+    build: './bnb/reservation-service'
+    ports:
+      - '8084:8080'
+      - '50054:50051'
+    volumes:
+      - './bnb/reservation-service:/go/src/app'
+    depends_on:
+      - mongo
+    
+  search-service:
+    build: './bnb/search-service'
+    ports:
+      - '8085:8080'
+      - '50055:50051'
+    volumes:
+      - './bnb/search-service:/go/src/app'
+    depends_on:
+      - mongo
+
+  # flights-backend:
+  #   build: './flights/backend'
+  #   ports:
+  #     - '8080:8080'
+  #   volumes:
+  #     - './flights/backend:/go/src/app'
+  #   depends_on:
+  #     - mongo
 
   mongo:
     image: 'mongo:latest'
