@@ -14,10 +14,13 @@ const AccommodationManagementPage = () => {
     useEffect(() => {
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
             .then((response) => {
-                console.log(response.data.id);
                 axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/host/${response.data.id}`)
+                    .catch((error) => {
+                        console.error(error)
+                        return
+                    })
                     .then((response) => {
-                        console.log(response);
+                        console.log(response.data);
                         setObjects(response.data)
                     })
             })
@@ -52,12 +55,12 @@ const AccommodationManagementPage = () => {
 
             </Grid>
             {
-                objects && objects.map((object) => {
+                objects && objects.map((object, index) => {
                     return (
                         <Grid item xs={4} sx={styles.grid} key={object.id}>
                             <Link to={`/accommodationInfo/${object.id}`}>
                                 <Box sx={styles.card}>
-                                    <AccommodationCard name={object.name} location={object.location.city} />
+                                    <AccommodationCard name={object.name} location={object.location.city} image={object.photos ? object.photos.at(0) : "/home.jpg"}/>
                                 </Box>
                             </Link>
                         </Grid>

@@ -4,7 +4,7 @@ import REGEX from "../regex";
 import NewAccommodationForm from "../components/accommodationManagement/NewAccommodationForm";
 import { axiosInstance } from "../config/interceptor"
 import AuthContext from "../config/authContext"
-import { useContext} from "react";
+import { useContext, useState } from "react";
 import CONSTANTS from "../config/constants";
 import { useNavigate } from "react-router";
 
@@ -12,6 +12,7 @@ let numberRegex = new RegExp(REGEX.NUMBER)
 
 const NewAccommodationPage = () => {
     const navigate = useNavigate()
+    const [array, setArray] = useState([])
 
     const validate = (values) => {
         let returnObject = {}
@@ -47,6 +48,10 @@ const NewAccommodationPage = () => {
     const onSubmit = (values) => {
 
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 let newValues = {
                     name: values.name,
@@ -59,11 +64,14 @@ const NewAccommodationPage = () => {
                     },
                     guests: parseInt(values.maxGuestNumber),
                     user: response.data.id,
-                    autoApprove: false
+                    autoApprove: false,
+                    photos: array
                 }
-                console.log(response.data.id);
-                console.log(newValues);
                 axiosInstance.post(`${CONSTANTS.GATEWAY}/accommodation/`, newValues)
+                    .catch((error) => {
+                        console.error(error)
+                        return
+                    })
                     .then((response) => {
                         navigate('/myAccommodation')
                     })
@@ -78,7 +86,7 @@ const NewAccommodationPage = () => {
                 render={({ handleSubmit, values }) => (
                     <form onSubmit={handleSubmit} noValidate>
                         <Container sx={{ display: 'grid', placeItems: 'center', width: '90%' }}>
-                            <NewAccommodationForm />
+                            <NewAccommodationForm setArray={setArray}/>
                             <Button variant="contained" color="primary" type='submit'>
                                 Submit
                             </Button>

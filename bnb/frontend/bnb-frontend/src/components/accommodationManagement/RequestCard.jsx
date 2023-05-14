@@ -10,6 +10,10 @@ const RequestCard = ({ requestId, userId, startDate, endDate, guestNumber, accep
 
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userId}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 setEmail(response.data.email)
             })

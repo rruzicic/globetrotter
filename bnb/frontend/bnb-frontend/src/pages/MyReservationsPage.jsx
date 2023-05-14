@@ -11,19 +11,29 @@ const MyReservationsPage = () => {
 
     useEffect(() => {
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/user/${response.data.id}`)
+                    .catch((error) => {
+                        console.error(error)
+                        return
+                    })
                     .then((ret) => {
                         setData(ret.data)
-                        console.log(ret.data);
                     })
             })
     }, [])
 
     const handleCancel = (id) => {
         axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
-                console.log(response);
             })
     }
 

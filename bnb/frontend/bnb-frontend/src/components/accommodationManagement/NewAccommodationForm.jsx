@@ -3,7 +3,18 @@ import { TextField } from 'mui-rff';
 import theme from '../../theme'
 
 
-const NewAccommodationForm = () => {
+const NewAccommodationForm = ({ setArray }) => {
+
+    const handleImage = (element) => {
+        var file = element.target.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            console.log('RESULT', reader.result)
+            setArray([reader.result])
+        }
+        reader.readAsDataURL(file);
+    }
+
     return (
         <>
             <Grid container spacing={1}>
@@ -48,6 +59,7 @@ const NewAccommodationForm = () => {
                         <input
                             type="file"
                             hidden
+                            onChange={handleImage}
                         />
                     </Button>
                 </Grid>

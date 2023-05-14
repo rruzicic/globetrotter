@@ -62,29 +62,42 @@ const AccommodationInfoPage = () => {
 
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 setObjectInfo(response.data)
             })
         axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
-                console.log(response.data);
                 setRequests(response.data)
             })
     }, [])
 
     const acceptReservation = (id) => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/approve/${id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 window.location.reload()
             })
-        console.log('Accepted ' + id);
     }
     const declineReservation = (id) => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/reject/${id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 window.location.reload()
             })
-        console.log('Declined ' + id);
     }
     const handleOpen = () => {
         setOpen((prev) => !prev)
@@ -100,6 +113,10 @@ const AccommodationInfoPage = () => {
             priceForPerson: isSinglePerson
         }
         axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/price`, dto)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 handleOpen()
             })
@@ -113,6 +130,10 @@ const AccommodationInfoPage = () => {
             }
         }
         axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/availability`, dto)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 handleOpen()
             })

@@ -48,14 +48,13 @@ const ChangeAccountInfo = ({ setUpdate, userInfo }) => {
         const { role, cancellationsCounter, confirmPassword, createdOn, deletedOn, modifiedOn, rating, ratingNum, superHost, ...newValues } = values
         axiosInstance.post(`${CONSTANTS.GATEWAY}/user/update`, newValues)
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 return
             })
             .then((response) => {
-                // console.log(response);
+                setUpdate(false)
+                window.location.reload();
             })
-            setUpdate(false)
-            window.location.reload();
     }
 
     const handleCancel = () => {

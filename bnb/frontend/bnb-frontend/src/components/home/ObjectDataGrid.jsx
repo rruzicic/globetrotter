@@ -66,20 +66,13 @@ const ObjectDataGrid = () => {
     // localhost:4000/accommodation/search?cityName=&guestNum=0&startDate=2023-01-01&endDate=2023-12-01
     const search = () => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/search?cityName=${locationSP ? locationSP : " "}&guestNum=${guestNumberSP ? parseInt(guestNumberSP) : " "}&startDate=${startDateSP}&endDate=${endDateSP}`)
-        .catch((err) => {
-            console.log(err);
-            return
-        })    
-        .then((response) => {
-                console.log(response);
+            .catch((err) => {
+                console.error(err);
+                return
+            })
+            .then((response) => {
                 setObjects(response.data)
             })
-        console.log({
-            startDate: startDateSP,
-            endDate: endDateSP,
-            location: locationSP,
-            guestNumber: guestNumberSP
-        });
     }
 
     const authCtx = useContext(AuthContext)
@@ -118,13 +111,14 @@ const ObjectDataGrid = () => {
             totalPrice: 0
         }
         axiosInstance.get(`http://localhost:4000/user/email/${authCtx.userEmail()}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
-                console.log(response.data.id);
                 dto.userId = response.data.id
-                console.log(dto);
                 axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/`, dto)
                     .then((response) => {
-                        console.log(response);
                     })
             })
     }

@@ -13,7 +13,7 @@ const AccountPage = () => {
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/user/email/${authCtx.userEmail()}`)
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 return
             })
             .then((response) => {

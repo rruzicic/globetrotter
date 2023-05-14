@@ -6,10 +6,14 @@ import { useEffect, useState } from "react";
 
 const MyReservationCard = ({ objectId, start, end, guestNum, totalPrice, image, handleCancel, reservationId, status }) => {
 
-    const [name, setName] = useState()
+    const [name, setName] = useState(null)
 
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${objectId}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
             .then((response) => {
                 setName(response.data.name)
             })
