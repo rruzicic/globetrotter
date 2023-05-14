@@ -118,3 +118,13 @@ func SearchAccomodation(cityName string, guestNum int, startDate string, endDate
 	}
 	return repos.SearchAccomodation(cityName, guestNum, startTime, endTime)
 }
+
+func GetAccommodationsByHostId(id string) ([]models.Accommodation, error) {
+	accommodations, err := repos.GetAccommodationsByHostId(id)
+	if err != nil {
+		log.Panic("Could not get accommodations for user id: ", id)
+		return nil, err
+	}
+
+	return accommodations, nil
+}
