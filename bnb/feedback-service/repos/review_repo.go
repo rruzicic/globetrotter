@@ -144,3 +144,135 @@ func UpdateHostReview(hostReview models.HostReview) error {
 
 //============================================================================================
 //============================================================================================
+
+func CreateAccommodationReview(accommodationReview models.AccommodationReview) (*models.AccommodationReview, error) {
+	obj_id := primitive.NewObjectIDFromTimestamp(time.Now())
+	accommodationReview.Id = &obj_id
+	accommodationReview.CreatedOn = int(time.Now().Unix())
+	accommodationReview.ModifiedOn = int(time.Now().Unix())
+
+	_, err := accommodationReviewCollection.InsertOne(context.TODO(), accommodationReview)
+
+	if err != nil {
+		log.Print("Could not create a review! err: ", err.Error())
+		return nil, err
+	}
+	return &accommodationReview, nil
+}
+
+func GetAccommodationReviewById(id string) (*models.AccommodationReview, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	accommodationReview := models.AccommodationReview{}
+
+	if err != nil {
+		log.Print("Could not get id from hex string: ", id)
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": objectId}}
+	if err := accommodationReviewCollection.FindOne(context.TODO(), filter).Decode(&accommodationReview); err != nil {
+		log.Print("could not find a accommodation review with id: ", id)
+		return nil, err
+	}
+
+	return &accommodationReview, nil
+}
+
+func GetAccommodationReviewsByUserId(id string) ([]models.AccommodationReview, error) {
+	userId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get user id from string: ", id)
+		return nil, err
+	}
+
+	accommodationReviews := []models.AccommodationReview{}
+	filter := bson.M{"user_id": bson.M{"$eq": userId}}
+	cursor, err := accommodationReviewCollection.Find(context.TODO(), filter)
+
+	if err != nil {
+		log.Print("Could not get accommodation review")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var accommodationReview models.AccommodationReview
+		err := cursor.Decode(&accommodationReview)
+
+		if err != nil {
+			log.Print("Could not unmarshall accommodation review on cursor")
+			return nil, err
+		}
+
+		accommodationReviews = append(accommodationReviews, accommodationReview)
+	}
+
+	return accommodationReviews, nil
+}
+
+func GetAccommodationReviewsByAccommodationId(id string) ([]models.AccommodationReview, error) {
+	accommodationId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get accommodation id from string: ", id)
+		return nil, err
+	}
+
+	accommodationReviews := []models.AccommodationReview{}
+	filter := bson.M{"accommodation_id": bson.M{"$eq": accommodationId}}
+	cursor, err := accommodationReviewCollection.Find(context.TODO(), filter)
+
+	if err != nil {
+		log.Print("Could not get accommodation review")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var accommodationReview models.AccommodationReview
+		err := cursor.Decode(&accommodationReview)
+
+		if err != nil {
+			log.Print("Could not unmarshall accommodation review on cursor")
+			return nil, err
+		}
+
+		accommodationReviews = append(accommodationReviews, accommodationReview)
+	}
+
+	return accommodationReviews, nil
+}
+
+func DeleteAccommodationReview(id string) error {
+	accommodationReviewId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Print("Could not get id from hex string: ", id)
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": accommodationReviewId}}
+	if _, err := accommodationReviewCollection.DeleteOne(context.TODO(), filter); err != nil {
+		log.Print("Could not delete accommodation review with hex id", id)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateAccommodationReview(accommodationReview models.AccommodationReview) error {
+	accommodationReview.ModifiedOn = int(time.Now().Unix())
+
+	objId, err := primitive.ObjectIDFromHex(accommodationReview.Id.Hex())
+	if err != nil {
+		log.Print("Could not convert accommodation review hex to id")
+		return err
+	}
+
+	filter := bson.M{"_id": bson.M{"$eq": objId}}
+	update := bson.M{"$set": bson.M{"rating": accommodationReview.Rating}}
+
+	if _, err := accommodationReviewCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		log.Print("Could not update accommodation review")
+		return err
+	}
+
+	return nil
+}
