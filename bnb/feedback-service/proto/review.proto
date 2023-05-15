@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/rruzicic/globetrotter/bnb/feedback-service/pb";
+import "google/protobuf/timestamp.proto";
+
+message HostReview{
+    string id = 1;
+    google.protobuf.Timestamp created_on = 2;
+    google.protobuf.Timestamp modified_on = 3;
+    google.protobuf.Timestamp deleted_on = 4;
+
+    int32 rating = 5;
+    string userId = 6;
+    string hostId = 7;
+}
+
+message AccommodationReview{
+    string id = 1;
+    google.protobuf.Timestamp created_on = 2;
+    google.protobuf.Timestamp modified_on = 3;
+    google.protobuf.Timestamp deleted_on = 4;
+
+    int32 rating = 5;
+    string userId = 6;
+    string accommodationId = 7;
+}
+
+message RequestReviewById{
+    string id = 1;
+}
+
+message RequestReviewsByUserId{
+    string id = 1;
+}
+
+message RequestReviewsByHostId{
+    string id = 1;
+}
+
+message RequestReviewsByAccommodationId{
+    string id = 1;
+}
+
+message AvgRatingResponse{
+    float avgRating = 1;
+}
+
+message RequestAvgRating{
+    string id = 1;
+}
+
+service FeedbackService{
+    rpc GetHostReviewById(RequestReviewById) returns (HostReview) {}
+    rpc GetHostReviewsByUserId(RequestReviewsByUserId) returns (stream HostReview) {}
+    rpc GetHostReviewsByHostId(RequestReviewsByHostId) returns (stream HostReview) {}
+    rpc CalcAvgRatingForHost(RequestAvgRating) returns (AvgRatingResponse) {}
+
+    rpc GetAccommodationReviewById(RequestReviewById) returns (AccommodationReview) {}
+    rpc GetAccommodationReviewsByUserId(RequestReviewsByUserId) returns (stream AccommodationReview) {}
+    rpc GetAccommodationReviewsByAccommodationId(RequestReviewsByAccommodationId) returns (stream AccommodationReview) {}
+    rpc CalcAvgRatingForAccommodation(RequestAvgRating) returns (AvgRatingResponse) {}
+}

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/rruzicic/globetrotter/bnb/account-service/pb";
+
+message User {
+    string id = 1;
+    google.protobuf.Timestamp created_on = 2;
+    google.protobuf.Timestamp modified_on = 3;
+    google.protobuf.Timestamp deleted_on = 4;
+
+    string firstName = 5;
+    string lastName = 6;
+    string email = 7;
+    string password = 8;
+    string role = 9;
+
+    string country = 10;
+    string street = 11;
+    string streetNum = 12;
+    int32 zipCode = 13;
+
+    bool superHost = 14;
+
+    float rating = 15;
+    int32 ratingNum = 16;
+    int32 cancellationsCounter = 17;
+}
+
+message UserUpdateRequest {
+    string id = 1;
+    optional string firstName = 2;
+    optional string lastName = 3;
+    optional string email = 4;
+    optional string password = 5;
+
+    optional string country = 6;
+    optional string street = 7;
+    optional string streetNum = 8;
+    optional int32 zipCode = 9;
+}
+
+
+message UserRequestPagination {
+    optional int32 page = 1;
+    optional int32 limit = 2;
+}
+message UserRequestId { string id = 1; }
+message UserRequestEmail { string email = 1; }
+message TokenRequest { 
+    string token = 1; 
+    string role = 2;
+}
+message UserResponse { User user = 1; }
+message BooleanReturn { bool boolean = 1;}
+
+service UserService {
+    rpc GetUserById(UserRequestId) returns (UserResponse) {}
+    rpc GetUserByEmail(UserRequestEmail) returns (UserResponse) {}
+    rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}        // not implemented
+    rpc UpdateUser(UserUpdateRequest) returns (UserResponse) {}                 // not implemented
+    rpc DeleteUser(UserRequestId) returns (UserResponse) {}                     // not implemented
+    rpc IncrementCancellationsCounter(UserRequestId) returns (UserResponse) {}
+    rpc VerifyToken(TokenRequest) returns (BooleanReturn) {}
+}
