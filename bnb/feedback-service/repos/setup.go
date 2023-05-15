@@ -8,7 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var reviewCollection *mongo.Collection
+var hostReviewCollection *mongo.Collection
+var accommodationReviewCollection *mongo.Collection
 
 var client *mongo.Client
 
@@ -18,7 +19,8 @@ func Connect() {
 		log.Panic("Could not connect to MongoDB")
 	}
 
-	reviewCollection = client.Database("bnb-reviews").Collection("reviews")
+	hostReviewCollection = client.Database("bnb-reviews").Collection("host_reviews")
+	accommodationReviewCollection = client.Database("bnb-reviews").Collection("accommodation_reviews")
 }
 
 func Disconnect() {
