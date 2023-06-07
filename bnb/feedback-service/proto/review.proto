@@ -50,6 +50,7 @@ message RequestAvgRating{
     string id = 1;
 }
 
+
 service FeedbackService{
     rpc GetHostReviewById(RequestReviewById) returns (HostReview) {}
     rpc GetHostReviewsByUserId(RequestReviewsByUserId) returns (stream HostReview) {}
