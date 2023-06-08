@@ -31,5 +31,6 @@ service ReservationService {
     rpc GetReservationsByAccommodationId(RequestReservationsByAccommodationId) returns (stream Reservation) {}
     rpc GetActiveReservationsByUser(RequestUserId) returns (stream Reservation) {}
     rpc GetFutureActiveReservationsByHost(RequestUserId) returns (stream Reservation) {}
+    rpc GetFinishedReservationsByUser(RequestUserId) returns (stream Reservation) {}
 }
 
