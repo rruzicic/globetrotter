@@ -75,6 +75,23 @@ func (s *ReservationServiceServer) GetActiveReservationsByUser(req *pb.RequestUs
 	return nil
 }
 
+func (s *ReservationServiceServer) GetFinishedReservationsByUser(req *pb.RequestUserId, stream pb.ReservationService_GetFinishedReservationsByUserServer) error {
+	reservations, err := services.GetFinishedReservationsByUser(req.GetId())
+	if err != nil {
+		log.Println("Could not get finished reservations for user id: ", req.GetId())
+		return err
+	}
+
+	for _, reservation := range reservations {
+		grpc_reservation := buildGRPCReservation(reservation)
+		if err := stream.Send(&grpc_reservation); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.RequestUserId, stream pb.ReservationService_GetFutureActiveReservationsByHostServer) error {
 	reservations, err := services.GetFutureActiveReservationsByHost(req.GetId())
 	if err != nil {

@@ -80,6 +80,25 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	return reservations, nil
 }
 
+func GetFinishedReservationsByUser(id string) ([]models.Reservation, error) {
+	allReservations, err := GetActiveReservationsByUser(id)
+	if err != nil {
+		log.Print("Could not reservations for user id: ", id)
+		return nil, err
+	}
+
+	finishedReservations := []models.Reservation{}
+	currentTime := time.Now()
+
+	for _, reservation := range allReservations {
+		if currentTime.After(reservation.DateInterval.End) {
+			finishedReservations = append(finishedReservations, reservation)
+		}
+	}
+
+	return finishedReservations, nil
+}
+
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
 	userId, err := primitive.ObjectIDFromHex(id)
 
