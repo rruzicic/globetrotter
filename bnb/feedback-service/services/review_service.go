@@ -1,8 +1,10 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/dtos"
-	//grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -86,9 +88,24 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 		Rating:          accommodationReviewDTO.Rating,
 	}
 
-	//TODO check if user had a previous reservation with this accommodation.
+	finishedReservations, err := grpcclient.GetFinishedReservationsByUser(userId.Hex())
+	if err != nil {
+		return nil, err
+	}
+	hasUserBeenToAccommodation := false
+	for _, reservation := range finishedReservations {
+		if accommodationId.String() == reservation.AccommodationId {
+			hasUserBeenToAccommodation = true
+			break
+		}
+	}
 
-	return repos.CreateAccommodationReview(accommodationReview)
+	if hasUserBeenToAccommodation {
+		return repos.CreateAccommodationReview(accommodationReview)
+	} else {
+		return nil, errors.New("user has not been to accommodation before and therefore can't review it")
+	}
+
 }
 
 func GetAccommodationtReviewById(id string) (*models.AccommodationReview, error) {
