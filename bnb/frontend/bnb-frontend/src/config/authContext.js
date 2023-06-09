@@ -1,6 +1,7 @@
 import jwt_decode from "jwt-decode";
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
 import { axiosInstance } from "./interceptor";
+import io from 'socket.io-client';
 
 const AuthContext = createContext({
     token: "",
@@ -15,7 +16,26 @@ const AuthContext = createContext({
 export const AuthContextProvider = ({ children }) => {
     const initialToken = localStorage.getItem("bnb_jwt")
     const [token, setToken] = useState(initialToken)
+    const [socket, setSocket] = useState(null)
     const isLoggedIn = !!token
+
+    useEffect(() => {
+        if (token) {
+            const newSocket = io('YOUR_WEBSOCKET_SERVER_URL', {
+                auth: { token: token },
+            });
+
+            setSocket(newSocket);
+
+            return () => {
+                newSocket.disconnect();
+            };
+        }
+    }, [token]);
+
+    useEffect(() => {
+        console.log('State updated:', socket);
+    }, [socket]);
 
     const checkTokenExpiration = () => {
         if (token) {
