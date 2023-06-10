@@ -31,6 +31,7 @@ services:
         - '50052:50051'
       volumes:
         - './bnb/account-service:/go/src/app'
+        - ./monitoring/logs/:/go/src/app/log/
       depends_on:
         - mongo
 
@@ -67,15 +68,15 @@ services:
   #   depends_on:
   #     - mongo
 
-  # flights-backend:
-  #   build: './flights/backend'
-  #   ports:
-  #     - '8080:8080'
-  #   volumes:
-  #     - './flights/backend:/go/src/app'
-  #   depends_on:
-  #     - mongo
-
+  flights-backend:
+    build: './flights/backend'
+    ports:
+      - '8080:8080'
+    volumes:
+      - './flights/backend:/go/src/app'
+    depends_on:
+      - mongo
+      
   mongo:
     image: 'mongo:latest'
     container_name: 'mongo'
@@ -86,3 +87,9 @@ services:
         source: ./data
         target: /data/db
     
+networks:
+  main-network:
+    name: main-network
+    driver: bridge
+  monitoring:
+    external: true

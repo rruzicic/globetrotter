@@ -1,0 +1,24 @@
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /user/health              --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.HealthCheck (4 handlers)
+[GIN-debug] GET    /user/all                 --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.GetAll (4 handlers)
+[GIN-debug] GET    /user/id/:id              --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.GetById (4 handlers)
+[GIN-debug] GET    /user/email/:email        --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.GetByEmail (4 handlers)
+[GIN-debug] POST   /user/register/host       --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.RegisterHost (4 handlers)
+[GIN-debug] POST   /user/register/guest      --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.RegisterGuest (4 handlers)
+[GIN-debug] POST   /user/update              --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.UpdateUser (5 handlers)
+[GIN-debug] POST   /user/login               --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.Login (4 handlers)
+[GIN-debug] DELETE /user/delete/:id          --> github.com/rruzicic/globetrotter/bnb/account-service/controllers.DeleteUser (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN] 2023/06/08 - 21:55:31 | 200 |     928.674µs |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 21:55:34 | 200 |     320.251µs |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 21:59:52 | 200 |    4.669777ms |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 21:59:59 | 200 |     104.349µs |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 22:23:05 | 200 |     9.52099ms |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 22:23:46 | 200 |     374.244µs |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 22:23:52 | 200 |      109.85µs |      172.18.0.1 | GET      "/user/health"
+[GIN] 2023/06/08 - 22:24:08 | 200 |      58.351µs |      172.18.0.1 | GET      "/user/health"
