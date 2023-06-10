@@ -21,14 +21,18 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
-            const newSocket = io('YOUR_WEBSOCKET_SERVER_URL', {
-                auth: { token: token },
-            });
+            // const newSocket = io('http://localhost:4000', {
+            //     auth: { token: token },
+            //     path: `/notification/websocket?email=${userEmailHandler()}`,
+            //     transports: ['websocket']
+            //   });
+
+            const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket?email=${userEmailHandler()}`);
 
             setSocket(newSocket);
 
             return () => {
-                newSocket.disconnect();
+                newSocket.close();
             };
         }
     }, [token]);
