@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/middlewares"
+	"github.com/rruzicic/globetrotter/bnb/recommendation-service/controllers"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func ginSetup() {
 	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
-	rec := r.Group("/recommendation")
+	rec := r.Group("/recommendation", controllers.SearchFlights)
 	rec.GET("/flights")
 
 	r.Run(":8080")

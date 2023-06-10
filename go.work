@@ -6,3 +6,4 @@ use ./bnb/account-service
 use ./bnb/feedback-service
 use ./bnb/reservation-service
 use ./bnb/search-service
+use ./bnb/recommendation-service
