@@ -15,7 +15,7 @@ func SearchFlights(reservationDTO dtos.ReservationDTO) ([]dtos.Flight, error) {
 	var arrival_flights []dtos.Flight
 	var departure_flights []dtos.Flight
 
-	arrival_flights_res, err := http.Get(fmt.Sprintf("flighs_service/flights/search?%s", arrival_query))
+	arrival_flights_res, err := http.Get(fmt.Sprintf("http://flights-backend:8080/flights/search?%s", arrival_query))
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func SearchFlights(reservationDTO dtos.ReservationDTO) ([]dtos.Flight, error) {
 		return nil, err
 	}
 
-	departure_flights_res, err := http.Get(fmt.Sprintf("flights_service/flgihts/search?%s", departure_query))
+	departure_flights_res, err := http.Get(fmt.Sprintf("http://flights-backend:8080/flights/search?%s", departure_query))
 	if err != nil {
 		return nil, err
 	}
