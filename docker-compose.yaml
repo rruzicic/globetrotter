@@ -11,6 +11,8 @@ services:
       # - feedback-service
       - reservation-service
       # - search-service
+    networks:
+      - backend-network
 
   accommodation-service:
     restart: on-failure:3
@@ -22,6 +24,8 @@ services:
       - './bnb/accommodation-service:/go/src/app'
     depends_on:
       - mongo
+    networks:
+      - backend-network
 
   account-service:
       restart: on-failure:3
@@ -34,6 +38,8 @@ services:
         - ./monitoring/logs/:/go/src/app/log/
       depends_on:
         - mongo
+      networks:
+        - backend-network
 
   # feedback-service:
   #   restart: on-failure:3
@@ -56,6 +62,8 @@ services:
       - './bnb/reservation-service:/go/src/app'
     depends_on:
       - mongo
+    networks:
+      - backend-network
     
   # search-service:
   #   restart: on-failure:3
@@ -76,6 +84,8 @@ services:
       - './flights/backend:/go/src/app'
     depends_on:
       - mongo
+    networks:
+      - backend-network
       
   mongo:
     image: 'mongo:latest'
@@ -86,10 +96,10 @@ services:
       - type: bind
         source: ./data
         target: /data/db
+    networks:
+      - backend-network
     
 networks:
-  main-network:
-    name: main-network
+  backend-network:
     driver: bridge
-  monitoring:
-    external: true
+    name: backend-network

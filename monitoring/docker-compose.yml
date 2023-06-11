@@ -1,38 +1,100 @@
+version: "3.5"
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    networks:
+      - monitoring-network
     volumes:
-      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-    healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:9200/_cat/health"]
-      interval: 3s
-      timeout: 3s
-      retries: 10
+      - "./jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
     ports:
-      - 9200:9200
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.6.2
-    volumes:
-      - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-    depends_on:
-      - elasticsearch
+      - "14250:14250"
+      - "14268:14268"
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "16685:16685"
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:6.5.1
-    entrypoint: "filebeat -e -strict.perms=false"
-    depends_on:
-      - elasticsearch
+  otel_collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    networks:
+      - monitoring-network
     volumes:
-      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - ./logs/:/logs/
-  
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.6.2
-    depends_on:
-      - elasticsearch
+      - "./otel-collector-config.yml:/etc/otelcol/otel-collector-config.yml"
+    command: --config /etc/otelcol/otel-collector-config.yml
     ports:
-      - 5601:5601
-    
+      - "14278:14278"
+    depends_on:
+      - jaeger
+  
+  prometheus:
+    image: prom/prometheus:latest
+    networks:
+      - monitoring-network
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    networks:
+      - monitoring-network
+    container_name: cadvisor
+    ports:
+    - 1080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring-network
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - "GF_SECURITY_ADMIN_USER=admin"
+      - "GF_SECURITY_ADMIN_PASSWORD=admin"
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://loki:3100
+        EOF
+        /run.sh
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+    networks:
+      - monitoring-network
+
+  promtail:
+    image: grafana/promtail:2.8.0
+    volumes:
+      - ./promtail-local-config.yaml:/etc/promtail/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - monitoring-network
+
 networks:
-  monitoring:
-    name: monitoring
+  monitoring-network:
+    name: backend-network
+    external: true
