@@ -55,7 +55,7 @@ func GetHighlyRatedAccommodationsOfUserGroup(users []models.User) ([]models.Acco
 		userIdList = append(userIdList, user.MongoId)
 	}
 
-	cypher_query := "MATCH (u:User)-[:STAYED_IN]->(a:Accommodation)<-[r:RATED]-(u) WHERE u.userId IN $userMongoIdList AND r.value IN [4, 5] RETURN a"
+	cypher_query := "MATCH (u:User)-[:Reservation]->(a:Accommodation)<-[r:Review]-(u) WHERE u.mongoId IN $userMongoIdList AND r.value IN [4, 5] RETURN a"
 	query_params := map[string]interface{}{
 		"userMongoIdList": userIdList,
 	}
