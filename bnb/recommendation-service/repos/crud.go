@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"time"
+
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
@@ -73,10 +75,11 @@ func CreateReservationRelationship(reservation models.Reservation) error {
 	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close()
 
-	cypher_query := "MATCH (u:User {mongoId:$userMongoId}) MATCH (a:Accommodation {mongoId:$accommodationMongoId}) CREATE (u)-[r:Reservation {mongoId:$mongoId}]->(a)"
+	cypher_query := "MATCH (u:User {mongoId:$userMongoId}) MATCH (a:Accommodation {mongoId:$accommodationMongoId}) CREATE (u)-[r:Reservation {reservationEnd:datetime($reservationEnd), mongoId:$mongoId}]->(a)"
 	query_params := map[string]interface{}{
 		"userMongoId":          reservation.UserMongoId,
 		"accommodationMongoId": reservation.AccommodationMongoId,
+		"reservationEnd":       reservation.ReservationEnd.Format(time.RFC3339),
 		"mongoId":              reservation.MongoId,
 	}
 
@@ -219,6 +222,26 @@ func UpdateReviewRelationship(review models.Review) error {
 	query_params := map[string]interface{}{
 		"mongoId": review.MongoId,
 		"value":   review.Value,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateReservationRelationship(reservation models.Reservation) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH ()-[r:Reservation {mongoId:$mongoId}]->() SET r.reservationEnd=datetime($reservationEnd)"
+	query_params := map[string]interface{}{
+		"mongoId":        reservation.MongoId,
+		"reservationEnd": reservation.ReservationEnd.Format(time.RFC3339),
 	}
 
 	if _, err := session.
