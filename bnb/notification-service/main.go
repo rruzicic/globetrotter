@@ -50,6 +50,12 @@ func handleWebSocket(c *gin.Context) {
 		return
 	}
 
+	//purely to make sure the connection opened properly
+	err = conn.WriteMessage(websocket.TextMessage, []byte("Hello, client!"))
+	if err != nil {
+		log.Println("Error sending message:", err)
+	}
+
 	defer conn.Close();
 
 	connectedClients.Lock()
