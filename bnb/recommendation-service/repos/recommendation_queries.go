@@ -5,8 +5,10 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
 
-// test what this returns and whether it can be directly transfered to []models.User
 func GetSimilarUsers(user models.User) ([]models.User, error) {
+	// use this query as entry to recommendations
+	// it returns the users most similar to this one
+	// then use them to get the highest rated accommodations that this user would "like"
 	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close()
 
@@ -39,4 +41,26 @@ func GetSimilarUsers(user models.User) ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func GetHighlyRatedAccommodationsOfUserGroup(users []models.User) ([]models.Accommodation, error) {
+	// use this query to get the accommodations that a certain user might want to see
+	// first use the get similar users and then use those users in this query
+	// then use these accommodations for the filter recent lowly rated accommodations query
+
+	return nil, nil
+}
+
+func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation) ([]models.Accommodation, error) {
+	// use this query to filter accommodations that were rated below 4 more than 5 times in the past 3 months
+	// then use the result of this query in the sorter query to get the best 10 by price
+
+	return nil, nil
+}
+
+func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]models.Accommodation, error) {
+	// use this query to get the 10 lowest priced accommodations out of the passed ones
+	// use these 10 to recommend to the user
+
+	return nil, nil
 }
