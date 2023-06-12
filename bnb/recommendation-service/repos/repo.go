@@ -89,3 +89,81 @@ func CreateReservationRelationship(reservation models.Reservation) error {
 
 	return nil
 }
+
+func DeleteAccommodationNode(accommodation models.Accommodation) error {
+	// also deletes all the relationships this node had
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH (a:Accommodation {mongoId=$mongoId}) DETACH DELETE"
+	query_params := map[string]interface{}{
+		"mongoId": accommodation.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteUserNode(user models.User) error {
+	// also deletes all the relationships this node had
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH (a:User {mongoId=$mongoId}) DETACH DELETE"
+	query_params := map[string]interface{}{
+		"mongoId": user.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteReviewRelationship(review models.Review) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH ()-[r:Review {mongoId:$mongoId}]->() DELETE r"
+	query_params := map[string]interface{}{
+		"mongoId": review.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteReservationRelationship(reservation models.Reservation) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH ()-[r:Reservation {mongoId:$mongoId}]->() DELETE r"
+	query_params := map[string]interface{}{
+		"mongoId": reservation.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
