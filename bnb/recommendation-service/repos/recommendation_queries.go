@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"time"
+
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
@@ -90,14 +92,98 @@ func GetHighlyRatedAccommodationsOfUserGroup(users []models.User) ([]models.Acco
 
 func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation) ([]models.Accommodation, error) {
 	// use this query to filter accommodations that were rated below 4 more than 5 times in the past 3 months
-	// then use the result of this query in the sorter query to get the best 10 by price
+	// then use the result of this query in the orderer query to get the best 10 by price
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
 
-	return nil, nil
+	accommodationIds := []string{}
+	for _, accommodation := range accommodations {
+		accommodationIds = append(accommodationIds, accommodation.MongoId)
+	}
+
+	cypher_query := "MATCH (u:User)-[re:Reservation]->(a:Accommodation)<-[r:Review]-(u) " +
+		"WHERE a.mongoId IN $accommodationMongoIdList" +
+		"WITH a, collect(r.value) AS reviews " +
+		"WHERE size([review IN reviews WHERE review < 3]) < 5 AND re.reservationEnd >= datetime($threeMonthsAgo)" +
+		"RETURN a"
+	query_params := map[string]interface{}{
+		"accommodationMongoIdList": accommodationIds,
+		"threeMonthsAgo":           time.Now().AddDate(0, -3, 0).Format(time.RFC3339),
+	}
+
+	accommodationRecords, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			retval, err := tx.Run(cypher_query, query_params)
+			if err != nil {
+				return nil, err
+			}
+
+			return retval.Collect()
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	filtered_accommodations := []models.Accommodation{}
+	for _, record := range accommodationRecords.([]*neo4j.Record) {
+		accommodation_map := record.Values[0].(neo4j.Node).GetProperties()
+		accommodation := models.Accommodation{
+			Name:     accommodation_map["name"].(string),
+			Location: accommodation_map["location"].(string),
+			Price:    accommodation_map["price"].(float32),
+			MongoId:  accommodation_map["mongoId"].(string),
+		}
+		filtered_accommodations = append(filtered_accommodations, accommodation)
+	}
+
+	return filtered_accommodations, nil
 }
 
 func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]models.Accommodation, error) {
 	// use this query to get the 10 lowest priced accommodations out of the passed ones
 	// use these 10 to recommend to the user
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
 
-	return nil, nil
+	accommodationIds := []string{}
+	for _, accommodation := range accommodations {
+		accommodationIds = append(accommodationIds, accommodation.MongoId)
+	}
+
+	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User) " +
+		"WHERE a.mongoId IN $accommodationMongoIdList " +
+		"WITH a, avg(r.value) AS averageRating " +
+		"RETURN a " +
+		"ORDER BY averageGrade DESC" +
+		"LIMIT 10"
+	query_params := map[string]interface{}{
+		"accommodationMongoIdList": accommodationIds,
+	}
+
+	accommodationRecords, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			retval, err := tx.Run(cypher_query, query_params)
+			if err != nil {
+				return nil, err
+			}
+
+			return retval.Collect()
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	ordered_accommodations := []models.Accommodation{}
+	for _, record := range accommodationRecords.([]*neo4j.Record) {
+		accommodation_map := record.Values[0].(neo4j.Node).GetProperties()
+		accommodation := models.Accommodation{
+			Name:     accommodation_map["name"].(string),
+			Location: accommodation_map["location"].(string),
+			Price:    accommodation_map["price"].(float32),
+			MongoId:  accommodation_map["mongoId"].(string),
+		}
+		ordered_accommodations = append(ordered_accommodations, accommodation)
+	}
+
+	return ordered_accommodations, nil
 }
