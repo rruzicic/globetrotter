@@ -1,8 +1,6 @@
 package repos
 
 import (
-	"log"
-
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
@@ -18,14 +16,27 @@ func GetSimilarUsers(user models.User) ([]models.User, error) {
 		"mongoId": user.MongoId,
 	}
 
-	retval, err := session.
+	userRecords, err := session.
 		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-			return tx.Run(cypher_query, query_params)
+			retval, err := tx.Run(cypher_query, query_params)
+			if err != nil {
+				return nil, err
+			}
+
+			return retval.Collect()
 		})
 	if err != nil {
 		return nil, err
 	}
-	log.Print(retval)
 
-	return retval.([]models.User), nil
+	users := []models.User{}
+	for _, record := range userRecords.([]*neo4j.Record) {
+		user_map := record.Values[0].(neo4j.Node).GetProperties()
+		// could have named all properties the same as they are in the models structs
+		// to be able to then marshall a json based on the map from above, then to unmarshall that json into a struct
+		// but thats too much of a hassle and a bit unsafe i think
+		users = append(users, models.User{Name: user_map["name"].(string), MongoId: user_map["mongoId"].(string)})
+	}
+
+	return users, nil
 }
