@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	go ginSetup()
 	repos.Connect()
+	go ginSetup()
 	repos.Disconnect()
 }
 
