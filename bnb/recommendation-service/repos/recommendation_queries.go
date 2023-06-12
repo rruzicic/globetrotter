@@ -47,8 +47,45 @@ func GetHighlyRatedAccommodationsOfUserGroup(users []models.User) ([]models.Acco
 	// use this query to get the accommodations that a certain user might want to see
 	// first use the get similar users and then use those users in this query
 	// then use these accommodations for the filter recent lowly rated accommodations query
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
 
-	return nil, nil
+	userIdList := []string{}
+	for _, user := range users {
+		userIdList = append(userIdList, user.MongoId)
+	}
+
+	cypher_query := "MATCH (u:User)-[:STAYED_IN]->(a:Accommodation)<-[r:RATED]-(u) WHERE u.userId IN $userMongoIdList AND r.value IN [4, 5] RETURN a"
+	query_params := map[string]interface{}{
+		"userMongoIdList": userIdList,
+	}
+
+	accommodationRecords, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			retval, err := tx.Run(cypher_query, query_params)
+			if err != nil {
+				return nil, err
+			}
+
+			return retval.Collect()
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	accommodations := []models.Accommodation{}
+	for _, record := range accommodationRecords.([]*neo4j.Record) {
+		accommodation_map := record.Values[0].(neo4j.Node).GetProperties()
+		accommodation := models.Accommodation{
+			Name:     accommodation_map["name"].(string),
+			Location: accommodation_map["location"].(string),
+			Price:    accommodation_map["price"].(float32),
+			MongoId:  accommodation_map["mongoId"].(string),
+		}
+		accommodations = append(accommodations, accommodation)
+	}
+
+	return accommodations, nil
 }
 
 func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation) ([]models.Accommodation, error) {
