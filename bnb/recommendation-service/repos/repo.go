@@ -167,3 +167,66 @@ func DeleteReservationRelationship(reservation models.Reservation) error {
 
 	return nil
 }
+
+func UpdateAccommodationNode(accommodation models.Accommodation) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH (a:Accommodation {mongoId:$mongoId})" +
+		"SET a.name=$name, a.location=$location, a.price=$price"
+	query_params := map[string]interface{}{
+		"name":     accommodation.Name,
+		"location": accommodation.Location,
+		"price":    accommodation.Price,
+		"mongoId":  accommodation.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateUserNode(user models.User) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH (u:User {mongoId:$mongoId}) SET u.name=$name"
+	query_params := map[string]interface{}{
+		"name":    user.Name,
+		"mongoId": user.MongoId,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateReviewRelationship(review models.Review) error {
+	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close()
+
+	cypher_query := "MATCH ()-[r:Review {mongoId:$mongoId}]->() SET r.value=$value"
+	query_params := map[string]interface{}{
+		"mongoId": review.MongoId,
+		"value":   review.Value,
+	}
+
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return tx.Run(cypher_query, query_params)
+		}); err != nil {
+		return err
+	}
+
+	return nil
+}
