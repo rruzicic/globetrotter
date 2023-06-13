@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	grpc_server "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/controllers"
+	grpc_server "github.com/rruzicic/globetrotter/bnb/notification-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/middleware"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/repos"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/socket"
@@ -12,8 +12,6 @@ import (
 func main() {
 	repos.Connect()
 	go ginSetup()
-
-	//TODO: WRONG SERVER
 	grpc_server.InitServer()
 	repos.Disconnect()
 }

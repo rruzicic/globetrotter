@@ -72,15 +72,14 @@ func HandleWebSocket(c *gin.Context) {
 
 func SendNotification(title string, message string, userEmail string) {
 	notificationString := fmt.Sprintf(`{"message": "%s", "title": "%s"}`, message, title)
+	log.Println(notificationString)
 	notification := []byte(notificationString)
 	connectedClients.RLock()
-	for key, client := range connectedClients.clients {
-		if(key == userEmail) {
+	for _, client := range connectedClients.clients {
 			if client.WriteMessage(websocket.TextMessage, []byte(notification)) != nil {
 				log.Println("Error sending message to client:")
 			}
-		}
 	}
-connectedClients.RUnlock()
+	connectedClients.RUnlock()
 }
 

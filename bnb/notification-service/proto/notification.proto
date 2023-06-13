@@ -1,8 +1,9 @@
 syntax = "proto3";
 
 package pb;
-option go_package = "github.com/rruzicic/globetrotter/bnb/reservation-service/pb";
+option go_package = "github.com/rruzicic/globetrotter/bnb/notification-service/pb";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 message Reservation {
     string accommodationId = 1;
@@ -14,11 +15,7 @@ message Reservation {
     float totalPrice = 7;
 }
 
-message ReservationID {
-    string reservationID = 1;
-}
-
 service NotificationService {
-    rpc ReservationCreated(ReservationID) returns (Reservation) {}
-    rpc ReservationCanceled(ReservationID) returns (Reservation) {}
+    rpc ReservationCreated(Reservation) returns (google.protobuf.Empty) {}
+    rpc ReservationCanceled(Reservation) returns (google.protobuf.Empty) {}
 }

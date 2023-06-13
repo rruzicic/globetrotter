@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/bnb/notification-service/socket"
+)
 
 func GetReservationById(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -14,5 +17,6 @@ func GetReservationById(ctx *gin.Context) {
 }
 
 func HealthCheck(ctx *gin.Context) {
+	socket.SendNotification("This is the title", "This is the message", "user@email.com")
 	ctx.JSON(400, "Healthy")
 }

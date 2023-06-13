@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,8 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
-	ReservationCreated(ctx context.Context, in *ReservationID, opts ...grpc.CallOption) (*Reservation, error)
-	ReservationCanceled(ctx context.Context, in *ReservationID, opts ...grpc.CallOption) (*Reservation, error)
+	ReservationCreated(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ReservationCanceled(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type notificationServiceClient struct {
@@ -34,8 +35,8 @@ func NewNotificationServiceClient(cc grpc.ClientConnInterface) NotificationServi
 	return &notificationServiceClient{cc}
 }
 
-func (c *notificationServiceClient) ReservationCreated(ctx context.Context, in *ReservationID, opts ...grpc.CallOption) (*Reservation, error) {
-	out := new(Reservation)
+func (c *notificationServiceClient) ReservationCreated(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/pb.NotificationService/ReservationCreated", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -43,8 +44,8 @@ func (c *notificationServiceClient) ReservationCreated(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *notificationServiceClient) ReservationCanceled(ctx context.Context, in *ReservationID, opts ...grpc.CallOption) (*Reservation, error) {
-	out := new(Reservation)
+func (c *notificationServiceClient) ReservationCanceled(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/pb.NotificationService/ReservationCanceled", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,8 +57,8 @@ func (c *notificationServiceClient) ReservationCanceled(ctx context.Context, in 
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
 type NotificationServiceServer interface {
-	ReservationCreated(context.Context, *ReservationID) (*Reservation, error)
-	ReservationCanceled(context.Context, *ReservationID) (*Reservation, error)
+	ReservationCreated(context.Context, *Reservation) (*emptypb.Empty, error)
+	ReservationCanceled(context.Context, *Reservation) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -65,10 +66,10 @@ type NotificationServiceServer interface {
 type UnimplementedNotificationServiceServer struct {
 }
 
-func (UnimplementedNotificationServiceServer) ReservationCreated(context.Context, *ReservationID) (*Reservation, error) {
+func (UnimplementedNotificationServiceServer) ReservationCreated(context.Context, *Reservation) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReservationCreated not implemented")
 }
-func (UnimplementedNotificationServiceServer) ReservationCanceled(context.Context, *ReservationID) (*Reservation, error) {
+func (UnimplementedNotificationServiceServer) ReservationCanceled(context.Context, *Reservation) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReservationCanceled not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
@@ -85,7 +86,7 @@ func RegisterNotificationServiceServer(s grpc.ServiceRegistrar, srv Notification
 }
 
 func _NotificationService_ReservationCreated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReservationID)
+	in := new(Reservation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -97,13 +98,13 @@ func _NotificationService_ReservationCreated_Handler(srv interface{}, ctx contex
 		FullMethod: "/pb.NotificationService/ReservationCreated",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).ReservationCreated(ctx, req.(*ReservationID))
+		return srv.(NotificationServiceServer).ReservationCreated(ctx, req.(*Reservation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _NotificationService_ReservationCanceled_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReservationID)
+	in := new(Reservation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -115,7 +116,7 @@ func _NotificationService_ReservationCanceled_Handler(srv interface{}, ctx conte
 		FullMethod: "/pb.NotificationService/ReservationCanceled",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).ReservationCanceled(ctx, req.(*ReservationID))
+		return srv.(NotificationServiceServer).ReservationCanceled(ctx, req.(*Reservation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
