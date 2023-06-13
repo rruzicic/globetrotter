@@ -26,7 +26,7 @@ func buildGraphAccommodation(accommodation models.Accommodation) *pb.GraphAccomm
 		Name:     accommodation.Name,
 		Location: accommodation.Location.Country + ", " + accommodation.Location.Street + " " + accommodation.Location.StreetNum,
 		Price:    accommodation.UnitPrice.Amount,
-		MongoId:  (*accommodation.Id).Hex(),
+		MongoId:  accommodation.Id.Hex(),
 	}
 }
 
