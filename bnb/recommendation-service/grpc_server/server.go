@@ -3,10 +3,12 @@ package grpcserver
 import (
 	"context"
 	"log"
+	"net"
 
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/repos"
+	"google.golang.org/grpc"
 )
 
 type RecommendationServiceDBEventsServer struct {
@@ -153,4 +155,19 @@ func (s *RecommendationServiceDBEventsServer) UpdateReview(ctx context.Context, 
 	}
 
 	return &pb.GraphEmpty{}, nil
+}
+
+func InitServer() {
+	listen, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Println("Recommendation service failed to listen. Error: ", err.Error())
+	}
+
+	server := grpc.NewServer()
+	pb.RegisterRecommendationServiceDBEventsServer(server, &RecommendationServiceDBEventsServer{})
+
+	log.Println("Recommendation server gRPC server listening..")
+	if err := server.Serve(listen); err != nil {
+		log.Println("Could not start Recommendation gRPC Server. Error: ", err.Error())
+	}
 }

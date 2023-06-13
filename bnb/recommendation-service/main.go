@@ -4,11 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/middlewares"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/controllers"
+	grpcserver "github.com/rruzicic/globetrotter/bnb/recommendation-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/repos"
 )
 
 func main() {
 	repos.Connect()
+	grpcserver.InitServer()
 	go ginSetup()
 	repos.Disconnect()
 }
