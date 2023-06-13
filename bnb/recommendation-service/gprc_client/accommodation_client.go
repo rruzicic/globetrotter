@@ -35,7 +35,7 @@ func GetAllAccommodations() ([](models.Accommodation), error) {
 	conn, _ := connectToAccomodationService()
 	client := pb.NewAccommodationServiceClient(conn)
 
-	accommodations := [](models.Accommodation){}
+	accommodations := []models.Accommodation{}
 	stream, err := client.GetAllAccommodations(context.Background(), &pb.Empty{})
 	if err != nil {
 		log.Println("Could not get stream of accomodations, Error: ", err.Error())
