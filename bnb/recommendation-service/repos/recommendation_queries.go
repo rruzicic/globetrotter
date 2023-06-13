@@ -151,7 +151,7 @@ func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]
 	}
 
 	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User)" +
-		"WHERE a.mongoId IN [\"1\", \"2\", \"3\", \"5\", \"6\"]" +
+		"WHERE a.mongoId IN $accommodationMongoIdList" +
 		"RETURN DISTINCT a" +
 		"ORDER BY a.price DESC" +
 		"LIMIT 10"
