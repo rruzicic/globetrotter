@@ -9,8 +9,10 @@ import (
 )
 
 func InitDBData() {
-	// get all acc, res, user and rev using rpc calls
-	// load each one of the lists seperately
+	// Initializes the database by pulling all currently available data
+	// from all the services
+	// ALSO DROPS THE WHOLE BASE BEFORE DOING SO
+	DropDB()
 }
 
 func DropDB() error {
