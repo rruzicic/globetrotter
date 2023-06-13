@@ -55,8 +55,11 @@ message BoolAnswer {
     bool answer = 1;
 }
 
+message Empty {}
+
 service AccommodationService {
     rpc TestConnection(TestMessage) returns (TestMessage) {}
+    rpc GetAllAccommodations(Empty) returns (stream Accommodation) {}
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
     rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
     rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (BoolAnswer) {}
