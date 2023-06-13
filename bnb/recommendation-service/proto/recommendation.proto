@@ -34,11 +34,6 @@ message User {
 message Empty {}
 
 service RecommendationServiceDBEvents {
-    rpc GetAllAccommodations(stream Accommodation) returns (Empty) {}
-    rpc GetAllUsers(stream User) returns (Empty) {}
-    rpc GetAllReservations(stream Reservation) returns (Empty) {}
-    rpc GetAllReviews(stream Review) returns (Empty) {}
-
     rpc CreateAccommodation(Accommodation) returns (Empty) {}
     rpc CreateUser(User) returns (Empty) {}
     rpc CreateReservation(Reservation) returns (Empty) {}

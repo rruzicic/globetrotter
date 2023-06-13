@@ -8,7 +8,10 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
 
-func InitDBData() {}
+func InitDBData() {
+	// get all acc, res, user and rev using rpc calls
+	// load each one of the lists seperately
+}
 
 func DropDB() error {
 	session := neo4jDriver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})

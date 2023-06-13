@@ -22,10 +22,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RecommendationServiceDBEventsClient interface {
-	GetAllAccommodations(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllAccommodationsClient, error)
-	GetAllUsers(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllUsersClient, error)
-	GetAllReservations(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllReservationsClient, error)
-	GetAllReviews(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllReviewsClient, error)
 	CreateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error)
 	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error)
 	CreateReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error)
@@ -46,142 +42,6 @@ type recommendationServiceDBEventsClient struct {
 
 func NewRecommendationServiceDBEventsClient(cc grpc.ClientConnInterface) RecommendationServiceDBEventsClient {
 	return &recommendationServiceDBEventsClient{cc}
-}
-
-func (c *recommendationServiceDBEventsClient) GetAllAccommodations(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllAccommodationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecommendationServiceDBEvents_ServiceDesc.Streams[0], "/pb.RecommendationServiceDBEvents/GetAllAccommodations", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &recommendationServiceDBEventsGetAllAccommodationsClient{stream}
-	return x, nil
-}
-
-type RecommendationServiceDBEvents_GetAllAccommodationsClient interface {
-	Send(*Accommodation) error
-	CloseAndRecv() (*Empty, error)
-	grpc.ClientStream
-}
-
-type recommendationServiceDBEventsGetAllAccommodationsClient struct {
-	grpc.ClientStream
-}
-
-func (x *recommendationServiceDBEventsGetAllAccommodationsClient) Send(m *Accommodation) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllAccommodationsClient) CloseAndRecv() (*Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *recommendationServiceDBEventsClient) GetAllUsers(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllUsersClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecommendationServiceDBEvents_ServiceDesc.Streams[1], "/pb.RecommendationServiceDBEvents/GetAllUsers", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &recommendationServiceDBEventsGetAllUsersClient{stream}
-	return x, nil
-}
-
-type RecommendationServiceDBEvents_GetAllUsersClient interface {
-	Send(*User) error
-	CloseAndRecv() (*Empty, error)
-	grpc.ClientStream
-}
-
-type recommendationServiceDBEventsGetAllUsersClient struct {
-	grpc.ClientStream
-}
-
-func (x *recommendationServiceDBEventsGetAllUsersClient) Send(m *User) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllUsersClient) CloseAndRecv() (*Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *recommendationServiceDBEventsClient) GetAllReservations(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllReservationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecommendationServiceDBEvents_ServiceDesc.Streams[2], "/pb.RecommendationServiceDBEvents/GetAllReservations", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &recommendationServiceDBEventsGetAllReservationsClient{stream}
-	return x, nil
-}
-
-type RecommendationServiceDBEvents_GetAllReservationsClient interface {
-	Send(*Reservation) error
-	CloseAndRecv() (*Empty, error)
-	grpc.ClientStream
-}
-
-type recommendationServiceDBEventsGetAllReservationsClient struct {
-	grpc.ClientStream
-}
-
-func (x *recommendationServiceDBEventsGetAllReservationsClient) Send(m *Reservation) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllReservationsClient) CloseAndRecv() (*Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *recommendationServiceDBEventsClient) GetAllReviews(ctx context.Context, opts ...grpc.CallOption) (RecommendationServiceDBEvents_GetAllReviewsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &RecommendationServiceDBEvents_ServiceDesc.Streams[3], "/pb.RecommendationServiceDBEvents/GetAllReviews", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &recommendationServiceDBEventsGetAllReviewsClient{stream}
-	return x, nil
-}
-
-type RecommendationServiceDBEvents_GetAllReviewsClient interface {
-	Send(*Review) error
-	CloseAndRecv() (*Empty, error)
-	grpc.ClientStream
-}
-
-type recommendationServiceDBEventsGetAllReviewsClient struct {
-	grpc.ClientStream
-}
-
-func (x *recommendationServiceDBEventsGetAllReviewsClient) Send(m *Review) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllReviewsClient) CloseAndRecv() (*Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func (c *recommendationServiceDBEventsClient) CreateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error) {
@@ -296,10 +156,6 @@ func (c *recommendationServiceDBEventsClient) UpdateReview(ctx context.Context, 
 // All implementations must embed UnimplementedRecommendationServiceDBEventsServer
 // for forward compatibility
 type RecommendationServiceDBEventsServer interface {
-	GetAllAccommodations(RecommendationServiceDBEvents_GetAllAccommodationsServer) error
-	GetAllUsers(RecommendationServiceDBEvents_GetAllUsersServer) error
-	GetAllReservations(RecommendationServiceDBEvents_GetAllReservationsServer) error
-	GetAllReviews(RecommendationServiceDBEvents_GetAllReviewsServer) error
 	CreateAccommodation(context.Context, *Accommodation) (*Empty, error)
 	CreateUser(context.Context, *User) (*Empty, error)
 	CreateReservation(context.Context, *Reservation) (*Empty, error)
@@ -319,18 +175,6 @@ type RecommendationServiceDBEventsServer interface {
 type UnimplementedRecommendationServiceDBEventsServer struct {
 }
 
-func (UnimplementedRecommendationServiceDBEventsServer) GetAllAccommodations(RecommendationServiceDBEvents_GetAllAccommodationsServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllAccommodations not implemented")
-}
-func (UnimplementedRecommendationServiceDBEventsServer) GetAllUsers(RecommendationServiceDBEvents_GetAllUsersServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
-}
-func (UnimplementedRecommendationServiceDBEventsServer) GetAllReservations(RecommendationServiceDBEvents_GetAllReservationsServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllReservations not implemented")
-}
-func (UnimplementedRecommendationServiceDBEventsServer) GetAllReviews(RecommendationServiceDBEvents_GetAllReviewsServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllReviews not implemented")
-}
 func (UnimplementedRecommendationServiceDBEventsServer) CreateAccommodation(context.Context, *Accommodation) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccommodation not implemented")
 }
@@ -379,110 +223,6 @@ type UnsafeRecommendationServiceDBEventsServer interface {
 
 func RegisterRecommendationServiceDBEventsServer(s grpc.ServiceRegistrar, srv RecommendationServiceDBEventsServer) {
 	s.RegisterService(&RecommendationServiceDBEvents_ServiceDesc, srv)
-}
-
-func _RecommendationServiceDBEvents_GetAllAccommodations_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RecommendationServiceDBEventsServer).GetAllAccommodations(&recommendationServiceDBEventsGetAllAccommodationsServer{stream})
-}
-
-type RecommendationServiceDBEvents_GetAllAccommodationsServer interface {
-	SendAndClose(*Empty) error
-	Recv() (*Accommodation, error)
-	grpc.ServerStream
-}
-
-type recommendationServiceDBEventsGetAllAccommodationsServer struct {
-	grpc.ServerStream
-}
-
-func (x *recommendationServiceDBEventsGetAllAccommodationsServer) SendAndClose(m *Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllAccommodationsServer) Recv() (*Accommodation, error) {
-	m := new(Accommodation)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func _RecommendationServiceDBEvents_GetAllUsers_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RecommendationServiceDBEventsServer).GetAllUsers(&recommendationServiceDBEventsGetAllUsersServer{stream})
-}
-
-type RecommendationServiceDBEvents_GetAllUsersServer interface {
-	SendAndClose(*Empty) error
-	Recv() (*User, error)
-	grpc.ServerStream
-}
-
-type recommendationServiceDBEventsGetAllUsersServer struct {
-	grpc.ServerStream
-}
-
-func (x *recommendationServiceDBEventsGetAllUsersServer) SendAndClose(m *Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllUsersServer) Recv() (*User, error) {
-	m := new(User)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func _RecommendationServiceDBEvents_GetAllReservations_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RecommendationServiceDBEventsServer).GetAllReservations(&recommendationServiceDBEventsGetAllReservationsServer{stream})
-}
-
-type RecommendationServiceDBEvents_GetAllReservationsServer interface {
-	SendAndClose(*Empty) error
-	Recv() (*Reservation, error)
-	grpc.ServerStream
-}
-
-type recommendationServiceDBEventsGetAllReservationsServer struct {
-	grpc.ServerStream
-}
-
-func (x *recommendationServiceDBEventsGetAllReservationsServer) SendAndClose(m *Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllReservationsServer) Recv() (*Reservation, error) {
-	m := new(Reservation)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func _RecommendationServiceDBEvents_GetAllReviews_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RecommendationServiceDBEventsServer).GetAllReviews(&recommendationServiceDBEventsGetAllReviewsServer{stream})
-}
-
-type RecommendationServiceDBEvents_GetAllReviewsServer interface {
-	SendAndClose(*Empty) error
-	Recv() (*Review, error)
-	grpc.ServerStream
-}
-
-type recommendationServiceDBEventsGetAllReviewsServer struct {
-	grpc.ServerStream
-}
-
-func (x *recommendationServiceDBEventsGetAllReviewsServer) SendAndClose(m *Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *recommendationServiceDBEventsGetAllReviewsServer) Recv() (*Review, error) {
-	m := new(Review)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func _RecommendationServiceDBEvents_CreateAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -757,27 +497,6 @@ var RecommendationServiceDBEvents_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RecommendationServiceDBEvents_UpdateReview_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetAllAccommodations",
-			Handler:       _RecommendationServiceDBEvents_GetAllAccommodations_Handler,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "GetAllUsers",
-			Handler:       _RecommendationServiceDBEvents_GetAllUsers_Handler,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "GetAllReservations",
-			Handler:       _RecommendationServiceDBEvents_GetAllReservations_Handler,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "GetAllReviews",
-			Handler:       _RecommendationServiceDBEvents_GetAllReviews_Handler,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "recommendation.proto",
 }

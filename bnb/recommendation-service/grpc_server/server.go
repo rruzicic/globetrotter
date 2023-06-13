@@ -47,15 +47,6 @@ func buildLocalReview(review *pb.Review) models.Review {
 	}
 }
 
-func (s *RecommendationServiceDBEventsServer) GetAllAccommodations(pb.RecommendationServiceDBEvents_GetAllAccommodationsServer) (*pb.Empty, error) {
-}
-func (s *RecommendationServiceDBEventsServer) GetAllUsers(pb.RecommendationServiceDBEvents_GetAllUsersServer) (*pb.Empty, error) {
-}
-func (s *RecommendationServiceDBEventsServer) GetAllReservations(pb.RecommendationServiceDBEvents_GetAllReservationsServer) (*pb.Empty, error) {
-}
-func (s *RecommendationServiceDBEventsServer) GetAllReviews(pb.RecommendationServiceDBEvents_GetAllReviewsServer) (*pb.Empty, error) {
-}
-
 func (s *RecommendationServiceDBEventsServer) CreateAccommodation(ctx context.Context, req *pb.Accommodation) (*pb.Empty, error) {
 	if err := repos.CreateAccommodationNode(buildLocalAccommodation(req)); err != nil {
 		log.Print("Could not create accommodation node. Error: ", err.Error())
