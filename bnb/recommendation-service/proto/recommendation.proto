@@ -30,3 +30,27 @@ message User {
     string name = 1;
     string mongoId = 2;
 }
+
+message Empty {}
+
+service RecommendationServiceDBEvents {
+    rpc GetAllAccommodations(stream Accommodation) returns (Empty) {}
+    rpc GetAllUsers(stream User) returns (Empty) {}
+    rpc GetAllReservations(stream Reservation) returns (Empty) {}
+    rpc GetAllReviews(stream Review) returns (Empty) {}
+
+    rpc CreateAccommodation(Accommodation) returns (Empty) {}
+    rpc CreateUser(User) returns (Empty) {}
+    rpc CreateReservation(Reservation) returns (Empty) {}
+    rpc CreateReview(Review) returns (Empty) {}
+
+    rpc DeleteAccommodation(Accommodation) returns (Empty) {}
+    rpc DeleteUser(User) returns (Empty) {}
+    rpc DeleteReservation(Reservation) returns (Empty) {}
+    rpc DeleteReview(Review) returns (Empty) {}
+
+    rpc UpdateAccommodation(Accommodation) returns (Empty) {}
+    rpc UpdateUser(User) returns (Empty) {}
+    rpc UpdateReservation(Reservation) returns (Empty) {}
+    rpc UpdateReview(Review) returns (Empty) {}
+}
