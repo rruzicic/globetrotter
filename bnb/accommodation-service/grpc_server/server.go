@@ -136,6 +136,23 @@ func (s *AccommodationServiceServer) RemoveReservationFromAccommodation(ctx cont
 	return &pb.BoolAnswer{Answer: true}, nil
 }
 
+func GetAllAccommodations(req *pb.Empty, stream pb.AccommodationService_GetAllAccommodationsServer) error {
+	accommodations, err := repos.GetAllAccommodations()
+	if err != nil {
+		log.Println("Could not get all accommodations. Error: ", err.Error())
+		return err
+	}
+
+	for _, accommodation := range accommodations {
+		grpc_accommodation := buildGRPCAccommodation(accommodation)
+		if err := stream.Send(&grpc_accommodation); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
