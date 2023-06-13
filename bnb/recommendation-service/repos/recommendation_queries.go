@@ -103,7 +103,7 @@ func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation)
 
 	cypher_query := "MATCH (u:User)-[re:Reservation]->(a:Accommodation)<-[r:Review]-(u) " +
 		"WHERE a.mongoId IN $accommodationMongoIdList" +
-		"WITH a, collect(r.value) AS reviews " +
+		"WITH a, re, collect(r.value) AS reviews " +
 		"WHERE size([review IN reviews WHERE review < 3]) < 5 AND re.reservationEnd >= datetime($threeMonthsAgo)" +
 		"RETURN a"
 	query_params := map[string]interface{}{
@@ -150,11 +150,10 @@ func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]
 		accommodationIds = append(accommodationIds, accommodation.MongoId)
 	}
 
-	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User) " +
-		"WHERE a.mongoId IN $accommodationMongoIdList " +
-		"WITH a, avg(r.value) AS averageRating " +
-		"RETURN a " +
-		"ORDER BY averageGrade DESC" +
+	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User)" +
+		"WHERE a.mongoId IN [\"1\", \"2\", \"3\", \"5\", \"6\"]" +
+		"RETURN DISTINCT a" +
+		"ORDER BY a.price DESC" +
 		"LIMIT 10"
 	query_params := map[string]interface{}{
 		"accommodationMongoIdList": accommodationIds,
