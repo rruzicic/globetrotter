@@ -22,18 +22,18 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RecommendationServiceDBEventsClient interface {
-	CreateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error)
-	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error)
-	CreateReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error)
-	CreateReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error)
-	DeleteAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error)
-	DeleteUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error)
-	DeleteReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error)
-	DeleteReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error)
-	UpdateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error)
-	UpdateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error)
-	UpdateReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error)
-	UpdateReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error)
+	CreateAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	CreateUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error)
+	CreateReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	CreateReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error)
+	DeleteAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	DeleteUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error)
+	DeleteReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	DeleteReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error)
+	UpdateAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	UpdateUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error)
+	UpdateReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error)
+	UpdateReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error)
 }
 
 type recommendationServiceDBEventsClient struct {
@@ -44,8 +44,8 @@ func NewRecommendationServiceDBEventsClient(cc grpc.ClientConnInterface) Recomme
 	return &recommendationServiceDBEventsClient{cc}
 }
 
-func (c *recommendationServiceDBEventsClient) CreateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) CreateAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/CreateAccommodation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -53,8 +53,8 @@ func (c *recommendationServiceDBEventsClient) CreateAccommodation(ctx context.Co
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) CreateUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -62,8 +62,8 @@ func (c *recommendationServiceDBEventsClient) CreateUser(ctx context.Context, in
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) CreateReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) CreateReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/CreateReservation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -71,8 +71,8 @@ func (c *recommendationServiceDBEventsClient) CreateReservation(ctx context.Cont
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) CreateReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) CreateReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/CreateReview", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,8 +80,8 @@ func (c *recommendationServiceDBEventsClient) CreateReview(ctx context.Context, 
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) DeleteAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) DeleteAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/DeleteAccommodation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ func (c *recommendationServiceDBEventsClient) DeleteAccommodation(ctx context.Co
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) DeleteUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) DeleteUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/DeleteUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -98,8 +98,8 @@ func (c *recommendationServiceDBEventsClient) DeleteUser(ctx context.Context, in
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) DeleteReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) DeleteReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/DeleteReservation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -107,8 +107,8 @@ func (c *recommendationServiceDBEventsClient) DeleteReservation(ctx context.Cont
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) DeleteReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) DeleteReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/DeleteReview", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,8 +116,8 @@ func (c *recommendationServiceDBEventsClient) DeleteReview(ctx context.Context, 
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) UpdateAccommodation(ctx context.Context, in *Accommodation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) UpdateAccommodation(ctx context.Context, in *GraphAccommodation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/UpdateAccommodation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -125,8 +125,8 @@ func (c *recommendationServiceDBEventsClient) UpdateAccommodation(ctx context.Co
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) UpdateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) UpdateUser(ctx context.Context, in *GraphUser, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -134,8 +134,8 @@ func (c *recommendationServiceDBEventsClient) UpdateUser(ctx context.Context, in
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) UpdateReservation(ctx context.Context, in *Reservation, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) UpdateReservation(ctx context.Context, in *GraphReservation, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/UpdateReservation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,8 +143,8 @@ func (c *recommendationServiceDBEventsClient) UpdateReservation(ctx context.Cont
 	return out, nil
 }
 
-func (c *recommendationServiceDBEventsClient) UpdateReview(ctx context.Context, in *Review, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *recommendationServiceDBEventsClient) UpdateReview(ctx context.Context, in *GraphReview, opts ...grpc.CallOption) (*GraphEmpty, error) {
+	out := new(GraphEmpty)
 	err := c.cc.Invoke(ctx, "/pb.RecommendationServiceDBEvents/UpdateReview", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -156,18 +156,18 @@ func (c *recommendationServiceDBEventsClient) UpdateReview(ctx context.Context, 
 // All implementations must embed UnimplementedRecommendationServiceDBEventsServer
 // for forward compatibility
 type RecommendationServiceDBEventsServer interface {
-	CreateAccommodation(context.Context, *Accommodation) (*Empty, error)
-	CreateUser(context.Context, *User) (*Empty, error)
-	CreateReservation(context.Context, *Reservation) (*Empty, error)
-	CreateReview(context.Context, *Review) (*Empty, error)
-	DeleteAccommodation(context.Context, *Accommodation) (*Empty, error)
-	DeleteUser(context.Context, *User) (*Empty, error)
-	DeleteReservation(context.Context, *Reservation) (*Empty, error)
-	DeleteReview(context.Context, *Review) (*Empty, error)
-	UpdateAccommodation(context.Context, *Accommodation) (*Empty, error)
-	UpdateUser(context.Context, *User) (*Empty, error)
-	UpdateReservation(context.Context, *Reservation) (*Empty, error)
-	UpdateReview(context.Context, *Review) (*Empty, error)
+	CreateAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error)
+	CreateUser(context.Context, *GraphUser) (*GraphEmpty, error)
+	CreateReservation(context.Context, *GraphReservation) (*GraphEmpty, error)
+	CreateReview(context.Context, *GraphReview) (*GraphEmpty, error)
+	DeleteAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error)
+	DeleteUser(context.Context, *GraphUser) (*GraphEmpty, error)
+	DeleteReservation(context.Context, *GraphReservation) (*GraphEmpty, error)
+	DeleteReview(context.Context, *GraphReview) (*GraphEmpty, error)
+	UpdateAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error)
+	UpdateUser(context.Context, *GraphUser) (*GraphEmpty, error)
+	UpdateReservation(context.Context, *GraphReservation) (*GraphEmpty, error)
+	UpdateReview(context.Context, *GraphReview) (*GraphEmpty, error)
 	mustEmbedUnimplementedRecommendationServiceDBEventsServer()
 }
 
@@ -175,40 +175,40 @@ type RecommendationServiceDBEventsServer interface {
 type UnimplementedRecommendationServiceDBEventsServer struct {
 }
 
-func (UnimplementedRecommendationServiceDBEventsServer) CreateAccommodation(context.Context, *Accommodation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) CreateAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccommodation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) CreateUser(context.Context, *User) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) CreateUser(context.Context, *GraphUser) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) CreateReservation(context.Context, *Reservation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) CreateReservation(context.Context, *GraphReservation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReservation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) CreateReview(context.Context, *Review) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) CreateReview(context.Context, *GraphReview) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateReview not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) DeleteAccommodation(context.Context, *Accommodation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) DeleteAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccommodation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) DeleteUser(context.Context, *User) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) DeleteUser(context.Context, *GraphUser) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) DeleteReservation(context.Context, *Reservation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) DeleteReservation(context.Context, *GraphReservation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReservation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) DeleteReview(context.Context, *Review) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) DeleteReview(context.Context, *GraphReview) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReview not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) UpdateAccommodation(context.Context, *Accommodation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) UpdateAccommodation(context.Context, *GraphAccommodation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccommodation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) UpdateUser(context.Context, *User) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) UpdateUser(context.Context, *GraphUser) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) UpdateReservation(context.Context, *Reservation) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) UpdateReservation(context.Context, *GraphReservation) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateReservation not implemented")
 }
-func (UnimplementedRecommendationServiceDBEventsServer) UpdateReview(context.Context, *Review) (*Empty, error) {
+func (UnimplementedRecommendationServiceDBEventsServer) UpdateReview(context.Context, *GraphReview) (*GraphEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateReview not implemented")
 }
 func (UnimplementedRecommendationServiceDBEventsServer) mustEmbedUnimplementedRecommendationServiceDBEventsServer() {
@@ -226,7 +226,7 @@ func RegisterRecommendationServiceDBEventsServer(s grpc.ServiceRegistrar, srv Re
 }
 
 func _RecommendationServiceDBEvents_CreateAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Accommodation)
+	in := new(GraphAccommodation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -238,13 +238,13 @@ func _RecommendationServiceDBEvents_CreateAccommodation_Handler(srv interface{},
 		FullMethod: "/pb.RecommendationServiceDBEvents/CreateAccommodation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).CreateAccommodation(ctx, req.(*Accommodation))
+		return srv.(RecommendationServiceDBEventsServer).CreateAccommodation(ctx, req.(*GraphAccommodation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(User)
+	in := new(GraphUser)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -256,13 +256,13 @@ func _RecommendationServiceDBEvents_CreateUser_Handler(srv interface{}, ctx cont
 		FullMethod: "/pb.RecommendationServiceDBEvents/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).CreateUser(ctx, req.(*User))
+		return srv.(RecommendationServiceDBEventsServer).CreateUser(ctx, req.(*GraphUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_CreateReservation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Reservation)
+	in := new(GraphReservation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -274,13 +274,13 @@ func _RecommendationServiceDBEvents_CreateReservation_Handler(srv interface{}, c
 		FullMethod: "/pb.RecommendationServiceDBEvents/CreateReservation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).CreateReservation(ctx, req.(*Reservation))
+		return srv.(RecommendationServiceDBEventsServer).CreateReservation(ctx, req.(*GraphReservation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_CreateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Review)
+	in := new(GraphReview)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -292,13 +292,13 @@ func _RecommendationServiceDBEvents_CreateReview_Handler(srv interface{}, ctx co
 		FullMethod: "/pb.RecommendationServiceDBEvents/CreateReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).CreateReview(ctx, req.(*Review))
+		return srv.(RecommendationServiceDBEventsServer).CreateReview(ctx, req.(*GraphReview))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_DeleteAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Accommodation)
+	in := new(GraphAccommodation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -310,13 +310,13 @@ func _RecommendationServiceDBEvents_DeleteAccommodation_Handler(srv interface{},
 		FullMethod: "/pb.RecommendationServiceDBEvents/DeleteAccommodation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).DeleteAccommodation(ctx, req.(*Accommodation))
+		return srv.(RecommendationServiceDBEventsServer).DeleteAccommodation(ctx, req.(*GraphAccommodation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(User)
+	in := new(GraphUser)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -328,13 +328,13 @@ func _RecommendationServiceDBEvents_DeleteUser_Handler(srv interface{}, ctx cont
 		FullMethod: "/pb.RecommendationServiceDBEvents/DeleteUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).DeleteUser(ctx, req.(*User))
+		return srv.(RecommendationServiceDBEventsServer).DeleteUser(ctx, req.(*GraphUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_DeleteReservation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Reservation)
+	in := new(GraphReservation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -346,13 +346,13 @@ func _RecommendationServiceDBEvents_DeleteReservation_Handler(srv interface{}, c
 		FullMethod: "/pb.RecommendationServiceDBEvents/DeleteReservation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).DeleteReservation(ctx, req.(*Reservation))
+		return srv.(RecommendationServiceDBEventsServer).DeleteReservation(ctx, req.(*GraphReservation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_DeleteReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Review)
+	in := new(GraphReview)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -364,13 +364,13 @@ func _RecommendationServiceDBEvents_DeleteReview_Handler(srv interface{}, ctx co
 		FullMethod: "/pb.RecommendationServiceDBEvents/DeleteReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).DeleteReview(ctx, req.(*Review))
+		return srv.(RecommendationServiceDBEventsServer).DeleteReview(ctx, req.(*GraphReview))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_UpdateAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Accommodation)
+	in := new(GraphAccommodation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -382,13 +382,13 @@ func _RecommendationServiceDBEvents_UpdateAccommodation_Handler(srv interface{},
 		FullMethod: "/pb.RecommendationServiceDBEvents/UpdateAccommodation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).UpdateAccommodation(ctx, req.(*Accommodation))
+		return srv.(RecommendationServiceDBEventsServer).UpdateAccommodation(ctx, req.(*GraphAccommodation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(User)
+	in := new(GraphUser)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -400,13 +400,13 @@ func _RecommendationServiceDBEvents_UpdateUser_Handler(srv interface{}, ctx cont
 		FullMethod: "/pb.RecommendationServiceDBEvents/UpdateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).UpdateUser(ctx, req.(*User))
+		return srv.(RecommendationServiceDBEventsServer).UpdateUser(ctx, req.(*GraphUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_UpdateReservation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Reservation)
+	in := new(GraphReservation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -418,13 +418,13 @@ func _RecommendationServiceDBEvents_UpdateReservation_Handler(srv interface{}, c
 		FullMethod: "/pb.RecommendationServiceDBEvents/UpdateReservation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).UpdateReservation(ctx, req.(*Reservation))
+		return srv.(RecommendationServiceDBEventsServer).UpdateReservation(ctx, req.(*GraphReservation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RecommendationServiceDBEvents_UpdateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Review)
+	in := new(GraphReview)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -436,7 +436,7 @@ func _RecommendationServiceDBEvents_UpdateReview_Handler(srv interface{}, ctx co
 		FullMethod: "/pb.RecommendationServiceDBEvents/UpdateReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecommendationServiceDBEventsServer).UpdateReview(ctx, req.(*Review))
+		return srv.(RecommendationServiceDBEventsServer).UpdateReview(ctx, req.(*GraphReview))
 	}
 	return interceptor(ctx, in, info, handler)
 }
