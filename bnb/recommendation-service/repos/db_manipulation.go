@@ -5,14 +5,34 @@ import (
 	"time"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/recommendation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 )
 
 func InitDBData() {
-	// Initializes the database by pulling all currently available data
-	// from all the services
+	// Initializes the database by pulling all currently available data from all the services
 	// ALSO DROPS THE WHOLE BASE BEFORE DOING SO
 	DropDB()
+
+	accommodations, _ := grpcclient.GetAllAccommodations()
+	for _, accommodation := range accommodations {
+		CreateAccommodationNode(accommodation)
+	}
+
+	users, _ := grpcclient.GetAllUsers()
+	for _, user := range users {
+		CreateUserNode(user)
+	}
+
+	reviews, _ := grpcclient.GetAllReviews()
+	for _, review := range reviews {
+		CreateReviewRelationship(review)
+	}
+
+	reservations, _ := grpcclient.GetAllReservations()
+	for _, reservation := range reservations {
+		CreateReservationRelationship(reservation)
+	}
 }
 
 func DropDB() error {

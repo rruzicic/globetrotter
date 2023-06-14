@@ -8,3 +8,11 @@ import (
 func GetRecommendedAccommodations(user models.User) ([]models.Accommodation, error) {
 	return repos.GetRecommendedAccommodations(user)
 }
+
+func InitDBData() {
+	repos.InitDBData()
+}
+
+func DropDB() error {
+	return repos.DropDB()
+}

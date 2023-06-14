@@ -46,3 +46,17 @@ func GetRecommendedAccommodations(ctx *gin.Context) {
 	ctx.JSON(200, accommodations)
 	return
 }
+
+func InitDBData(ctx *gin.Context) {
+	// for first time DB use and debug only
+	services.InitDBData()
+	ctx.JSON(200, "Okay")
+	return
+}
+
+func DropDB(ctx *gin.Context) {
+	if err := services.DropDB(); err != nil {
+		ctx.JSON(500, "Server Error")
+	}
+	ctx.JSON(200, "Okay")
+}
