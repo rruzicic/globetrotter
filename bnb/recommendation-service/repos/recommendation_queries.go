@@ -186,3 +186,27 @@ func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]
 
 	return ordered_accommodations, nil
 }
+
+func GetRecommendedAccommodations(user models.User) ([]models.Accommodation, error) {
+	users, err := GetSimilarUsers(user)
+	if err != nil {
+		return nil, err
+	}
+
+	highly_rated_accommodations, err := GetHighlyRatedAccommodationsOfUserGroup(users)
+	if err != nil {
+		return nil, err
+	}
+
+	filtered_accommodations, err := FilterRecentLowlyRatedAccommodations(highly_rated_accommodations)
+	if err != nil {
+		return nil, err
+	}
+
+	accommodations, err := GetTenLowestPricedAccommodations(filtered_accommodations)
+	if err != nil {
+		return nil, err
+	}
+
+	return accommodations, nil
+}
