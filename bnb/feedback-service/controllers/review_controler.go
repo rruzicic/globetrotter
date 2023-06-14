@@ -23,7 +23,7 @@ func CreateHostReview(ctx *gin.Context) {
 
 func GetHostReviewById(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == ""{
+	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -37,9 +37,9 @@ func GetHostReviewById(ctx *gin.Context) {
 	ctx.JSON(200, hostReview)
 }
 
-func GetHostReviewsByUserId(ctx *gin.Context){
+func GetHostReviewsByUserId(ctx *gin.Context) {
 	userId := ctx.Param("user_id")
-	if userId == ""{
+	if userId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -55,7 +55,7 @@ func GetHostReviewsByUserId(ctx *gin.Context){
 
 func GetHostReviewsByHostId(ctx *gin.Context) {
 	hostId := ctx.Param("host_id")
-	if hostId == ""{
+	if hostId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -71,7 +71,7 @@ func GetHostReviewsByHostId(ctx *gin.Context) {
 
 func DeleteHostReview(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == ""{
+	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -82,10 +82,10 @@ func DeleteHostReview(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, "Host Review with id: " + id + " successfully deleted.")
+	ctx.JSON(200, "Host Review with id: "+id+" successfully deleted.")
 }
 
-func UpdateHostReview(ctx *gin.Context){
+func UpdateHostReview(ctx *gin.Context) {
 	var hostReview dtos.CreateHostReviewDTO
 	if err := ctx.ShouldBindJSON(&hostReview); err != nil {
 		ctx.JSON(400, "Bad Request")
@@ -98,7 +98,7 @@ func UpdateHostReview(ctx *gin.Context){
 		return
 	}
 
-	ctx.JSON(200, "Review for host with id: " + hostReview.HostId + " successfully updated.")
+	ctx.JSON(200, "Review for host with id: "+hostReview.HostId+" successfully updated.")
 }
 
 //==================================================================================================
@@ -121,7 +121,7 @@ func CreateAccommodationReview(ctx *gin.Context) {
 
 func GetAccommodationReviewById(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == ""{
+	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -135,9 +135,9 @@ func GetAccommodationReviewById(ctx *gin.Context) {
 	ctx.JSON(200, accommodationReview)
 }
 
-func GetAccommodationReviewsByUserId(ctx *gin.Context){
+func GetAccommodationReviewsByUserId(ctx *gin.Context) {
 	userId := ctx.Param("user_id")
-	if userId == ""{
+	if userId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -151,9 +151,9 @@ func GetAccommodationReviewsByUserId(ctx *gin.Context){
 	ctx.JSON(200, accommodationReviews)
 }
 
-func GetAcommodationReviewsByAccommodationId(ctx *gin.Context) {
+func GetAccommodationReviewsByAccommodationId(ctx *gin.Context) {
 	accommodationtId := ctx.Param("accommodation_id")
-	if accommodationtId == ""{
+	if accommodationtId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -169,7 +169,7 @@ func GetAcommodationReviewsByAccommodationId(ctx *gin.Context) {
 
 func DeleteAccommodationReview(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == ""{
+	if id == "" {
 		ctx.JSON(400, "Bad Request")
 		return
 	}
@@ -180,10 +180,10 @@ func DeleteAccommodationReview(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, "Accommodation Review with id: " + id + " successfully deleted.")
+	ctx.JSON(200, "Accommodation Review with id: "+id+" successfully deleted.")
 }
 
-func UpdateAccommodationReview(ctx *gin.Context){
+func UpdateAccommodationReview(ctx *gin.Context) {
 	var accommodationReview dtos.CreateAccommodationReviewDTO
 	if err := ctx.ShouldBindJSON(&accommodationReview); err != nil {
 		ctx.JSON(400, "Bad Request")
@@ -196,5 +196,5 @@ func UpdateAccommodationReview(ctx *gin.Context){
 		return
 	}
 
-	ctx.JSON(200, "Review for accommodation with id: " + accommodationReview.AccommodationId + " successfully updated.")
+	ctx.JSON(200, "Review for accommodation with id: "+accommodationReview.AccommodationId+" successfully updated.")
 }
