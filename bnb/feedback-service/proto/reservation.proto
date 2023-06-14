@@ -12,6 +12,7 @@ message Reservation{
     int32 numOfGuests = 5;
     bool isApproved = 6;
     float totalPrice = 7;
+    string id = 8;
 }
 
 message RequestReservationById{
@@ -26,7 +27,10 @@ message RequestUserId{
     string id = 1;
 }
 
+message EmptyResMsg {}
+
 service ReservationService {
+    rpc GetAllReservations(EmptyResMsg) returns (stream Reservation) {}
     rpc GetReservationById(RequestReservationById) returns (Reservation) {}
     rpc GetReservationsByAccommodationId(RequestReservationsByAccommodationId) returns (stream Reservation) {}
     rpc GetActiveReservationsByUser(RequestUserId) returns (stream Reservation) {}
