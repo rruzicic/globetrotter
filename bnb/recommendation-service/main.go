@@ -24,6 +24,7 @@ func ginSetup() {
 
 	rec := r.Group("/recommendation", controllers.SearchFlights)
 	rec.GET("/flights")
+	rec.POST("/accommodations", controllers.GetRecommendedAccommodations)
 
 	r.Run(":8080")
 }
