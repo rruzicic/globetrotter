@@ -76,12 +76,18 @@ services:
             type: loki
             access: proxy
             url: http://loki:3100
+          - name: Prometheus
+            type: prometheus
+            access: proxy
+            url: http://prometheus:9090
         EOF
         /run.sh
     ports:
-      - "3000:3000"
+      - "3200:3000"
     depends_on:
       - loki
+    volumes:
+      - ./grafana-data:/var/lib/grafana
     networks:
       - monitoring-network
 

@@ -35,7 +35,6 @@ services:
         - '50052:50051'
       volumes:
         - './bnb/account-service:/go/src/app'
-        - ./monitoring/logs/:/go/src/app/log/
       depends_on:
         - mongo
       networks:
