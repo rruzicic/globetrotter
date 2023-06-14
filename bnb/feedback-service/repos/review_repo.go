@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
@@ -157,6 +158,11 @@ func CreateAccommodationReview(accommodationReview models.AccommodationReview) (
 		log.Print("Could not create a review! err: ", err.Error())
 		return nil, err
 	}
+
+	if err := grpcclient.CreateReview(accommodationReview); err != nil {
+		return nil, err
+	}
+
 	return &accommodationReview, nil
 }
 
@@ -276,6 +282,11 @@ func DeleteAccommodationReview(id string) error {
 		return err
 	}
 
+	accommodationReview, err := GetAccommodationReviewById(id)
+	if err := grpcclient.DeleteReview(*accommodationReview); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -293,6 +304,10 @@ func UpdateAccommodationReview(accommodationReview models.AccommodationReview) e
 
 	if _, err := accommodationReviewCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Print("Could not update accommodation review")
+		return err
+	}
+
+	if err := grpcclient.UpdateReview(accommodationReview); err != nil {
 		return err
 	}
 
