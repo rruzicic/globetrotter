@@ -31,7 +31,7 @@ func buildLocalAccommodation(accommodation *pb.Accommodation) models.Accommodati
 	}
 }
 
-func GetAllAccommodations() ([](models.Accommodation), error) {
+func GetAllAccommodations() ([]models.Accommodation, error) {
 	conn, _ := connectToAccomodationService()
 	client := pb.NewAccommodationServiceClient(conn)
 

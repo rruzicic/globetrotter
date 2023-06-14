@@ -49,6 +49,23 @@ func buildGRPCAvgRating(avgRating float32) pb.AvgRatingResponse {
 	}
 }
 
+func (s *FeedbackServiceServer) GetAllAccommodationReviews(req *pb.EmptyReviewMsg, stream pb.FeedbackService_GetAllAccommodationReviewsServer) error {
+	reviews, err := repos.GetAllAccommodationReviews()
+	if err != nil {
+		log.Println("Could not get all accommodation reviews. Error: ", err.Error())
+		return err
+	}
+
+	for _, review := range reviews {
+		grpc_review := buildGRPCAccommodationReview(review)
+		if err := stream.Send(&grpc_review); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *FeedbackServiceServer) GetHostReviewById(ctx context.Context, req *pb.RequestReviewById) (*pb.HostReview, error) {
 	hostReview, err := repos.GetHostReviewById(req.GetId())
 	if err != nil {

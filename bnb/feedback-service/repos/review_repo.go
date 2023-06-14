@@ -160,6 +160,28 @@ func CreateAccommodationReview(accommodationReview models.AccommodationReview) (
 	return &accommodationReview, nil
 }
 
+func GetAllAccommodationReviews() ([]models.AccommodationReview, error) {
+	reviews := []models.AccommodationReview{}
+	cursor, err := accommodationReviewCollection.Find(context.TODO(), bson.M{})
+
+	if err != nil {
+		log.Println("Could not get all accommodation reviews")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var review models.AccommodationReview
+		if err := cursor.Decode(&review); err != nil {
+			log.Println("Could not decode review at cursor. Error: ", err.Error())
+			return nil, err
+		}
+
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
+}
+
 func GetAccommodationReviewById(id string) (*models.AccommodationReview, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	accommodationReview := models.AccommodationReview{}
