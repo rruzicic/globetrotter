@@ -107,6 +107,10 @@ func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
 	return repos.GetActiveReservationsByUser(id)
 }
 
+func GetFinishedReservationsByUser(id string) ([]models.Reservation, error) {
+	return repos.GetFinishedReservationsByUser(id)
+}
+
 func GetFutureActiveReservationsByHost(id string) ([]models.Reservation, error) {
 	accomodations, err := grpcclient.GetAccommodationByHostId(id)
 	//log.Println("accomodations for given host id: ", accomodations)

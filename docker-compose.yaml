@@ -55,7 +55,7 @@ services:
       - './bnb/reservation-service:/go/src/app'
     depends_on:
       - mongo
-    
+
   # search-service:
   #   restart: on-failure:3
   #   build: './bnb/search-service'
@@ -66,6 +66,17 @@ services:
   #     - './bnb/search-service:/go/src/app'
   #   depends_on:
   #     - mongo
+
+  recommendation-service:
+    restart: on-failure:3
+    build: './bnb/recommendation-service'
+    ports:
+      - '8086:8080'
+      - '50056:50051'
+    volumes:
+      - './bnb/recommendation-service:/go/src/app'
+    depends_on:
+      - neo4j      
 
   # flights-backend:
   #   build: './flights/backend'
@@ -85,4 +96,11 @@ services:
       - type: bind
         source: ./data
         target: /data/db
-    
+  
+  neo4j:
+    image: 'neo4j:latest'
+    container_name: 'neo4j'
+    restart: on-failure:3
+    ports:
+      - 7474:7474
+      - 7687:7687

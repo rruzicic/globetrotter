@@ -26,7 +26,25 @@ func buildGRPCReservation(reservation models.Reservation) pb.Reservation {
 		NumOfGuests:     int32(reservation.NumOfGuests),
 		IsApproved:      reservation.IsApproved,
 		TotalPrice:      reservation.TotalPrice,
+		Id:              reservation.Id.Hex(),
 	}
+}
+
+func (s *ReservationServiceServer) GetAllReservations(req *pb.EmptyResMsg, stream pb.ReservationService_GetAllReservationsServer) error {
+	reservations, err := repos.GetAllReservations()
+	if err != nil {
+		log.Println("Could not get all reservations. Error: ", err.Error())
+		return err
+	}
+
+	for _, reservation := range reservations {
+		grpc_reservation := buildGRPCReservation(reservation)
+		if err := stream.Send(&grpc_reservation); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *ReservationServiceServer) GetReservationById(ctx context.Context, req *pb.RequestReservationById) (*pb.Reservation, error) {
@@ -62,6 +80,23 @@ func (s *ReservationServiceServer) GetActiveReservationsByUser(req *pb.RequestUs
 	reservations, err := services.GetActiveReservationsByUser(req.GetId())
 	if err != nil {
 		log.Println("Could not get reservations for user id: ", req.GetId())
+		return err
+	}
+
+	for _, reservation := range reservations {
+		grpc_reservation := buildGRPCReservation(reservation)
+		if err := stream.Send(&grpc_reservation); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *ReservationServiceServer) GetFinishedReservationsByUser(req *pb.RequestUserId, stream pb.ReservationService_GetFinishedReservationsByUserServer) error {
+	reservations, err := services.GetFinishedReservationsByUser(req.GetId())
+	if err != nil {
+		log.Println("Could not get finished reservations for user id: ", req.GetId())
 		return err
 	}
 

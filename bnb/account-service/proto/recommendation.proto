@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/rruzicic/globetrotter/bnb/recommendation-service/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message GraphAccommodation {
+    string name = 1;
+    string location = 2;
+    float price = 3;
+    string mongoId = 4;
+}
+
+message GraphReservation {
+    string mongoId = 1;
+    string userMongoId = 2;
+    string accommodationMongoId = 3;
+    google.protobuf.Timestamp reservationEnd = 4;
+}
+
+message GraphReview {
+    int32 value = 1;
+    string mongoId = 2;
+    string userMongoId = 3;
+    string accommodationMongoId = 4;
+}
+
+message GraphUser {
+    string name = 1;
+    string mongoId = 2;
+}
+
+message GraphEmpty {}
+
+service RecommendationServiceDBEvents {
+    rpc CreateAccommodation(GraphAccommodation) returns (GraphEmpty) {}
+    rpc CreateUser(GraphUser) returns (GraphEmpty) {}
+    rpc CreateReservation(GraphReservation) returns (GraphEmpty) {}
+    rpc CreateReview(GraphReview) returns (GraphEmpty) {}
+
+    rpc DeleteAccommodation(GraphAccommodation) returns (GraphEmpty) {}
+    rpc DeleteUser(GraphUser) returns (GraphEmpty) {}
+    rpc DeleteReservation(GraphReservation) returns (GraphEmpty) {}
+    rpc DeleteReview(GraphReview) returns (GraphEmpty) {}
+
+    rpc UpdateAccommodation(GraphAccommodation) returns (GraphEmpty) {}
+    rpc UpdateUser(GraphUser) returns (GraphEmpty) {}
+    rpc UpdateReservation(GraphReservation) returns (GraphEmpty) {}
+    rpc UpdateReview(GraphReview) returns (GraphEmpty) {}
+}
