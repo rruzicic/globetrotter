@@ -136,7 +136,7 @@ func (s *AccommodationServiceServer) RemoveReservationFromAccommodation(ctx cont
 	return &pb.BoolAnswer{Answer: true}, nil
 }
 
-func GetAllAccommodations(req *pb.Empty, stream pb.AccommodationService_GetAllAccommodationsServer) error {
+func (s *AccommodationServiceServer) GetAllAccommodations(req *pb.Empty, stream pb.AccommodationService_GetAllAccommodationsServer) error {
 	accommodations, err := repos.GetAllAccommodations()
 	if err != nil {
 		log.Println("Could not get all accommodations. Error: ", err.Error())

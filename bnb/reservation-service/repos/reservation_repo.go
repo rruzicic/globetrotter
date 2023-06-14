@@ -31,6 +31,28 @@ func CreateReservation(reservation models.Reservation) (*models.Reservation, err
 	return &reservation, nil
 }
 
+func GetAllReservations() ([]models.Reservation, error) {
+	reservations := []models.Reservation{}
+
+	cursor, err := reservationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		log.Println("Could not get all reservations")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var reservation models.Reservation
+		if err := cursor.Decode(&reservation); err != nil {
+			log.Println("Could not decode reservation from cursos")
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation)
+	}
+
+	return reservations, nil
+}
+
 func GetReservationById(id string) (*models.Reservation, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	reservation := models.Reservation{}
