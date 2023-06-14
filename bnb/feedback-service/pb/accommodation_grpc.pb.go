@@ -24,6 +24,7 @@ const (
 	AccommodationService_GetAccommodationByHostId_FullMethodName           = "/pb.AccommodationService/GetAccommodationByHostId"
 	AccommodationService_AddReservationToAccommodation_FullMethodName      = "/pb.AccommodationService/AddReservationToAccommodation"
 	AccommodationService_RemoveReservationFromAccommodation_FullMethodName = "/pb.AccommodationService/RemoveReservationFromAccommodation"
+	AccommodationService_GetPastHostsByAccommodations_FullMethodName       = "/pb.AccommodationService/GetPastHostsByAccommodations"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -35,6 +36,7 @@ type AccommodationServiceClient interface {
 	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
 	AddReservationToAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
 	RemoveReservationFromAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
+	GetPastHostsByAccommodations(ctx context.Context, in *RequestGetPastHostsByAccommodations, opts ...grpc.CallOption) (AccommodationService_GetPastHostsByAccommodationsClient, error)
 }
 
 type accommodationServiceClient struct {
@@ -113,6 +115,38 @@ func (c *accommodationServiceClient) RemoveReservationFromAccommodation(ctx cont
 	return out, nil
 }
 
+func (c *accommodationServiceClient) GetPastHostsByAccommodations(ctx context.Context, in *RequestGetPastHostsByAccommodations, opts ...grpc.CallOption) (AccommodationService_GetPastHostsByAccommodationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[1], AccommodationService_GetPastHostsByAccommodations_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &accommodationServiceGetPastHostsByAccommodationsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type AccommodationService_GetPastHostsByAccommodationsClient interface {
+	Recv() (*HostAnswer, error)
+	grpc.ClientStream
+}
+
+type accommodationServiceGetPastHostsByAccommodationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *accommodationServiceGetPastHostsByAccommodationsClient) Recv() (*HostAnswer, error) {
+	m := new(HostAnswer)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -122,6 +156,7 @@ type AccommodationServiceServer interface {
 	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
 	AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
 	RemoveReservationFromAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
+	GetPastHostsByAccommodations(*RequestGetPastHostsByAccommodations, AccommodationService_GetPastHostsByAccommodationsServer) error
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -143,6 +178,9 @@ func (UnimplementedAccommodationServiceServer) AddReservationToAccommodation(con
 }
 func (UnimplementedAccommodationServiceServer) RemoveReservationFromAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveReservationFromAccommodation not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetPastHostsByAccommodations(*RequestGetPastHostsByAccommodations, AccommodationService_GetPastHostsByAccommodationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetPastHostsByAccommodations not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -250,6 +288,27 @@ func _AccommodationService_RemoveReservationFromAccommodation_Handler(srv interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_GetPastHostsByAccommodations_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(RequestGetPastHostsByAccommodations)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(AccommodationServiceServer).GetPastHostsByAccommodations(m, &accommodationServiceGetPastHostsByAccommodationsServer{stream})
+}
+
+type AccommodationService_GetPastHostsByAccommodationsServer interface {
+	Send(*HostAnswer) error
+	grpc.ServerStream
+}
+
+type accommodationServiceGetPastHostsByAccommodationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *accommodationServiceGetPastHostsByAccommodationsServer) Send(m *HostAnswer) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +337,11 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetAccommodationByHostId",
 			Handler:       _AccommodationService_GetAccommodationByHostId_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetPastHostsByAccommodations",
+			Handler:       _AccommodationService_GetPastHostsByAccommodations_Handler,
 			ServerStreams: true,
 		},
 	},

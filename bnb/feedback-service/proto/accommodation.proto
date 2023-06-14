@@ -55,10 +55,19 @@ message BoolAnswer {
     bool answer = 1;
 }
 
+message RequestGetPastHostsByAccommodations{
+    repeated string accommodation_id = 1;
+}
+
+message HostAnswer {
+    string host_id = 1;
+}
+
 service AccommodationService {
     rpc TestConnection(TestMessage) returns (TestMessage) {}
     rpc GetAccommodationById(RequestAccommodationById) returns (Accommodation) {}
     rpc GetAccommodationByHostId(RequestAccommodationByHostId) returns (stream Accommodation) {}
     rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (BoolAnswer) {}
     rpc RemoveReservationFromAccommodation(AddReservationToAccommodationRequest) returns (BoolAnswer) {}
+    rpc GetPastHostsByAccommodations(RequestGetPastHostsByAccommodations) returns (stream HostAnswer) {}
 }
