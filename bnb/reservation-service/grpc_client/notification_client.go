@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"google.golang.org/grpc"
@@ -21,11 +22,20 @@ func connectToNotificationService() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
-func ReservationCreated(res models.Reservation) (*pb.UserResponse, error) {
+func ReservationCreated(reservation models.Reservation, accommodationName string, hostId string) (*pb.UserResponse, error) {
 	conn, _ := connectToNotificationService()
 	client := pb.NewNotificationServiceClient(conn)
 
-	_, err := client.ReservationCreated(context.Background(), &pb.ReservationNotification{})
+	_, err := client.ReservationCreated(context.Background(),
+	&pb.ReservationNotification{
+		AccommodationId: reservation.AccommodationId.Hex(),
+		UserId: hostId,
+		StartDate: &timestamp.Timestamp{Seconds: reservation.DateInterval.Start.Unix()},
+		EndDate: &timestamp.Timestamp{Seconds: reservation.DateInterval.End.Unix()},
+		NumOfGuests: int32(reservation.NumOfGuests),
+		IsApproved: reservation.IsApproved,
+		AccommodationName: accommodationName,
+	})
 	if err != nil {
 		log.Panic("Could not notify about reservation. Error: ", err)
 		return nil, err

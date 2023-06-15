@@ -5,7 +5,9 @@ import (
 	"log"
 	"net"
 
+	"github.com/rruzicic/globetrotter/bnb/notification-service/model"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/pb"
+	"github.com/rruzicic/globetrotter/bnb/notification-service/repos"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/socket"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,16 +19,17 @@ type NotificationServiceServer struct {
 
 func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error){
 
-	// //TODO: NOT COMPLETED
-	// notification := model.Notification{
-	// 	AccommodationId: &res.AccommodationId,
-	// }
+	notification := model.Notification{
+		UserId: res.UserId,
+		AccommodationId: &res.AccommodationId,
+		AccommodationName: &res.AccommodationName,
+	}
 
-	// notif, err := repos.CreateReservationNotification(notification)
-	// if err != nil {
-	// 	log.Panic("Notification creation failed")
-	// }
-	socket.SendNotification("This is the title", "This is the message", "645fddcfa60812dcc5464e01")
+	notif, err := repos.CreateReservationNotification(notification)
+	if err != nil {
+		log.Panic("Notification creation failed")
+	}
+	socket.SendNotification(*notif)
 
 	return &emptypb.Empty{}, nil
 }

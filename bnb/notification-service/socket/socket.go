@@ -1,13 +1,14 @@
 package socket
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
 	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/rruzicic/globetrotter/bnb/notification-service/model"
 )
 
 //define buffer sizes
@@ -58,16 +59,21 @@ func HandleWebSocket(c *gin.Context) {
 	connectedClients.Unlock()
 }
 
-func SendNotification(title string, message string, userId string) {
-	notificationString := fmt.Sprintf(`{"message": "%s", "title": "%s"}`, message, title)
-	log.Println(notificationString)
-	notification := []byte(notificationString)
+func SendNotification(notification model.Notification) {
 	connectedClients.RLock()
-	//TODO: currently sending to all users
-	for _, client := range connectedClients.clients {
-			if client.WriteMessage(websocket.TextMessage, []byte(notification)) != nil {
-				log.Println("Error sending message to client:")
-			}
+
+	message, err := json.Marshal(notification)
+	if err != nil {
+		log.Println("Error marshaling notification:", err)
+		return
+	}
+
+	for clientId, client := range connectedClients.clients {
+			log.Printf("User from notification: %s ", notification.UserId)
+			log.Printf("User from map: %s", clientId)
+				if client.WriteMessage(websocket.TextMessage, []byte(message)) != nil {
+					log.Println("Error sending message to client:")
+				}
 	}
 	connectedClients.RUnlock()
 }

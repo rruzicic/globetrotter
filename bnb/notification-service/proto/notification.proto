@@ -13,6 +13,7 @@ message ReservationNotification {
     int32 numOfGuests = 5;
     bool isApproved = 6;
     float totalPrice = 7;
+    string accommodationName = 8;
 }
 
 service NotificationService {
