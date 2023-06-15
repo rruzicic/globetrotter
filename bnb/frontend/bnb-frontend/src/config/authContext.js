@@ -11,7 +11,7 @@ const AuthContext = createContext({
     isUser: () => { },
     isHost: () => { },
     userEmail: () => { },
-    sendMessage: () => {}
+    userId: () => { },
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -22,7 +22,7 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
-            const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket?email=${userEmailHandler()}`);
+            const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket/${userIdHandler()}`);
 
             newSocket.onmessage = (event) => {
                 const message = event.data;
@@ -86,9 +86,8 @@ export const AuthContextProvider = ({ children }) => {
         return jwt_decode(localStorage.getItem("bnb_jwt")).email
     }
 
-    const sendMessageHandler = () => {
-        const message = "Hello, server!"; // The message you want to send
-        socket.send(message); // Send the message
+    const userIdHandler = () => {
+        return jwt_decode(localStorage.getItem("bnb_jwt")).id
     }
 
     const contextValue = {
@@ -99,7 +98,7 @@ export const AuthContextProvider = ({ children }) => {
         login: loginHandler,
         logout: logoutHandler,
         userEmail: userEmailHandler,
-        sendMessage: sendMessageHandler
+        userId: userIdHandler,
     };
 
     return (

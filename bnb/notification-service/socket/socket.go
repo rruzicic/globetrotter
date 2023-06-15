@@ -33,6 +33,7 @@ func EnableWebSocketMiddleware() gin.HandlerFunc {
 
 func HandleWebSocket(c *gin.Context) {
 	id := c.Param("id")
+	log.Println("Parameter from request: ", id)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
@@ -52,7 +53,11 @@ func HandleWebSocket(c *gin.Context) {
 	connectedClients.clients[id] = conn
 	connectedClients.Unlock()
 
+	log.Println("Added client with key: ", id)
+
 	<-c.Request.Context().Done()
+
+	log.Println("Removed client with key: ", id)
 
 	connectedClients.Lock()
 	delete(connectedClients.clients, id)
@@ -68,12 +73,16 @@ func SendNotification(notification model.Notification) {
 		return
 	}
 
+	log.Println(len(connectedClients.clients))
+
 	for clientId, client := range connectedClients.clients {
-			log.Printf("User from notification: %s ", notification.UserId)
-			log.Printf("User from map: %s", clientId)
+			log.Println("User from notification: ", notification.UserId)
+			log.Println("User from map: ", clientId)
+			if(clientId == notification.UserId) {
 				if client.WriteMessage(websocket.TextMessage, []byte(message)) != nil {
 					log.Println("Error sending message to client:")
 				}
+			}
 	}
 	connectedClients.RUnlock()
 }
