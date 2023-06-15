@@ -34,16 +34,16 @@ services:
       depends_on:
         - mongo
 
-  # feedback-service:
-  #   restart: on-failure:3
-  #   build: './bnb/feedback-service'
-  #   ports:
-  #     - '8083:8080'
-  #     - '50053:50051'
-  #   volumes:
-  #     - './bnb/feedback-service:/go/src/app'
-  #   depends_on:
-  #     - mongo
+  feedback-service:
+    restart: on-failure:3
+    build: './bnb/feedback-service'
+    ports:
+      - '8083:8080'
+      - '50053:50051'
+    volumes:
+      - './bnb/feedback-service:/go/src/app'
+    depends_on:
+      - mongo
 
   reservation-service:
     restart: on-failure:3
