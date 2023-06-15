@@ -16,7 +16,17 @@ type NotificationServiceServer struct {
 }
 
 func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error){
-	socket.SendNotification("This is the title", "This is the message", "user@email.com")
+
+	// //TODO: NOT COMPLETED
+	// notification := model.Notification{
+	// 	AccommodationId: &res.AccommodationId,
+	// }
+
+	// notif, err := repos.CreateReservationNotification(notification)
+	// if err != nil {
+	// 	log.Panic("Notification creation failed")
+	// }
+	socket.SendNotification("This is the title", "This is the message", "645fddcfa60812dcc5464e01")
 
 	return &emptypb.Empty{}, nil
 }

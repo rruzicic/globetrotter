@@ -21,7 +21,7 @@ func connectToNotificationService() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
-func ReservationCreated(models.Reservation) (*pb.UserResponse, error) {
+func ReservationCreated(res models.Reservation) (*pb.UserResponse, error) {
 	conn, _ := connectToNotificationService()
 	client := pb.NewNotificationServiceClient(conn)
 
