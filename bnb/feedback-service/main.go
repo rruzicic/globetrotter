@@ -25,17 +25,17 @@ func ginSetup() {
 	//TODO implement controllers
 	HostFeedback := r.Group("/HostFeedback")
 	HostFeedback.POST("/", controllers.CreateHostReview)
-	HostFeedback.GET("/:id", controllers.GetHostReviewById)
-	HostFeedback.GET("/:user_id", controllers.GetHostReviewsByUserId)
-	HostFeedback.GET("/:host_id", controllers.GetHostReviewsByHostId)
+	HostFeedback.GET("/id/:id", controllers.GetHostReviewById)
+	HostFeedback.GET("/user/:user_id", controllers.GetHostReviewsByUserId)
+	HostFeedback.GET("/host/:host_id", controllers.GetHostReviewsByHostId)
 	HostFeedback.DELETE("/:id", controllers.DeleteHostReview)
 	HostFeedback.PUT("/", controllers.UpdateHostReview)
 
 	AccommodationFeedback := r.Group("AccommodationFeedback")
 	AccommodationFeedback.POST("/", controllers.CreateAccommodationReview)
-	AccommodationFeedback.GET("/:id", controllers.GetAccommodationReviewById)
-	AccommodationFeedback.GET("/:user_id", controllers.GetAccommodationReviewsByUserId)
-	AccommodationFeedback.GET("/:accommodation_id", controllers.GetAccommodationReviewsByAccommodationId)
+	AccommodationFeedback.GET("/id/:id", controllers.GetAccommodationReviewById)
+	AccommodationFeedback.GET("/user/:user_id", controllers.GetAccommodationReviewsByUserId)
+	AccommodationFeedback.GET("/accommodation/:accommodation_id", controllers.GetAccommodationReviewsByAccommodationId)
 	AccommodationFeedback.DELETE("/:id", controllers.DeleteAccommodationReview)
 	AccommodationFeedback.PUT("/", controllers.UpdateAccommodationReview)
 
