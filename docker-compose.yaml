@@ -11,6 +11,8 @@ services:
       # - feedback-service
       - reservation-service
       # - search-service
+    networks:
+      - backend-network
 
   accommodation-service:
     restart: on-failure:3
@@ -22,6 +24,8 @@ services:
       - './bnb/accommodation-service:/go/src/app'
     depends_on:
       - mongo
+    networks:
+      - backend-network
 
   account-service:
       restart: on-failure:3
@@ -33,6 +37,8 @@ services:
         - './bnb/account-service:/go/src/app'
       depends_on:
         - mongo
+      networks:
+        - backend-network
 
   # feedback-service:
   #   restart: on-failure:3
@@ -55,6 +61,9 @@ services:
       - './bnb/reservation-service:/go/src/app'
     depends_on:
       - mongo
+    networks:
+      - backend-network
+    
 
   # search-service:
   #   restart: on-failure:3
@@ -67,6 +76,17 @@ services:
   #   depends_on:
   #     - mongo
 
+  flights-backend:
+    build: './flights/backend'
+    ports:
+      - '8080:8080'
+    volumes:
+      - './flights/backend:/go/src/app'
+    depends_on:
+      - mongo
+    networks:
+      - backend-network
+      
   recommendation-service:
     restart: on-failure:3
     build: './bnb/recommendation-service'
@@ -76,7 +96,9 @@ services:
     volumes:
       - './bnb/recommendation-service:/go/src/app'
     depends_on:
-      - neo4j      
+      - neo4j
+    networks:
+      - backend-network      
 
   # flights-backend:
   #   build: './flights/backend'
@@ -96,7 +118,9 @@ services:
       - type: bind
         source: ./data
         target: /data/db
-  
+    networks:
+      - backend-network
+
   neo4j:
     image: 'neo4j:latest'
     container_name: 'neo4j'
@@ -104,3 +128,12 @@ services:
     ports:
       - 7474:7474
       - 7687:7687
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
+    name: backend-network
+  
+
