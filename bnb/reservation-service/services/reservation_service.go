@@ -32,6 +32,11 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 		TotalPrice:      0.0,
 	}
 
+	_, err = grpcclient.ReservationCreated(reservation)
+	if err != nil {
+		return nil, err
+	}
+
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
 		return nil, err

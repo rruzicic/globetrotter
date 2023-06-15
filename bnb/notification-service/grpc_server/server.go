@@ -15,7 +15,7 @@ type NotificationServiceServer struct {
 	pb.UnimplementedNotificationServiceServer
 }
 
-func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res *pb.Reservation) (*emptypb.Empty, error){
+func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error){
 	socket.SendNotification("This is the title", "This is the message", "user@email.com")
 
 	return &emptypb.Empty{}, nil
