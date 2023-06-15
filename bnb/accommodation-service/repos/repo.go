@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/accommodation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,6 +20,11 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 		log.Println("Could not save Accommodation because: ", err.Error())
 		return err
 	}
+
+	if err := grpcclient.CreateAccommodation(accommodation); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -67,6 +73,10 @@ func UpdateAccommodation(accommodation models.Accommodation) error {
 
 	if _, err := accommodationsCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Println("Could not update accommodation")
+		return err
+	}
+
+	if err := grpcclient.UpdateAccommodation(accommodation); err != nil {
 		return err
 	}
 
