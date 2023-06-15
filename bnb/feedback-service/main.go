@@ -23,7 +23,9 @@ func ginSetup() {
 	r.NoRoute()
 
 	//TODO implement controllers
-	HostFeedback := r.Group("/HostFeedback")
+	Feedback := r.Group("/feedback")
+
+	HostFeedback := Feedback.Group("/HostFeedback")
 	HostFeedback.POST("/", controllers.CreateHostReview)
 	HostFeedback.GET("/id/:id", controllers.GetHostReviewById)
 	HostFeedback.GET("/user/:user_id", controllers.GetHostReviewsByUserId)
@@ -31,7 +33,7 @@ func ginSetup() {
 	HostFeedback.DELETE("/:id", controllers.DeleteHostReview)
 	HostFeedback.PUT("/", controllers.UpdateHostReview)
 
-	AccommodationFeedback := r.Group("AccommodationFeedback")
+	AccommodationFeedback := Feedback.Group("AccommodationFeedback")
 	AccommodationFeedback.POST("/", controllers.CreateAccommodationReview)
 	AccommodationFeedback.GET("/id/:id", controllers.GetAccommodationReviewById)
 	AccommodationFeedback.GET("/user/:user_id", controllers.GetAccommodationReviewsByUserId)

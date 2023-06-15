@@ -44,7 +44,7 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 	}
 	hasUserBeenToHosts := false
 	for _, pastHost := range pastHostsIds {
-		if pastHost.HostId == hostId.String() {
+		if pastHost.HostId == hostId.Hex() {
 			hasUserBeenToHosts = true
 		}
 	}
@@ -118,7 +118,7 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 	}
 	hasUserBeenToAccommodation := false
 	for _, reservation := range finishedReservations {
-		if accommodationId.String() == reservation.AccommodationId {
+		if accommodationId.Hex() == reservation.AccommodationId {
 			hasUserBeenToAccommodation = true
 			break
 		}
@@ -145,7 +145,7 @@ func GetAccommodationReviewsByAccommodationId(id string) ([]models.Accommodation
 }
 
 func DeleteAccommodationReview(id string) error {
-	return repos.DeleteHostReview(id)
+	return repos.DeleteAccommodationReview(id)
 }
 
 func UpdateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationReviewDTO) error {
