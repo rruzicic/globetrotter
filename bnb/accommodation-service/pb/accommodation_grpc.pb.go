@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	AccommodationService_TestConnection_FullMethodName                     = "/pb.AccommodationService/TestConnection"
+	AccommodationService_GetAllAccommodations_FullMethodName               = "/pb.AccommodationService/GetAllAccommodations"
 	AccommodationService_GetAccommodationById_FullMethodName               = "/pb.AccommodationService/GetAccommodationById"
 	AccommodationService_GetAccommodationByHostId_FullMethodName           = "/pb.AccommodationService/GetAccommodationByHostId"
 	AccommodationService_AddReservationToAccommodation_FullMethodName      = "/pb.AccommodationService/AddReservationToAccommodation"
@@ -32,6 +33,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccommodationServiceClient interface {
 	TestConnection(ctx context.Context, in *TestMessage, opts ...grpc.CallOption) (*TestMessage, error)
+	GetAllAccommodations(ctx context.Context, in *Empty, opts ...grpc.CallOption) (AccommodationService_GetAllAccommodationsClient, error)
 	GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error)
 	GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error)
 	AddReservationToAccommodation(ctx context.Context, in *AddReservationToAccommodationRequest, opts ...grpc.CallOption) (*BoolAnswer, error)
@@ -56,6 +58,38 @@ func (c *accommodationServiceClient) TestConnection(ctx context.Context, in *Tes
 	return out, nil
 }
 
+func (c *accommodationServiceClient) GetAllAccommodations(ctx context.Context, in *Empty, opts ...grpc.CallOption) (AccommodationService_GetAllAccommodationsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[0], AccommodationService_GetAllAccommodations_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &accommodationServiceGetAllAccommodationsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type AccommodationService_GetAllAccommodationsClient interface {
+	Recv() (*Accommodation, error)
+	grpc.ClientStream
+}
+
+type accommodationServiceGetAllAccommodationsClient struct {
+	grpc.ClientStream
+}
+
+func (x *accommodationServiceGetAllAccommodationsClient) Recv() (*Accommodation, error) {
+	m := new(Accommodation)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *accommodationServiceClient) GetAccommodationById(ctx context.Context, in *RequestAccommodationById, opts ...grpc.CallOption) (*Accommodation, error) {
 	out := new(Accommodation)
 	err := c.cc.Invoke(ctx, AccommodationService_GetAccommodationById_FullMethodName, in, out, opts...)
@@ -66,7 +100,7 @@ func (c *accommodationServiceClient) GetAccommodationById(ctx context.Context, i
 }
 
 func (c *accommodationServiceClient) GetAccommodationByHostId(ctx context.Context, in *RequestAccommodationByHostId, opts ...grpc.CallOption) (AccommodationService_GetAccommodationByHostIdClient, error) {
-	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[0], AccommodationService_GetAccommodationByHostId_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[1], AccommodationService_GetAccommodationByHostId_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +150,7 @@ func (c *accommodationServiceClient) RemoveReservationFromAccommodation(ctx cont
 }
 
 func (c *accommodationServiceClient) GetPastHostsByAccommodations(ctx context.Context, in *RequestGetPastHostsByAccommodations, opts ...grpc.CallOption) (AccommodationService_GetPastHostsByAccommodationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[1], AccommodationService_GetPastHostsByAccommodations_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &AccommodationService_ServiceDesc.Streams[2], AccommodationService_GetPastHostsByAccommodations_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -152,6 +186,7 @@ func (x *accommodationServiceGetPastHostsByAccommodationsClient) Recv() (*HostAn
 // for forward compatibility
 type AccommodationServiceServer interface {
 	TestConnection(context.Context, *TestMessage) (*TestMessage, error)
+	GetAllAccommodations(*Empty, AccommodationService_GetAllAccommodationsServer) error
 	GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error)
 	GetAccommodationByHostId(*RequestAccommodationByHostId, AccommodationService_GetAccommodationByHostIdServer) error
 	AddReservationToAccommodation(context.Context, *AddReservationToAccommodationRequest) (*BoolAnswer, error)
@@ -166,6 +201,9 @@ type UnimplementedAccommodationServiceServer struct {
 
 func (UnimplementedAccommodationServiceServer) TestConnection(context.Context, *TestMessage) (*TestMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestConnection not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAllAccommodations(*Empty, AccommodationService_GetAllAccommodationsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllAccommodations not implemented")
 }
 func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Context, *RequestAccommodationById) (*Accommodation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationById not implemented")
@@ -211,6 +249,27 @@ func _AccommodationService_TestConnection_Handler(srv interface{}, ctx context.C
 		return srv.(AccommodationServiceServer).TestConnection(ctx, req.(*TestMessage))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_GetAllAccommodations_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(AccommodationServiceServer).GetAllAccommodations(m, &accommodationServiceGetAllAccommodationsServer{stream})
+}
+
+type AccommodationService_GetAllAccommodationsServer interface {
+	Send(*Accommodation) error
+	grpc.ServerStream
+}
+
+type accommodationServiceGetAllAccommodationsServer struct {
+	grpc.ServerStream
+}
+
+func (x *accommodationServiceGetAllAccommodationsServer) Send(m *Accommodation) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _AccommodationService_GetAccommodationById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -334,6 +393,11 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAllAccommodations",
+			Handler:       _AccommodationService_GetAllAccommodations_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "GetAccommodationByHostId",
 			Handler:       _AccommodationService_GetAccommodationByHostId_Handler,

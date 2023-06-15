@@ -23,6 +23,7 @@ const (
 	FeedbackService_GetHostReviewsByUserId_FullMethodName                   = "/pb.FeedbackService/GetHostReviewsByUserId"
 	FeedbackService_GetHostReviewsByHostId_FullMethodName                   = "/pb.FeedbackService/GetHostReviewsByHostId"
 	FeedbackService_CalcAvgRatingForHost_FullMethodName                     = "/pb.FeedbackService/CalcAvgRatingForHost"
+	FeedbackService_GetAllAccommodationReviews_FullMethodName               = "/pb.FeedbackService/GetAllAccommodationReviews"
 	FeedbackService_GetAccommodationReviewById_FullMethodName               = "/pb.FeedbackService/GetAccommodationReviewById"
 	FeedbackService_GetAccommodationReviewsByUserId_FullMethodName          = "/pb.FeedbackService/GetAccommodationReviewsByUserId"
 	FeedbackService_GetAccommodationReviewsByAccommodationId_FullMethodName = "/pb.FeedbackService/GetAccommodationReviewsByAccommodationId"
@@ -37,6 +38,7 @@ type FeedbackServiceClient interface {
 	GetHostReviewsByUserId(ctx context.Context, in *RequestReviewsByUserId, opts ...grpc.CallOption) (FeedbackService_GetHostReviewsByUserIdClient, error)
 	GetHostReviewsByHostId(ctx context.Context, in *RequestReviewsByHostId, opts ...grpc.CallOption) (FeedbackService_GetHostReviewsByHostIdClient, error)
 	CalcAvgRatingForHost(ctx context.Context, in *RequestAvgRating, opts ...grpc.CallOption) (*AvgRatingResponse, error)
+	GetAllAccommodationReviews(ctx context.Context, in *EmptyReviewMsg, opts ...grpc.CallOption) (FeedbackService_GetAllAccommodationReviewsClient, error)
 	GetAccommodationReviewById(ctx context.Context, in *RequestReviewById, opts ...grpc.CallOption) (*AccommodationReview, error)
 	GetAccommodationReviewsByUserId(ctx context.Context, in *RequestReviewsByUserId, opts ...grpc.CallOption) (FeedbackService_GetAccommodationReviewsByUserIdClient, error)
 	GetAccommodationReviewsByAccommodationId(ctx context.Context, in *RequestReviewsByAccommodationId, opts ...grpc.CallOption) (FeedbackService_GetAccommodationReviewsByAccommodationIdClient, error)
@@ -133,6 +135,38 @@ func (c *feedbackServiceClient) CalcAvgRatingForHost(ctx context.Context, in *Re
 	return out, nil
 }
 
+func (c *feedbackServiceClient) GetAllAccommodationReviews(ctx context.Context, in *EmptyReviewMsg, opts ...grpc.CallOption) (FeedbackService_GetAllAccommodationReviewsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &FeedbackService_ServiceDesc.Streams[2], FeedbackService_GetAllAccommodationReviews_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &feedbackServiceGetAllAccommodationReviewsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type FeedbackService_GetAllAccommodationReviewsClient interface {
+	Recv() (*AccommodationReview, error)
+	grpc.ClientStream
+}
+
+type feedbackServiceGetAllAccommodationReviewsClient struct {
+	grpc.ClientStream
+}
+
+func (x *feedbackServiceGetAllAccommodationReviewsClient) Recv() (*AccommodationReview, error) {
+	m := new(AccommodationReview)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *feedbackServiceClient) GetAccommodationReviewById(ctx context.Context, in *RequestReviewById, opts ...grpc.CallOption) (*AccommodationReview, error) {
 	out := new(AccommodationReview)
 	err := c.cc.Invoke(ctx, FeedbackService_GetAccommodationReviewById_FullMethodName, in, out, opts...)
@@ -143,7 +177,7 @@ func (c *feedbackServiceClient) GetAccommodationReviewById(ctx context.Context, 
 }
 
 func (c *feedbackServiceClient) GetAccommodationReviewsByUserId(ctx context.Context, in *RequestReviewsByUserId, opts ...grpc.CallOption) (FeedbackService_GetAccommodationReviewsByUserIdClient, error) {
-	stream, err := c.cc.NewStream(ctx, &FeedbackService_ServiceDesc.Streams[2], FeedbackService_GetAccommodationReviewsByUserId_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &FeedbackService_ServiceDesc.Streams[3], FeedbackService_GetAccommodationReviewsByUserId_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +209,7 @@ func (x *feedbackServiceGetAccommodationReviewsByUserIdClient) Recv() (*Accommod
 }
 
 func (c *feedbackServiceClient) GetAccommodationReviewsByAccommodationId(ctx context.Context, in *RequestReviewsByAccommodationId, opts ...grpc.CallOption) (FeedbackService_GetAccommodationReviewsByAccommodationIdClient, error) {
-	stream, err := c.cc.NewStream(ctx, &FeedbackService_ServiceDesc.Streams[3], FeedbackService_GetAccommodationReviewsByAccommodationId_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &FeedbackService_ServiceDesc.Streams[4], FeedbackService_GetAccommodationReviewsByAccommodationId_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -223,6 +257,7 @@ type FeedbackServiceServer interface {
 	GetHostReviewsByUserId(*RequestReviewsByUserId, FeedbackService_GetHostReviewsByUserIdServer) error
 	GetHostReviewsByHostId(*RequestReviewsByHostId, FeedbackService_GetHostReviewsByHostIdServer) error
 	CalcAvgRatingForHost(context.Context, *RequestAvgRating) (*AvgRatingResponse, error)
+	GetAllAccommodationReviews(*EmptyReviewMsg, FeedbackService_GetAllAccommodationReviewsServer) error
 	GetAccommodationReviewById(context.Context, *RequestReviewById) (*AccommodationReview, error)
 	GetAccommodationReviewsByUserId(*RequestReviewsByUserId, FeedbackService_GetAccommodationReviewsByUserIdServer) error
 	GetAccommodationReviewsByAccommodationId(*RequestReviewsByAccommodationId, FeedbackService_GetAccommodationReviewsByAccommodationIdServer) error
@@ -245,6 +280,9 @@ func (UnimplementedFeedbackServiceServer) GetHostReviewsByHostId(*RequestReviews
 }
 func (UnimplementedFeedbackServiceServer) CalcAvgRatingForHost(context.Context, *RequestAvgRating) (*AvgRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalcAvgRatingForHost not implemented")
+}
+func (UnimplementedFeedbackServiceServer) GetAllAccommodationReviews(*EmptyReviewMsg, FeedbackService_GetAllAccommodationReviewsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllAccommodationReviews not implemented")
 }
 func (UnimplementedFeedbackServiceServer) GetAccommodationReviewById(context.Context, *RequestReviewById) (*AccommodationReview, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationReviewById not implemented")
@@ -347,6 +385,27 @@ func _FeedbackService_CalcAvgRatingForHost_Handler(srv interface{}, ctx context.
 		return srv.(FeedbackServiceServer).CalcAvgRatingForHost(ctx, req.(*RequestAvgRating))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedbackService_GetAllAccommodationReviews_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(EmptyReviewMsg)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(FeedbackServiceServer).GetAllAccommodationReviews(m, &feedbackServiceGetAllAccommodationReviewsServer{stream})
+}
+
+type FeedbackService_GetAllAccommodationReviewsServer interface {
+	Send(*AccommodationReview) error
+	grpc.ServerStream
+}
+
+type feedbackServiceGetAllAccommodationReviewsServer struct {
+	grpc.ServerStream
+}
+
+func (x *feedbackServiceGetAllAccommodationReviewsServer) Send(m *AccommodationReview) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _FeedbackService_GetAccommodationReviewById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -460,6 +519,11 @@ var FeedbackService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetHostReviewsByHostId",
 			Handler:       _FeedbackService_GetHostReviewsByHostId_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetAllAccommodationReviews",
+			Handler:       _FeedbackService_GetAllAccommodationReviews_Handler,
 			ServerStreams: true,
 		},
 		{

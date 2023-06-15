@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
@@ -157,7 +158,34 @@ func CreateAccommodationReview(accommodationReview models.AccommodationReview) (
 		log.Print("Could not create a review! err: ", err.Error())
 		return nil, err
 	}
+
+	if err := grpcclient.CreateReview(accommodationReview); err != nil {
+		return nil, err
+	}
+
 	return &accommodationReview, nil
+}
+
+func GetAllAccommodationReviews() ([]models.AccommodationReview, error) {
+	reviews := []models.AccommodationReview{}
+	cursor, err := accommodationReviewCollection.Find(context.TODO(), bson.M{})
+
+	if err != nil {
+		log.Println("Could not get all accommodation reviews")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var review models.AccommodationReview
+		if err := cursor.Decode(&review); err != nil {
+			log.Println("Could not decode review at cursor. Error: ", err.Error())
+			return nil, err
+		}
+
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
 }
 
 func GetAccommodationReviewById(id string) (*models.AccommodationReview, error) {
@@ -254,6 +282,11 @@ func DeleteAccommodationReview(id string) error {
 		return err
 	}
 
+	accommodationReview, err := GetAccommodationReviewById(id)
+	if err := grpcclient.DeleteReview(*accommodationReview); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -271,6 +304,10 @@ func UpdateAccommodationReview(accommodationReview models.AccommodationReview) e
 
 	if _, err := accommodationReviewCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Print("Could not update accommodation review")
+		return err
+	}
+
+	if err := grpcclient.UpdateReview(accommodationReview); err != nil {
 		return err
 	}
 
