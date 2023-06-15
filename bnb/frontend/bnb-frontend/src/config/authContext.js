@@ -22,12 +22,6 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
-            // const newSocket = io('http://localhost:4000', {
-            //     auth: { token: token },
-            //     path: `/notification/websocket?email=${userEmailHandler()}`,
-            //     transports: ['websocket']
-            //   });
-
             const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket?email=${userEmailHandler()}`);
 
             newSocket.onmessage = (event) => {
@@ -39,6 +33,7 @@ export const AuthContextProvider = ({ children }) => {
 
             return () => {
                 newSocket.close();
+                setSocket(null)
             };
         }
     }, [token]);
@@ -67,6 +62,11 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     const logoutHandler = () => {
+        if (socket) {
+            socket.close();
+            setSocket(null);
+        }
+        
         setToken(null);
         localStorage.removeItem("bnb_jwt");
     };

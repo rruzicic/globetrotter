@@ -31,7 +31,7 @@ func EnableWebSocketMiddleware() gin.HandlerFunc {
 }
 
 func HandleWebSocket(c *gin.Context) {
-	email := c.Param("email")
+	id := c.Param("id")
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func HandleWebSocket(c *gin.Context) {
 		return
 	}
 
-	//purely to make sure the connection opened properly
+	//TODO: remove later: purely to make sure the connection opened properly
 	err = conn.WriteMessage(websocket.TextMessage, []byte("Hello, client!"))
 	if err != nil {
 		log.Println("Error sending message:", err)
@@ -48,33 +48,22 @@ func HandleWebSocket(c *gin.Context) {
 	defer conn.Close();
 
 	connectedClients.Lock()
-	connectedClients.clients[email] = conn
+	connectedClients.clients[id] = conn
 	connectedClients.Unlock()
 
-	//probably won't be used, left here as an option
-	for {
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Error reading message:", err)
-			break
-		}
-
-		log.Println("********************")
-		log.Printf("Received message from user: %s\n", email)
-		log.Printf("Message: %s\n", message)
-		log.Println("********************")
-	}
+	<-c.Request.Context().Done()
 
 	connectedClients.Lock()
-	delete(connectedClients.clients, email)
+	delete(connectedClients.clients, id)
 	connectedClients.Unlock()
 }
 
-func SendNotification(title string, message string, userEmail string) {
+func SendNotification(title string, message string, userId string) {
 	notificationString := fmt.Sprintf(`{"message": "%s", "title": "%s"}`, message, title)
 	log.Println(notificationString)
 	notification := []byte(notificationString)
 	connectedClients.RLock()
+	//TODO: currently sending to all users
 	for _, client := range connectedClients.clients {
 			if client.WriteMessage(websocket.TextMessage, []byte(notification)) != nil {
 				log.Println("Error sending message to client:")
