@@ -12,12 +12,15 @@ const AuthContext = createContext({
     isHost: () => { },
     userEmail: () => { },
     userId: () => { },
+    countNewNotifications: () => {},
+    clearNotificationCount: () => {}
 })
 
 export const AuthContextProvider = ({ children }) => {
     const initialToken = localStorage.getItem("bnb_jwt")
     const [token, setToken] = useState(initialToken)
     const [socket, setSocket] = useState(null)
+    const [newNotifications, setNewNotifications] = useState(0)
     const isLoggedIn = !!token
 
     useEffect(() => {
@@ -27,6 +30,7 @@ export const AuthContextProvider = ({ children }) => {
             newSocket.onmessage = (event) => {
                 const message = event.data;
                 console.log('Received message:', message);
+                setNewNotifications(prev => prev + 1)
             };
 
             setSocket(newSocket);
@@ -66,7 +70,7 @@ export const AuthContextProvider = ({ children }) => {
             socket.close();
             setSocket(null);
         }
-        
+
         setToken(null);
         localStorage.removeItem("bnb_jwt");
     };
@@ -90,6 +94,14 @@ export const AuthContextProvider = ({ children }) => {
         return jwt_decode(localStorage.getItem("bnb_jwt")).id
     }
 
+    const countNewNotificationsHandler = () => {
+        return newNotifications
+    }
+
+    const ClearNotificationCountHandler = () => {
+        setNewNotifications(0);
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -99,6 +111,8 @@ export const AuthContextProvider = ({ children }) => {
         logout: logoutHandler,
         userEmail: userEmailHandler,
         userId: userIdHandler,
+        countNewNotifications: countNewNotificationsHandler,
+        clearNotificationCount: ClearNotificationCountHandler
     };
 
     return (

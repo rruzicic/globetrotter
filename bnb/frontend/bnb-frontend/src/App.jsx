@@ -13,6 +13,7 @@ import NewAccommodationPage from './pages/NewAccommodationPage';
 import AccommodationInfoPage from './pages/AccommodationInfoPage';
 import "react-image-gallery/styles/css/image-gallery.css";
 import MyReservationsPage from './pages/MyReservationsPage';
+import NotificationsPage from './pages/NotificationPage';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
               <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
               <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
               <Route path={'/myReservations'} element={<MyReservationsPage />} />
+              <Route path={'/notifications'} element={<NotificationsPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>
