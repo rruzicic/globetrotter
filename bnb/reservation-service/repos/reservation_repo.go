@@ -23,12 +23,14 @@ func CreateReservation(reservation models.Reservation) (*models.Reservation, err
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
-	_, err := reservationCollection.InsertOne(context.TODO(), reservation)
+	inserted_id, err := reservationCollection.InsertOne(context.TODO(), reservation)
 
 	if err != nil {
 		log.Print("Could not create reservation! err: ", err.Error())
 		return nil, err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	reservation.Id = &id
 
 	if err := grpcclient.CreateReservation(reservation); err != nil {
 		return nil, err

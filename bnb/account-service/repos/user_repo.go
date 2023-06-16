@@ -16,11 +16,13 @@ func CreateUser(user models.User) (*models.User, error) {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
 
-	_, err := usersCollection.InsertOne(context.TODO(), user)
+	inserted_id, err := usersCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
 		return &models.User{}, err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	user.Id = &id
 
 	if err := grpcclient.CreateUser(user); err != nil {
 		return nil, err
