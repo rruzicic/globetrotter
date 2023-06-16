@@ -32,7 +32,6 @@ func EnableWebSocketMiddleware() gin.HandlerFunc {
 
 func HandleWebSocket(c *gin.Context) {
 	id := c.Param("id")
-	log.Println("Parameter from request: ", id)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {

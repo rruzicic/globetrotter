@@ -10,10 +10,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func GetNotificationsByUserId(email string) ([]model.Notification, error) {
+func GetNotificationsByUserId(id string) ([]model.Notification, error) {
 
 	notifications := []model.Notification{}
-	filter := bson.M{"email": bson.M{"$eq": email}}
+	filter := bson.M{"user_id": bson.M{"$eq": id}}
 	cursor, err := notificationCollection.Find(context.TODO(), filter)
 
 	if err != nil {

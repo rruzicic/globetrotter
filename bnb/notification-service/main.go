@@ -26,9 +26,9 @@ func ginSetup() {
 
 	notification := r.Group("/notification")
 	
-	notification.GET("/:id", controllers.GetReservationById)
 	notification.GET("/health", controllers.HealthCheck)
 	notification.GET("/websocket/:id", socket.HandleWebSocket)
+	notification.GET("/user/:id", controllers.GetNotificationsByUserId)
 	r.NoRoute()
 	r.Run(":8080")
 }
