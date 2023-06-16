@@ -11,7 +11,7 @@ func APIKeyExpired(key models.APIKey) bool {
 	return time.Now().Before(key.Expiration)
 }
 
-func AddKeyToUser(user models.User, key models.APIKey) bool {
+func AddAPIKeyToUser(user models.User, key models.APIKey) bool {
 	// Overwrites the last key!
 	user.ApiKey = key
 	return repos.UpdateUser(user)

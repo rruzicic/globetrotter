@@ -1,10 +1,13 @@
 package repos
 
 import (
+	"context"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/rruzicic/globetrotter/flights/backend/models"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func generateAPIKeyString() string {
@@ -29,4 +32,16 @@ func GenerateAPIKey(temporary bool) models.APIKey {
 
 	// some magic to get the max time so that expiration is at the heat death of the universe
 	return models.APIKey{Key: key, Expiration: time.Unix(-2208988800, 0).Add(1<<63 - 1)}
+}
+
+func FindUserByAPIKey(key models.APIKey) (*models.User, error) {
+	var user models.User
+	filter := bson.M{"api_key.key": bson.M{"$eq": key.Key}}
+
+	if err := usersCollection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+		log.Println("Can't find user using API key. Error: ", err.Error())
+		return nil, err
+	}
+
+	return &user, nil
 }
