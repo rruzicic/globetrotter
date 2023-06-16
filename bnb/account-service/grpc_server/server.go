@@ -23,7 +23,7 @@ type server struct {
 func userToUserResponse(user *models.User) *pb.UserResponse {
 	return &pb.UserResponse{
 		User: &pb.User{
-			Id:                   user.Id.String(),
+			Id:                   user.Id.Hex(),
 			CreatedOn:            timestamppb.New(time.Unix(int64(user.CreatedOn), 0)),
 			ModifiedOn:           timestamppb.New(time.Unix(int64(user.ModifiedOn), 0)),
 			DeletedOn:            timestamppb.New(time.Unix(int64(user.DeletedOn), 0)),
