@@ -59,7 +59,7 @@ message BooleanReturn { bool boolean = 1;}
 service UserService {
     rpc GetUserById(UserRequestId) returns (UserResponse) {}
     rpc GetUserByEmail(UserRequestEmail) returns (UserResponse) {}
-    rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}        // not implemented
+    rpc GetUsers(UserRequestPagination) returns (stream UserResponse) {}
     rpc UpdateUser(UserUpdateRequest) returns (UserResponse) {}                 // not implemented
     rpc DeleteUser(UserRequestId) returns (UserResponse) {}                     // not implemented
     rpc IncrementCancellationsCounter(UserRequestId) returns (UserResponse) {}

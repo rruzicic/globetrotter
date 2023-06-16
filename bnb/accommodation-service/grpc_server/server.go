@@ -50,6 +50,12 @@ func buildGRPCAccommodation(accommodation models.Accommodation) pb.Accommodation
 	}
 }
 
+func buildGRPCHostId(hostId string) pb.HostAnswer {
+	return pb.HostAnswer{
+		HostId: hostId,
+	}
+}
+
 func (s *AccommodationServiceServer) GetAccommodationById(ctx context.Context, req *pb.RequestAccommodationById) (*pb.Accommodation, error) {
 	accommodation, err := repos.GetAccommodationById(req.GetId())
 	if err != nil {
@@ -72,6 +78,27 @@ func (s *AccommodationServiceServer) GetAccommodationByHostId(req *pb.RequestAcc
 	for _, accommodation := range accommodations {
 		grpc_accommodation := buildGRPCAccommodation(accommodation)
 		if err := stream.Send(&grpc_accommodation); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *AccommodationServiceServer) GetPastHostsByAccommodations(req *pb.RequestGetPastHostsByAccommodations, stream pb.AccommodationService_GetPastHostsByAccommodationsServer) error {
+	pastHosts := []string{}
+	for _, id := range req.AccommodationId {
+		accommodation, err := repos.GetAccommodationById(id)
+		if err != nil {
+			log.Println("Could not get accommodations for host id: ", id, ", error: ", err.Error())
+			return err
+		}
+		pastHosts = append(pastHosts, accommodation.User.Hex())
+	}
+
+	for _, pastHost := range pastHosts {
+		grpc_hostId := buildGRPCHostId(pastHost)
+		if err := stream.Send(&grpc_hostId); err != nil {
 			return err
 		}
 	}
@@ -134,6 +161,23 @@ func (s *AccommodationServiceServer) RemoveReservationFromAccommodation(ctx cont
 	}
 
 	return &pb.BoolAnswer{Answer: true}, nil
+}
+
+func (s *AccommodationServiceServer) GetAllAccommodations(req *pb.Empty, stream pb.AccommodationService_GetAllAccommodationsServer) error {
+	accommodations, err := repos.GetAllAccommodations()
+	if err != nil {
+		log.Println("Could not get all accommodations. Error: ", err.Error())
+		return err
+	}
+
+	for _, accommodation := range accommodations {
+		grpc_accommodation := buildGRPCAccommodation(accommodation)
+		if err := stream.Send(&grpc_accommodation); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func InitServer() {

@@ -9,6 +9,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
+	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 	"github.com/rruzicic/globetrotter/bnb/account-service/services"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
@@ -64,8 +65,15 @@ func (s *server) GetUserByEmail(ctx context.Context, in *pb.UserRequestEmail) (*
 }
 
 func (s *server) GetUsers(pagination *pb.UserRequestPagination, stream pb.UserService_GetUsersServer) error {
-	//stream.Send() // for sending individual Users via stream
-	// TODO: implement
+	users := repos.GetAllUsers()
+
+	for _, user := range users {
+		grpc_user := userToUserResponse(&user)
+		if err := stream.Send(grpc_user); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

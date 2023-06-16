@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,11 +16,18 @@ func CreateUser(user models.User) (*models.User, error) {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
 
-	_, err := usersCollection.InsertOne(context.TODO(), user)
+	inserted_id, err := usersCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Panic("could not save document to database! err: ", err.Error())
 		return &models.User{}, err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	user.Id = &id
+
+	if err := grpcclient.CreateUser(user); err != nil {
+		return nil, err
+	}
+
 	return &user, nil
 }
 
@@ -78,6 +86,10 @@ func UpdateUser(user models.User) (*models.User, error) {
 		return &models.User{}, err
 	}
 
+	if err := grpcclient.UpdateUser(user); err != nil {
+		return nil, err
+	}
+
 	return &updatedUser, nil
 }
 
@@ -85,6 +97,11 @@ func DeleteUser(id primitive.ObjectID) error {
 	filter := bson.M{"_id": bson.M{"$eq": id}}
 	if _, err := usersCollection.DeleteOne(context.TODO(), filter); err != nil {
 		log.Print("Could not delete user with hex id", id)
+		return err
+	}
+
+	user, _ := GetUserById(id)
+	if err := grpcclient.DeleteUser(*user); err != nil {
 		return err
 	}
 

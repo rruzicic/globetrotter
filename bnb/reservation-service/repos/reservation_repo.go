@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
@@ -22,13 +23,42 @@ func CreateReservation(reservation models.Reservation) (*models.Reservation, err
 	reservation.CreatedOn = int(time.Now().Unix())
 	reservation.ModifiedOn = int(time.Now().Unix())
 
-	_, err := reservationCollection.InsertOne(context.TODO(), reservation)
+	inserted_id, err := reservationCollection.InsertOne(context.TODO(), reservation)
 
 	if err != nil {
 		log.Print("Could not create reservation! err: ", err.Error())
 		return nil, err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	reservation.Id = &id
+
+	if err := grpcclient.CreateReservation(reservation); err != nil {
+		return nil, err
+	}
+
 	return &reservation, nil
+}
+
+func GetAllReservations() ([]models.Reservation, error) {
+	reservations := []models.Reservation{}
+
+	cursor, err := reservationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		log.Println("Could not get all reservations")
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		var reservation models.Reservation
+		if err := cursor.Decode(&reservation); err != nil {
+			log.Println("Could not decode reservation from cursos")
+			return nil, err
+		}
+
+		reservations = append(reservations, reservation)
+	}
+
+	return reservations, nil
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -78,6 +108,25 @@ func GetReservationsByUserId(id string) ([]models.Reservation, error) {
 	}
 
 	return reservations, nil
+}
+
+func GetFinishedReservationsByUser(id string) ([]models.Reservation, error) {
+	allReservations, err := GetActiveReservationsByUser(id)
+	if err != nil {
+		log.Print("Could not reservations for user id: ", id)
+		return nil, err
+	}
+
+	finishedReservations := []models.Reservation{}
+	currentTime := time.Now()
+
+	for _, reservation := range allReservations {
+		if currentTime.After(reservation.DateInterval.End) {
+			finishedReservations = append(finishedReservations, reservation)
+		}
+	}
+
+	return finishedReservations, nil
 }
 
 func GetActiveReservationsByUser(id string) ([]models.Reservation, error) {
@@ -163,6 +212,15 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
+	res, err := GetReservationById(id)
+	if err != nil {
+		return err
+	}
+
+	if err := grpcclient.DeleteReservation(*res); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -185,6 +243,10 @@ func UpdateReservation(reservation models.Reservation) error {
 
 	if _, err := reservationCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		log.Panic("Could not update reservation")
+		return err
+	}
+
+	if err := grpcclient.UpdateReservation(reservation); err != nil {
 		return err
 	}
 
