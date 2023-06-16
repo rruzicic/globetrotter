@@ -12,5 +12,6 @@ type User struct {
 	EMail     string `json:"email" bson:"email" binding:"required,email"`
 	Password  string `json:"password" bson:"password"`
 	Role      string `json:"role" bson:"role"`
+	ApiKey    APIKey `json:"apiKey" bson:"api_key"`
 	Address
 }
