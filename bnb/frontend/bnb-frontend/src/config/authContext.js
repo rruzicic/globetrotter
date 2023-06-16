@@ -1,7 +1,6 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext, useEffect } from "react";
-import { axiosInstance } from "./interceptor";
-import io from 'socket.io-client';
+import { toast } from "react-toastify";
 
 const AuthContext = createContext({
     token: "",
@@ -12,8 +11,8 @@ const AuthContext = createContext({
     isHost: () => { },
     userEmail: () => { },
     userId: () => { },
-    countNewNotifications: () => {},
-    clearNotificationCount: () => {}
+    countNewNotifications: () => { },
+    clearNotificationCount: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -29,10 +28,30 @@ export const AuthContextProvider = ({ children }) => {
 
             newSocket.onmessage = (event) => {
                 const message = event.data;
-                console.log('Received message:', message);
+                switch (message) {
+                    case 'RESERVATION':
+                        toast('You have a new reservation request 🔥');
+                        break;
+                    case 'CANCELLATION':
+                        toast('Reservation has been cancelled 😢');
+                        break;
+                    case 'RATING':
+                        toast('Someone rated you 🚀');
+                        break;
+                    case 'A_RATING':
+                        toast('Someone rated your accommodation 🚀');
+                        break;
+                    case 'HOST_STATUS':
+                        toast('Host status changed 🔥');
+                        break;
+                    case 'RESPONSE':
+                        toast('Host responded to your reservation request 🔥');
+                        break;
+                    default:
+                        console.error('Unknown notification type');
+                }
                 setNewNotifications(prev => prev + 1)
             };
-
             setSocket(newSocket);
 
             return () => {

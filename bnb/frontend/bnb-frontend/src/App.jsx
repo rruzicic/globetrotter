@@ -14,7 +14,8 @@ import AccommodationInfoPage from './pages/AccommodationInfoPage';
 import "react-image-gallery/styles/css/image-gallery.css";
 import MyReservationsPage from './pages/MyReservationsPage';
 import NotificationsPage from './pages/NotificationPage';
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             </Routes>
           </Layout>
         </BrowserRouter>
+        <ToastContainer />
     </ThemeProvider>
   );
 }

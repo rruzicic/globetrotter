@@ -1,7 +1,6 @@
 package socket
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"sync"
@@ -53,11 +52,7 @@ func HandleWebSocket(c *gin.Context) {
 	connectedClients.clients[id] = conn
 	connectedClients.Unlock()
 
-	log.Println("Added client with key: ", id)
-
 	<-c.Request.Context().Done()
-
-	log.Println("Removed client with key: ", id)
 
 	connectedClients.Lock()
 	delete(connectedClients.clients, id)
@@ -67,19 +62,9 @@ func HandleWebSocket(c *gin.Context) {
 func SendNotification(notification model.Notification) {
 	connectedClients.RLock()
 
-	message, err := json.Marshal(notification)
-	if err != nil {
-		log.Println("Error marshaling notification:", err)
-		return
-	}
-
-	log.Println(len(connectedClients.clients))
-
 	for clientId, client := range connectedClients.clients {
-			log.Println("User from notification: ", notification.UserId)
-			log.Println("User from map: ", clientId)
 			if(clientId == notification.UserId) {
-				if client.WriteMessage(websocket.TextMessage, []byte(message)) != nil {
+				if client.WriteMessage(websocket.TextMessage, []byte(notification.Type)) != nil {
 					log.Println("Error sending message to client:")
 				}
 			}
