@@ -30,7 +30,7 @@ func buildLocalUser(user *pb.User) models.User {
 }
 
 func GetAllUsers() ([]models.User, error) {
-	conn, _ := connectToAccomodationService()
+	conn, _ := connectToUserService()
 	client := pb.NewUserServiceClient(conn)
 
 	users := []models.User{}
