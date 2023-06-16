@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
+	go ginSetup()
 	repos.Connect()
 	grpcserver.InitServer()
-	go ginSetup()
 	repos.Disconnect()
 }
 
@@ -27,6 +27,7 @@ func ginSetup() {
 	rec.POST("/accommodations", controllers.GetRecommendedAccommodations)
 	rec.GET("/accommodations/init", controllers.InitDBData)
 	rec.GET("/accommodations/drop", controllers.DropDB)
+	rec.GET("/accommodations/init-mock", controllers.LoadMockData)
 
 	r.Run(":8080")
 }
