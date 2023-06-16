@@ -22,8 +22,8 @@ func ginSetup() {
 	r.Use(middlewares.CORSMiddleware())
 	r.NoRoute()
 
-	rec := r.Group("/recommendation", controllers.SearchFlights)
-	rec.GET("/flights")
+	rec := r.Group("/recommendation")
+	rec.GET("/flights", controllers.SearchFlights)
 	rec.POST("/accommodations", controllers.GetRecommendedAccommodations)
 
 	r.Run(":8080")
