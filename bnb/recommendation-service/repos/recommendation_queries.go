@@ -81,7 +81,7 @@ func GetHighlyRatedAccommodationsOfUserGroup(users []models.User) ([]models.Acco
 		accommodation := models.Accommodation{
 			Name:     accommodation_map["name"].(string),
 			Location: accommodation_map["location"].(string),
-			Price:    accommodation_map["price"].(float32),
+			Price:    float32(accommodation_map["price"].(float64)),
 			MongoId:  accommodation_map["mongoId"].(string),
 		}
 		accommodations = append(accommodations, accommodation)
@@ -102,9 +102,9 @@ func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation)
 	}
 
 	cypher_query := "MATCH (u:User)-[re:Reservation]->(a:Accommodation)<-[r:Review]-(u) " +
-		"WHERE a.mongoId IN $accommodationMongoIdList" +
+		"WHERE a.mongoId IN $accommodationMongoIdList " +
 		"WITH a, re, collect(r.value) AS reviews " +
-		"WHERE size([review IN reviews WHERE review < 3]) < 5 AND re.reservationEnd >= datetime($threeMonthsAgo)" +
+		"WHERE size([review IN reviews WHERE review < 3]) < 5 AND re.reservationEnd >= datetime($threeMonthsAgo) " +
 		"RETURN a"
 	query_params := map[string]interface{}{
 		"accommodationMongoIdList": accommodationIds,
@@ -130,7 +130,7 @@ func FilterRecentLowlyRatedAccommodations(accommodations []models.Accommodation)
 		accommodation := models.Accommodation{
 			Name:     accommodation_map["name"].(string),
 			Location: accommodation_map["location"].(string),
-			Price:    accommodation_map["price"].(float32),
+			Price:    float32(accommodation_map["price"].(float64)),
 			MongoId:  accommodation_map["mongoId"].(string),
 		}
 		filtered_accommodations = append(filtered_accommodations, accommodation)
@@ -150,11 +150,11 @@ func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]
 		accommodationIds = append(accommodationIds, accommodation.MongoId)
 	}
 
-	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User)" +
-		"WHERE a.mongoId IN $accommodationMongoIdList" +
-		"RETURN DISTINCT a" +
-		"ORDER BY a.price DESC" +
-		"LIMIT 10"
+	cypher_query := "MATCH (a:Accommodation)<-[r:Review]-(:User) " +
+		"WHERE a.mongoId IN $accommodationMongoIdList " +
+		"RETURN DISTINCT a " +
+		"ORDER BY a.price DESC " +
+		"LIMIT 10 "
 	query_params := map[string]interface{}{
 		"accommodationMongoIdList": accommodationIds,
 	}
@@ -178,7 +178,7 @@ func GetTenLowestPricedAccommodations(accommodations []models.Accommodation) ([]
 		accommodation := models.Accommodation{
 			Name:     accommodation_map["name"].(string),
 			Location: accommodation_map["location"].(string),
-			Price:    accommodation_map["price"].(float32),
+			Price:    float32(accommodation_map["price"].(float64)),
 			MongoId:  accommodation_map["mongoId"].(string),
 		}
 		ordered_accommodations = append(ordered_accommodations, accommodation)
