@@ -28,6 +28,7 @@ export const AuthContextProvider = ({ children }) => {
 
             newSocket.onmessage = (event) => {
                 const message = event.data;
+                console.log(message);
                 switch (message) {
                     case 'RESERVATION':
                         toast('You have a new reservation request 🔥');

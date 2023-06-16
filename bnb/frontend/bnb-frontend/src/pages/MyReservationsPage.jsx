@@ -33,7 +33,8 @@ const MyReservationsPage = () => {
                 return
             })
             .then((response) => {
-                window.location.reload()
+                // window.location.reload()
+                console.log(response);
             })
     }
 

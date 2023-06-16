@@ -150,6 +150,17 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		return err
+	}
+
+	_, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
+	if err != nil {
+		log.Print(res)
+		return err
+	}
+
 	boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
 	if err != nil {
 		log.Print(boolAns, err.Error())

@@ -45,3 +45,26 @@ func ReservationCreated(reservation models.Reservation, accommodationName string
 
 	return nil, nil
 }
+func ReservationCanceled(reservation models.Reservation, accommodationName string, hostId string) (*pb.UserResponse, error) {
+	conn, _ := connectToNotificationService()
+	client := pb.NewNotificationServiceClient(conn)
+
+	_, err := client.ReservationCanceled(context.Background(),
+	&pb.ReservationNotification{
+		AccommodationId: reservation.AccommodationId.Hex(),
+		UserId: hostId,
+		StartDate: &timestamp.Timestamp{Seconds: reservation.DateInterval.Start.Unix()},
+		EndDate: &timestamp.Timestamp{Seconds: reservation.DateInterval.End.Unix()},
+		NumOfGuests: int32(reservation.NumOfGuests),
+		IsApproved: reservation.IsApproved,
+		AccommodationName: accommodationName,
+	})
+	if err != nil {
+		log.Panic("Could not notify about reservation cancellation. Error: ", err)
+		return nil, err
+	}
+	
+	defer conn.Close()
+
+	return nil, nil
+}
