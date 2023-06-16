@@ -83,20 +83,3 @@ func FindUserByAPIKey(api_key string) (*models.User, error) {
 
 	return &user, nil
 }
-
-func AddUserAPIKey(user models.User, api_key models.API_Key) bool {
-	user.APIKey = api_key
-	return UpdateUser(user)
-}
-
-func DeleteUserAPIKey(api_key string) bool {
-	user, err := FindUserByAPIKey(api_key)
-
-	if err != nil {
-		return false
-	}
-
-	user.APIKey = models.API_Key{}
-
-	return UpdateUser(*user)
-}
