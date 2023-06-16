@@ -23,13 +23,3 @@ func FindUserByEmail(mail string) (*models.User, error) {
 
 	return user, nil
 }
-
-func FindUserByAPIKey(api_key string) (*models.User, error) {
-	user, err := repos.FindUserByAPIKey(api_key)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}

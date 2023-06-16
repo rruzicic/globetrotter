@@ -70,16 +70,3 @@ func FindUserByEmail(mail string) (*models.User, error) {
 
 	return &user, nil
 }
-
-func FindUserByAPIKey(api_key string) (*models.User, error) {
-	var user models.User
-
-	filter := bson.M{"api_key": bson.M{"value": bson.M{"$eq": api_key}}}
-
-	if err := usersCollection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
-		log.Panic("Could not find user by api key: ", api_key)
-		return nil, err
-	}
-
-	return &user, nil
-}

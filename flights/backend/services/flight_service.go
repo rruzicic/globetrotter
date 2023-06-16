@@ -106,21 +106,6 @@ func GetTicketsByUser(userId string) ([]models.Ticket, error) {
 	return tickets, nil
 }
 
-func BuyTicketForOtherUser(buyTicketForOtherUserDTO dto.BuyTicketForOtherUserDTO) error {
-	user, err := repos.FindUserByAPIKey(buyTicketForOtherUserDTO.ApiKey)
-
-	if err != nil {
-		return err
-	}
-
-	if err := BuyTicket(buyTicketForOtherUserDTO.FlightId, user.EMail, buyTicketForOtherUserDTO.NumOfTicketsOptional...); err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
 func SearchFlights(searchFLightsDTO dto.SearchFlightsDTO) ([]models.Flight, error) {
 	flights, err := repos.GetFlightBySearchParams(searchFLightsDTO)
 
