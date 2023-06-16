@@ -33,13 +33,13 @@ func buildGRPCHostReview(hostReview models.HostReview) pb.HostReview {
 
 func buildGRPCAccommodationReview(accommodationReview models.AccommodationReview) pb.AccommodationReview {
 	return pb.AccommodationReview{
-		Id:              accommodationReview.Id.String(),
+		Id:              accommodationReview.Id.Hex(),
 		CreatedOn:       timestamppb.New(time.Unix(int64(accommodationReview.CreatedOn), 0)),
 		ModifiedOn:      timestamppb.New(time.Unix(int64(accommodationReview.ModifiedOn), 0)),
 		DeletedOn:       timestamppb.New(time.Unix(int64(accommodationReview.DeletedOn), 0)),
 		Rating:          int32(accommodationReview.Rating),
-		UserId:          accommodationReview.UserId.String(),
-		AccommodationId: accommodationReview.AccommodationId.String(),
+		UserId:          accommodationReview.UserId.Hex(),
+		AccommodationId: accommodationReview.AccommodationId.Hex(),
 	}
 }
 
