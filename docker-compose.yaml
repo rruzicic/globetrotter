@@ -24,6 +24,7 @@ services:
       - './bnb/accommodation-service:/go/src/app'
     depends_on:
       - mongo
+      - nats
     networks:
       - backend-network
 
@@ -37,6 +38,7 @@ services:
         - './bnb/account-service:/go/src/app'
       depends_on:
         - mongo
+        - nats
       networks:
         - backend-network
 
@@ -50,6 +52,7 @@ services:
       - './bnb/feedback-service:/go/src/app'
     depends_on:
       - mongo
+      - nats
     networks:
       - backend-network
 
@@ -63,6 +66,7 @@ services:
       - './bnb/reservation-service:/go/src/app'
     depends_on:
       - mongo
+      - nats
     networks:
       - backend-network
     
@@ -130,6 +134,17 @@ services:
     ports:
       - 7474:7474
       - 7687:7687
+    networks:
+      - backend-network
+
+  nats:
+    image: 'nats:latest'
+    container_name: 'nats'
+    restart: on-failure:3
+    expose:
+      - "4222"
+    ports:
+      - "4222:4222"
     networks:
       - backend-network
 
