@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/pkg/http"
-	"github.com/rruzicic/globetrotter/flights/backend/repos"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
 
@@ -19,7 +18,7 @@ func APIKeyMiddleware() gin.HandlerFunc {
 		httpGin := http.Gin{Context: ctx}
 		key := extractKey(ctx)
 
-		user, err := repos.FindUserByAPIKey(models.APIKey{Key: key, Expiration: time.Now()})
+		user, err := services.FindUserByAPIKey(models.APIKey{Key: key, Expiration: time.Now()})
 		if err != nil {
 			ctx.Abort()
 			httpGin.Unauthorized("No user with this key")
