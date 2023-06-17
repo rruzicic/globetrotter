@@ -45,7 +45,7 @@ func CreateReservationNotification(notification model.Notification) (*model.Noti
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil
@@ -60,7 +60,7 @@ func CreateCancellationNotification(notification model.Notification) (*model.Not
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil
@@ -75,7 +75,7 @@ func CreateRatingNotification(notification model.Notification) (*model.Notificat
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil
@@ -90,7 +90,7 @@ func CreateAccommodationRatingNotification(notification model.Notification) (*mo
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil
@@ -105,7 +105,7 @@ func CreateHostStatusNotification(notification model.Notification) (*model.Notif
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil
@@ -120,7 +120,7 @@ func CreateReservationResponseNotification(notification model.Notification) (*mo
 
 	_, err := notificationCollection.InsertOne(context.TODO(), notification)
 	if err != nil {
-		log.Print("Could not create reservation! err: ", err.Error())
+		log.Print("Could not create notification! err: ", err.Error())
 		return nil, err
 	}
 	return &notification, nil

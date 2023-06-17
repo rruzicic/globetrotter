@@ -16,7 +16,21 @@ message ReservationNotification {
     string accommodationName = 8;
 }
 
+message HostRatingNotification {
+    string ratedId = 1;
+    string raterId = 2;
+    int64 rating = 3;
+}
+message AccommodationRatingNotification {
+    string ownerId = 1;
+    string ratedId = 2;
+    string raterId = 3;
+    int64 rating = 4;
+}
+
 service NotificationService {
     rpc ReservationCreated(ReservationNotification) returns (google.protobuf.Empty) {}
     rpc ReservationCanceled(ReservationNotification) returns (google.protobuf.Empty) {}
+    rpc HostRated(HostRatingNotification) returns (google.protobuf.Empty) {}
+    rpc AccommodationRated(AccommodationRatingNotification) returns (google.protobuf.Empty) {}
 }

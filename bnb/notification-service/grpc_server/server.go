@@ -50,6 +50,42 @@ func (s *NotificationServiceServer) ReservationCanceled(ctx context.Context, res
 	return &emptypb.Empty{}, nil
 }
 
+func (s *NotificationServiceServer) HostRated(ctx context.Context, rating *pb.HostRatingNotification) (*emptypb.Empty, error) {
+	log.Println("Notification server hit")
+	ratingValue := int(rating.Rating)
+	notification := model.Notification{
+		UserId: rating.RatedId,
+		RaterId: &rating.RaterId,
+		Rating:  &ratingValue,
+	}
+
+	notif, err := repos.CreateRatingNotification(notification);
+	if err != nil {
+		log.Println("Error server.go notification service")
+	}
+	socket.SendNotification(*notif)
+
+	return &emptypb.Empty{}, nil
+}
+
+func (s *NotificationServiceServer) AccommodationRated(ctx context.Context, rating *pb.AccommodationRatingNotification) (*emptypb.Empty, error) {
+	ratingValue := int(rating.Rating)
+	notification := model.Notification{
+		UserId: rating.OwnerId,
+		AccommodationId: &rating.RatedId,
+		RaterId: &rating.RaterId,
+		Rating:  &ratingValue,
+	}
+
+	notif, err := repos.CreateAccommodationRatingNotification(notification);
+	if err != nil {
+		log.Println("Error server.go notification service")
+	}
+	socket.SendNotification(*notif)
+
+	return &emptypb.Empty{}, nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
