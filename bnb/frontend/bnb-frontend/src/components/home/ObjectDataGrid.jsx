@@ -67,10 +67,8 @@ const ObjectDataGrid = () => {
                 return
             })
             .then((response) => {
-                console.log(response.data);
                 setObjects(response.data)
                 setShownObjects(response.data)
-
             })
     }
 
