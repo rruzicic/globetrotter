@@ -187,7 +187,7 @@ const ObjectDataGrid = () => {
                         <Stack sx={{display: 'grid', placeItems: 'center'}}>
                             <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits}/>
                         </Stack>
-                        <Button variant="contained" color="primary" sx={{marginTop: '2rem'}} disabled={!objects} onClick={applyFilter}>
+                        <Button fullWidth variant="contained" color="primary" sx={{marginTop: '2rem'}} disabled={!objects} onClick={applyFilter}>
                             Apply filters
                         </Button>
                     </Paper>

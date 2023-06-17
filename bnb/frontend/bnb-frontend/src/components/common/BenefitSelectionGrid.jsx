@@ -1,5 +1,4 @@
 import { Box, Grid, Tooltip, useTheme } from "@mui/material";
-import { useState } from "react";
 import NetworkWifi3BarIcon from '@mui/icons-material/NetworkWifi3Bar';
 import PetsIcon from '@mui/icons-material/Pets';
 import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';

@@ -48,21 +48,6 @@ const AccommodationInfoPage = () => {
         setAEndDate(event.target.value);
     };
 
-    const images = [
-        {
-            original: '/home.jpg',
-            thumbnail: '/home1.jpg',
-        },
-        {
-            original: '/home1.jpg',
-            thumbnail: '/home1.jpg',
-        },
-        {
-            original: '/home2.jpg',
-            thumbnail: '/home2.jpg',
-        },
-    ];
-
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${id}`)
             .catch((error) => {
@@ -210,7 +195,7 @@ const AccommodationInfoPage = () => {
                                 {objectInfo.name}
                             </Typography>
                             <Grid item xs={12}>
-                                <ImageGallery items={images} />
+                                <ImageGallery items={[{ original: objectInfo.photos, thumbnail: objectInfo.photos }]} />
                             </Grid>
                             <Grid item xs={3} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem', textAlign: 'center', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
                                 <Typography variant="h6" color="secondary">

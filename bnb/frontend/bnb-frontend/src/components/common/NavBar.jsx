@@ -1,5 +1,4 @@
 import { Box, Button, useTheme } from "@mui/material";
-import theme from "../../theme";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../../config/authContext";
@@ -7,7 +6,7 @@ const NavBar = () => {
     const authCtx = useContext(AuthContext)
     const theme = useTheme()
     return (
-        <Box style={{ backgroundColor: theme.palette.primary.main, width: '100%', padding: '1rem 0', display: 'flex', justifyContent: 'space-around' }}>
+        <Box style={{ backgroundColor: theme.palette.primary.main, width: '100%', padding: '1rem 0', display: 'flex', justifyContent: 'space-around', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
             <Link to={'/'}>
                 <Button variant="contained" color="secondary">
                     Home
