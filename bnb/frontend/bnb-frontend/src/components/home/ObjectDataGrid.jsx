@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { axiosInstance } from '../../config/interceptor'
 import CONSTANTS from '../../config/constants'
 import AuthContext from "../../config/authContext";
+import BenefitsSelectionGrid from "../common/BenefitSelectionGrid";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -16,6 +17,7 @@ const ObjectDataGrid = () => {
     const [priceRange, setPriceRange] = useState([10, 100])
     const [objects, setObjects] = useState(null)
     const [shownObjects, setShownObjects] = useState(null)
+    const [benefits, setBenefits] = useState([])
 
 
     const handleChangePage = (event, newPage) => {
@@ -130,8 +132,13 @@ const ObjectDataGrid = () => {
             })
     }
 
+    const isSubArray = (objectBenefits) => {
+        return benefits.every((benefit) => objectBenefits.includes(benefit))
+    }
+
     const applyFilter = () => {
-        setShownObjects(() => objects.filter((object) => object.unitPrice.amount >= priceRange[0] && object.unitPrice.amount <= priceRange[1]))
+        setShownObjects(() => objects.filter((object) => object.unitPrice.amount >= priceRange[0] && object.unitPrice.amount <= priceRange[1] && isSubArray(object.availableCommodations)))
+        console.log(benefits);
     }
 
     return (
@@ -147,7 +154,7 @@ const ObjectDataGrid = () => {
             </Stack>
             <Grid container spacing={1}>
                 <Grid item xs={3}>
-                    <Paper sx={{ padding: '1rem' }}>
+                    <Paper sx={{ padding: '1rem', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
                         <Typography variant="h5" >
                             Filters:
                         </Typography>
@@ -177,8 +184,8 @@ const ObjectDataGrid = () => {
                             </Typography>
                             <Checkbox size="small" />
                         </Stack>
-                        <Stack>
-                            Benefits: TODO
+                        <Stack sx={{display: 'grid', placeItems: 'center'}}>
+                            <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits}/>
                         </Stack>
                         <Button variant="contained" color="primary" sx={{marginTop: '2rem'}} disabled={!objects} onClick={applyFilter}>
                             Apply filters
@@ -188,7 +195,7 @@ const ObjectDataGrid = () => {
                 {
                     shownObjects && (
                         <Grid item xs={9}>
-                            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                            <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
                                 <TableContainer sx={{ maxHeight: 440 }}>
                                     <Table stickyHeader aria-label="sticky table">
                                         <TableHead>
