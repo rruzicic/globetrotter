@@ -77,6 +77,7 @@ func UpdateUser(user models.User) (*models.User, error) {
 		"email":      user.EMail,
 		"password":   user.Password,
 		"address":    user.Address,
+		"api_key":    user.ApiKey,
 	}
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 	update := bson.M{"$set": edited}
@@ -106,4 +107,16 @@ func DeleteUser(id primitive.ObjectID) error {
 	}
 
 	return nil
+}
+
+func AddAPIKeyToUser(email string, key string) (*models.User, error) {
+	user, err := GetUserByEmail(email)
+	if err != nil {
+		log.Print("Could not get user by email. Error: ", err.Error())
+		return nil, err
+	}
+
+	user.ApiKey = key
+
+	return UpdateUser(*user)
 }

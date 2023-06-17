@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
+	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/services"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -107,4 +108,21 @@ func DeleteUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, "User deleted successfully")
+}
+
+func AddAPIKeyToUser(ctx *gin.Context) {
+	key := ctx.Query("key")
+	email, err := jwt.ExtractTokenEmail(ctx)
+	if err != nil {
+		ctx.JSON(500, err.Error())
+		return
+	}
+
+	user, err := services.AddAPIKeyToUser(email, key)
+	if err != nil {
+		ctx.JSON(500, err.Error())
+		return
+	}
+
+	ctx.JSON(200, user)
 }

@@ -100,3 +100,7 @@ func IncrementCancellationsCounter(userId primitive.ObjectID) (*models.User, err
 func verifyPassword(dbPassword string, dtoPassword string) bool {
 	return dbPassword == dtoPassword
 }
+
+func AddAPIKeyToUser(email string, key string) (*models.User, error) {
+	return repos.AddAPIKeyToUser(email, key)
+}

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -115,4 +116,25 @@ func SearchFlights(reservationDTO dtos.ReservationDTO) ([]dtos.Flight, error) {
 	}
 
 	return append(arrivalFlights, departureFlights...), nil
+}
+
+func BuyTicketFromBnBDTO(buyFromBnBDTO dtos.BuyTicketFromBnBDTO) error {
+	baseURL := "http://flights-backend:8080/flights"
+	resource := "/flights/buy-ticket-for-friend"
+	url, _ := url.ParseRequestURI(baseURL)
+	url.Path = resource
+	urlStr := fmt.Sprintf("%v", url)
+
+	reqBody, err := json.Marshal(buyFromBnBDTO)
+	if err != nil {
+		log.Print("Could not marshal buy from bnb dto. Error: ", err.Error())
+	}
+
+	res, err := http.Post(urlStr, "application/json", bytes.NewBuffer(reqBody))
+	if err != nil {
+		log.Print("Could not send request. Error: ", err.Error())
+		return err
+	}
+
+	return res.Request.Context().Err()
 }
