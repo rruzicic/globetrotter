@@ -77,6 +77,7 @@ func UpdateUser(user models.User) (*models.User, error) {
 		"email":      user.EMail,
 		"password":   user.Password,
 		"address":    user.Address,
+		"super_host": user.SuperHost,
 	}
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 	update := bson.M{"$set": edited}
@@ -102,6 +103,30 @@ func DeleteUser(id primitive.ObjectID) error {
 
 	user, _ := GetUserById(id)
 	if err := grpcclient.DeleteUser(*user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AvgRatingChanged(hostId string, avgRating float32) error {
+	objectId, err := primitive.ObjectIDFromHex(hostId)
+	if err != nil {
+		return err
+	}
+	user, err := GetUserById(objectId)
+	if err != nil {
+		return err
+	}
+	user.Rating = avgRating
+	if avgRating > 4.7 {
+		user.SuperHost = true
+	} else {
+		user.SuperHost = false
+	}
+
+	_, err = UpdateUser(*user)
+	if err != nil {
 		return err
 	}
 

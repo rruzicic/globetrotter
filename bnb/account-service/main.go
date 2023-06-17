@@ -5,10 +5,13 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/proto"
+	"github.com/nats-io/nats.go"
 	"github.com/rruzicic/globetrotter/bnb/account-service/controllers"
 	grpcserver "github.com/rruzicic/globetrotter/bnb/account-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/middlewares"
+	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
@@ -32,6 +35,23 @@ func main() {
 	repos.Connect()
 	go ginSetup()
 	grpcserver.InitServer()
+
+	//Subscribe to messages
+	conn := Conn()
+	defer conn.Close()
+	_, err = conn.Subscribe("account-service", func(message *nats.Msg) {
+		event := pb.AvgRatingEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			// Handle the message
+			log.Println("Recieved message to update host average rating")
+			repos.AvgRatingChanged(event.HostId, event.AvgRating)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
 	repos.Disconnect()
 }
 
@@ -99,4 +119,12 @@ func newResource(ctx context.Context) *resource.Resource {
 
 func getSampler() trace.Sampler {
 	return trace.AlwaysSample()
+}
+
+func Conn() *nats.Conn {
+	conn, err := nats.Connect("nats://localhost:4222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return conn
 }
