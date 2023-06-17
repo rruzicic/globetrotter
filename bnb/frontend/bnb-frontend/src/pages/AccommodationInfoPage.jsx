@@ -86,7 +86,11 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
-                window.location.reload()
+                setRequests((prevRequests) =>
+                    prevRequests.map((request) =>
+                        request.id === id ? { ...request, isApproved: true } : request
+                    )
+                );
             })
     }
     const declineReservation = (id) => {
@@ -96,7 +100,7 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
-                window.location.reload()
+                setRequests((prev) => prev.filter((a) => a.id !== id))
             })
     }
     const handleOpen = () => {
@@ -233,9 +237,9 @@ const AccommodationInfoPage = () => {
                             </Typography>
                             <Grid container spacing={2} mt={4}>
                                 {
-                                    requests.map((request) => {
+                                    requests.map((request, index) => {
                                         return (
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} key={index}>
                                                 <RequestCard
                                                     requestId={request.id}
                                                     accept={acceptReservation}

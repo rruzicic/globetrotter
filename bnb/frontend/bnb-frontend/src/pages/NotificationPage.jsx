@@ -19,7 +19,6 @@ const NotificationsPage = () => {
                 console.error(err)
             })
             .then((response) => {
-                console.log(response.data);
                 setNotifications(response.data.sort((a, b) => b.createdOn - a.createdOn))
             })
     }, [])
@@ -37,25 +36,24 @@ const NotificationsPage = () => {
             case 'CANCELLATION':
                 return (`${timestampToDate(notification.createdOn)}:   Reservation at ${notification.accommodationName} has been canceled`)
             case 'RATING':
-                return ("TODO")
+                return (`${timestampToDate(notification.createdOn)}:   You have been rated with a ${notification.rating}`)
             case 'A_RATING':
-                return ("TODO")
+                return (`${timestampToDate(notification.createdOn)}:   Your accommodation ${notification.accommodationName} has been rated with a ${notification.rating}`)
             case 'HOST_STATUS':
-                return ("TODO")
+                return (`${timestampToDate(notification.createdOn)}: Your super host status has been updated!`)
             case 'RESPONSE':
-                return ("TODO")
+                return (`${timestampToDate(notification.createdOn)}: Your reservation request for ${notification.accommodationName} has been ${notification.approved ? "approved!" : "rejected.."}`)
             default:
                 console.error('Unknown notification type');
         }
     }
-
 
     return (
         <Stack spacing={4} mt={4} mb={4}>
             {
                 notifications && notifications.map((notification) => {
                     return (
-                        <Container sx={{backgroundColor: theme.palette.primary.main, padding: '1.5rem', width: '60%', margin: '0'}}>
+                        <Container sx={{backgroundColor: theme.palette.primary.main, borderRadius: '1rem', padding: '1.5rem', width: '100%', margin: '0', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'}}>
                             {generateNotificationText(notification)}
                         </Container>
                     )
