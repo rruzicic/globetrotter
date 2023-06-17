@@ -15,11 +15,13 @@ func CreateAccommodation(accommodation models.Accommodation) error {
 	accommodation.CreatedOn = int(time.Now().Unix())
 	accommodation.ModifiedOn = int(time.Now().Unix())
 
-	_, err := accommodationsCollection.InsertOne(context.TODO(), accommodation)
+	inserted_id, err := accommodationsCollection.InsertOne(context.TODO(), accommodation)
 	if err != nil {
 		log.Println("Could not save Accommodation because: ", err.Error())
 		return err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	accommodation.Id = &id
 
 	if err := grpcclient.CreateAccommodation(accommodation); err != nil {
 		return err

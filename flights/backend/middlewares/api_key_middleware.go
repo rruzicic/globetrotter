@@ -1,31 +1,33 @@
 package middlewares
 
 import (
-	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rruzicic/globetrotter/flights/backend/models"
 	"github.com/rruzicic/globetrotter/flights/backend/pkg/http"
 	"github.com/rruzicic/globetrotter/flights/backend/services"
 )
 
-func APIKeyAuthMiddleware() gin.HandlerFunc {
+func extractKey(ctx *gin.Context) string {
+	return ctx.Request.Header.Get("x-api-key")
+}
+
+func APIKeyMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		httpGin := http.Gin{Context: ctx}
-		api_key := httpGin.Context.Request.Header.Get("X-API-Key")
+		key := extractKey(ctx)
 
-		user, err := services.FindUserByAPIKey(api_key)
-
+		user, err := services.FindUserByAPIKey(models.APIKey{Key: key, Expiration: time.Now()})
 		if err != nil {
-			log.Println("Unknown api key")
 			ctx.Abort()
-			httpGin.Unauthorized(nil)
+			httpGin.Unauthorized("No user with this key")
 			return
 		}
 
-		if !services.CheckAPIKeyExpiration(user.APIKey) {
-			log.Println("Expired api key")
+		if services.APIKeyExpired(user.ApiKey) {
 			ctx.Abort()
-			httpGin.Unauthorized(nil)
+			httpGin.Unauthorized("Key expired")
 			return
 		}
 

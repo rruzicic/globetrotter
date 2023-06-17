@@ -4,36 +4,115 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/dtos"
 )
 
+type flightsGinResponse struct {
+	Code      int
+	Msg       string
+	Timestamp uint
+	Data      []dtos.Flight
+}
+
+func createArrivalUrl(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) string {
+	params := url.Values{}
+	params.Add("destination", reservationDTO.ArrivalDestination)
+	params.Add("departure", "")
+	params.Add("passengerNumber", strconv.Itoa(reservationDTO.People))
+	params.Add("departureDateTime", reservationDTO.ReservationStartDate.Format(time.RFC3339))
+	params.Add("arrivalDateTime", "")
+	url, _ := url.ParseRequestURI(baseUrl)
+	url.Path = resource
+	url.RawQuery = params.Encode()
+	urlStr := fmt.Sprintf("%v", url)
+
+	return urlStr
+}
+
+func createDepartureUrl(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) string {
+	params := url.Values{}
+	params.Add("destination", reservationDTO.DepartureDestination)
+	params.Add("departure", "")
+	params.Add("passengerNumber", strconv.Itoa(reservationDTO.People))
+	params.Add("departureDateTime", reservationDTO.ReservationEndDate.Format(time.RFC3339))
+	params.Add("arrivalDateTime", "")
+	url, _ := url.ParseRequestURI(baseUrl)
+	url.Path = resource
+	url.RawQuery = params.Encode()
+	urlStr := fmt.Sprintf("%v", url)
+
+	return urlStr
+}
+
+func getArrivalFlights(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) ([]dtos.Flight, error) {
+	url := createArrivalUrl(reservationDTO, baseUrl, resource)
+
+	res, err := http.Get(url)
+	if err != nil {
+		log.Print("Error sending get request. Error: ", err.Error())
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Print("Error reading arrival response's body. Error: ", err.Error())
+		return nil, err
+	}
+
+	var ginResponse flightsGinResponse
+	if err := json.Unmarshal(body, &ginResponse); err != nil {
+		log.Print("Could not unmarshall response body into response structure. Error: ", err.Error())
+	}
+
+	return ginResponse.Data, nil
+}
+
+func getDepartureFlights(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) ([]dtos.Flight, error) {
+	url := createDepartureUrl(reservationDTO, baseUrl, resource)
+
+	res, err := http.Get(url)
+	if err != nil {
+		log.Print("Error sending get request. Error: ", err.Error())
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Print("Error reading departure response's body. Error: ", err.Error())
+		return nil, err
+	}
+
+	var ginResponse flightsGinResponse
+	if err := json.Unmarshal(body, &ginResponse); err != nil {
+		log.Print("Could not unmarshall response body into response structure. Error: ", err.Error())
+	}
+
+	return ginResponse.Data, nil
+}
+
 func SearchFlights(reservationDTO dtos.ReservationDTO) ([]dtos.Flight, error) {
-	arrival_query := fmt.Sprintf("destination=%s&departure=%s&passengerNumber=%d&departureDateTime=%s&arrivalDateTime=%s", reservationDTO.ArrivalDestination, "", reservationDTO.People, reservationDTO.ReservationStartDate.String(), "")
-	departure_query := fmt.Sprintf("destination=%s&departure=%s&passengerNumber=%d&departureDateTime=%s&arrivalDateTime=%s", reservationDTO.DepartureDestination, "", reservationDTO.People, reservationDTO.ReservationStartDate.String(), "")
-	var arrival_flights []dtos.Flight
-	var departure_flights []dtos.Flight
+	baseURL := "http://flights-backend:8080/flights"
+	resource := "/flights/search"
 
-	arrival_flights_res, err := http.Get(fmt.Sprintf("http://flights-backend:8080/flights/search?%s", arrival_query))
+	arrivalFlights, err := getArrivalFlights(reservationDTO, baseURL, resource)
 	if err != nil {
-		return nil, err
-	}
-	defer arrival_flights_res.Body.Close()
-	arrival_flights_res_body, _ := ioutil.ReadAll(arrival_flights_res.Body)
-	if err := json.Unmarshal(arrival_flights_res_body, &arrival_flights); err != nil {
+		log.Print("Error with getting arrival flights")
 		return nil, err
 	}
 
-	departure_flights_res, err := http.Get(fmt.Sprintf("http://flights-backend:8080/flights/search?%s", departure_query))
+	departureFlights, err := getDepartureFlights(reservationDTO, baseURL, resource)
 	if err != nil {
-		return nil, err
-	}
-	defer departure_flights_res.Body.Close()
-	departure_flights_res_body, _ := ioutil.ReadAll(departure_flights_res.Body)
-	if err := json.Unmarshal(departure_flights_res_body, &departure_flights); err != nil {
+		log.Print("Error with getting departure flights")
 		return nil, err
 	}
 
-	return append(arrival_flights, departure_flights...), nil
+	return append(arrivalFlights, departureFlights...), nil
 }

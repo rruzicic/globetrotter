@@ -152,12 +152,14 @@ func CreateAccommodationReview(accommodationReview models.AccommodationReview) (
 	accommodationReview.CreatedOn = int(time.Now().Unix())
 	accommodationReview.ModifiedOn = int(time.Now().Unix())
 
-	_, err := accommodationReviewCollection.InsertOne(context.TODO(), accommodationReview)
+	inserted_id, err := accommodationReviewCollection.InsertOne(context.TODO(), accommodationReview)
 
 	if err != nil {
 		log.Print("Could not create a review! err: ", err.Error())
 		return nil, err
 	}
+	id := inserted_id.InsertedID.(primitive.ObjectID)
+	accommodationReview.Id = &id
 
 	if err := grpcclient.CreateReview(accommodationReview); err != nil {
 		return nil, err

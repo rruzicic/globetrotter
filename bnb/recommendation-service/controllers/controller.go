@@ -60,3 +60,10 @@ func DropDB(ctx *gin.Context) {
 	}
 	ctx.JSON(200, "Okay")
 }
+
+func LoadMockData(ctx *gin.Context) {
+	// for first time DB use and debug only
+	services.LoadMockDBData()
+	ctx.JSON(200, "Okay")
+	return
+}

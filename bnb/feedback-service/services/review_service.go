@@ -28,8 +28,32 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 	}
 
 	//TODO check if user had a previous reservation with this host.
+	finishedReservations, err := grpcclient.GetFinishedReservationsByUser(userId.Hex())
+	if err != nil {
+		return nil, err
+	}
 
-	return repos.CreateHostReview(hostReview)
+	accommodationIds := []string{}
+	for _, reservation := range finishedReservations {
+		accommodationIds = append(accommodationIds, reservation.AccommodationId)
+	}
+
+	pastHostsIds, err := grpcclient.GetPastHostsByAccommodations(accommodationIds)
+	if err != nil {
+		return nil, err
+	}
+	hasUserBeenToHosts := false
+	for _, pastHost := range pastHostsIds {
+		if pastHost.HostId == hostId.Hex() {
+			hasUserBeenToHosts = true
+		}
+	}
+
+	if hasUserBeenToHosts {
+		return repos.CreateHostReview(hostReview)
+	} else {
+		return nil, errors.New("user has not been to any of the hosts accommodations before and therefore can't review him")
+	}
 }
 
 func GetHostReviewById(id string) (*models.HostReview, error) {
@@ -94,7 +118,7 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 	}
 	hasUserBeenToAccommodation := false
 	for _, reservation := range finishedReservations {
-		if accommodationId.String() == reservation.AccommodationId {
+		if accommodationId.Hex() == reservation.AccommodationId {
 			hasUserBeenToAccommodation = true
 			break
 		}
@@ -121,7 +145,7 @@ func GetAccommodationReviewsByAccommodationId(id string) ([]models.Accommodation
 }
 
 func DeleteAccommodationReview(id string) error {
-	return repos.DeleteHostReview(id)
+	return repos.DeleteAccommodationReview(id)
 }
 
 func UpdateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationReviewDTO) error {

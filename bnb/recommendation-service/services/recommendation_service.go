@@ -16,3 +16,7 @@ func InitDBData() {
 func DropDB() error {
 	return repos.DropDB()
 }
+
+func LoadMockDBData() {
+	repos.LoadMockData()
+}
