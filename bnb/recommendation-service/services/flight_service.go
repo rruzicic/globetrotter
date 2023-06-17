@@ -22,8 +22,8 @@ type flightsGinResponse struct {
 
 func createArrivalUrl(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) string {
 	params := url.Values{}
-	params.Add("destination", reservationDTO.ArrivalDestination)
-	params.Add("departure", "")
+	params.Add("destination", reservationDTO.ArrivalLocationAtReservation)
+	params.Add("departure", reservationDTO.DepartureLocationToReservation)
 	params.Add("passengerNumber", strconv.Itoa(reservationDTO.People))
 	params.Add("departureDateTime", reservationDTO.ReservationStartDate.Format(time.RFC3339))
 	params.Add("arrivalDateTime", "")
@@ -37,8 +37,8 @@ func createArrivalUrl(reservationDTO dtos.ReservationDTO, baseUrl string, resour
 
 func createDepartureUrl(reservationDTO dtos.ReservationDTO, baseUrl string, resource string) string {
 	params := url.Values{}
-	params.Add("destination", reservationDTO.DepartureDestination)
-	params.Add("departure", "")
+	params.Add("destination", reservationDTO.ArrivalLocationAtHome)
+	params.Add("departure", reservationDTO.DepartureLocationFromReservation)
 	params.Add("passengerNumber", strconv.Itoa(reservationDTO.People))
 	params.Add("departureDateTime", reservationDTO.ReservationEndDate.Format(time.RFC3339))
 	params.Add("arrivalDateTime", "")
