@@ -14,6 +14,7 @@ type User struct {
 	Role                 string `json:"role" bson:"role"`
 	SuperHost            bool   `json:"superHost" bson:"super_host"`
 	CancellationsCounter int    `json:"cancellationsCounter" bson:"cancellations_counter"`
+	ApiKey               string `json:"apiKey" bson:"api_key"`
 	RatingStatus
 	Address
 }
