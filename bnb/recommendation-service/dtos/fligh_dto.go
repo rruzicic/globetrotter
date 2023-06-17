@@ -3,7 +3,7 @@ package dtos
 import "time"
 
 type Flight struct {
-	FlightId          string    `json:"flightId"`
+	FlightId          string    `json:"id"`
 	DepartureDateTime time.Time `json:"departureDateTime"`
 	ArrivalDateTime   time.Time `json:"arrivalDateTime"`
 	Departure         string    `json:"departure" `
