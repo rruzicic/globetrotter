@@ -22,6 +22,26 @@ func connectToNotificationService() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
+func ReservationResponse(reservation models.Reservation, accommodationName string)(*pb.UserResponse, error) {
+	conn, _ := connectToNotificationService()
+	client := pb.NewNotificationServiceClient(conn)
+
+	_, err := client.ReservationResponse(context.Background(),&pb.ReservationResponseNotification{
+		UserId: reservation.UserId.Hex(),
+		AccommodationId: reservation.AccommodationId.Hex(),
+		AccommodationName: accommodationName,
+		Approved: reservation.IsApproved,
+	})
+	if err != nil {
+		log.Panic("Could not notify about reservation. Error: ", err)
+		return nil, err
+	}
+	
+	defer conn.Close()
+
+	return nil, nil
+}
+
 func ReservationCreated(reservation models.Reservation, accommodationName string, hostId string) (*pb.UserResponse, error) {
 	conn, _ := connectToNotificationService()
 	client := pb.NewNotificationServiceClient(conn)

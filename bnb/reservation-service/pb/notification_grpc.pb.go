@@ -27,6 +27,7 @@ type NotificationServiceClient interface {
 	ReservationCanceled(ctx context.Context, in *ReservationNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	HostRated(ctx context.Context, in *HostRatingNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AccommodationRated(ctx context.Context, in *AccommodationRatingNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ReservationResponse(ctx context.Context, in *ReservationResponseNotification, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type notificationServiceClient struct {
@@ -73,6 +74,15 @@ func (c *notificationServiceClient) AccommodationRated(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *notificationServiceClient) ReservationResponse(ctx context.Context, in *ReservationResponseNotification, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/pb.NotificationService/ReservationResponse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type NotificationServiceServer interface {
 	ReservationCanceled(context.Context, *ReservationNotification) (*emptypb.Empty, error)
 	HostRated(context.Context, *HostRatingNotification) (*emptypb.Empty, error)
 	AccommodationRated(context.Context, *AccommodationRatingNotification) (*emptypb.Empty, error)
+	ReservationResponse(context.Context, *ReservationResponseNotification) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedNotificationServiceServer) HostRated(context.Context, *HostRa
 }
 func (UnimplementedNotificationServiceServer) AccommodationRated(context.Context, *AccommodationRatingNotification) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccommodationRated not implemented")
+}
+func (UnimplementedNotificationServiceServer) ReservationResponse(context.Context, *ReservationResponseNotification) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReservationResponse not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -185,6 +199,24 @@ func _NotificationService_AccommodationRated_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_ReservationResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReservationResponseNotification)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).ReservationResponse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.NotificationService/ReservationResponse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).ReservationResponse(ctx, req.(*ReservationResponseNotification))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AccommodationRated",
 			Handler:    _NotificationService_AccommodationRated_Handler,
+		},
+		{
+			MethodName: "ReservationResponse",
+			Handler:    _NotificationService_ReservationResponse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

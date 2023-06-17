@@ -15,7 +15,6 @@ message ReservationNotification {
     float totalPrice = 7;
     string accommodationName = 8;
 }
-
 message HostRatingNotification {
     string ratedId = 1;
     string raterId = 2;
@@ -27,10 +26,17 @@ message AccommodationRatingNotification {
     string raterId = 3;
     int64 rating = 4;
 }
+message ReservationResponseNotification {
+    string userId = 1;
+    string accommodationId = 2;
+    string accommodationName = 3;
+    bool approved = 4;
+}
 
 service NotificationService {
     rpc ReservationCreated(ReservationNotification) returns (google.protobuf.Empty) {}
     rpc ReservationCanceled(ReservationNotification) returns (google.protobuf.Empty) {}
     rpc HostRated(HostRatingNotification) returns (google.protobuf.Empty) {}
     rpc AccommodationRated(AccommodationRatingNotification) returns (google.protobuf.Empty) {}
+    rpc ReservationResponse(ReservationResponseNotification) returns (google.protobuf.Empty) {}
 }

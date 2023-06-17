@@ -205,6 +205,8 @@ func ApproveReservation(id string) error {
 		}
 	}
 
+	grpcclient.ReservationResponse(*reservation, accommodation.Name)
+
 	return repos.UpdateReservation(*reservation)
 }
 
@@ -214,8 +216,16 @@ func RejectReservation(id string) error {
 		log.Panic("Could not get reservation by id. Error: ", err)
 		return err
 	}
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		log.Panic("Could not get accommodation by id from accommodation service. Error: ", err)
+		return err
+	}
 
 	reservation.IsApproved = false
+
+	grpcclient.ReservationResponse(*reservation, accommodation.Name)
+	
 	return repos.UpdateReservation(*reservation)
 }
 

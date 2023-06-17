@@ -9,4 +9,5 @@ type Notification struct {
 	AccommodationName 	*string `json:"accommodationName,omitempty" bson:"accommodation_name,omitempty"`
 	Rating          	*int    `json:"rating,omitempty" bson:"rating,omitempty"`
 	RaterId				*string `json:"raterId,omitempty" bson:"rater_id,omitempty"`
+	Approved 			*bool `json:"approved,omitempty" bson:"approved,omitempty"`
 }

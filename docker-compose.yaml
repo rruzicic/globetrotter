@@ -91,29 +91,29 @@ services:
     networks:
       - backend-network      
       
-  # recommendation-service:
-  #   restart: on-failure:3
-  #   build: './bnb/recommendation-service'
-  #   ports:
-  #     - '8086:8080'
-  #     - '50056:50051'
-  #   volumes: 
-  #     - './bnb/recommendation-service:/go/src/app'
-  #   depends_on:
-  #     - neo4j
-  #   networks:
-  #     - backend-network      
+  recommendation-service:
+    restart: on-failure:3
+    build: './bnb/recommendation-service'
+    ports:
+      - '8086:8080'
+      - '50056:50051'
+    volumes: 
+      - './bnb/recommendation-service:/go/src/app'
+    depends_on:
+      - neo4j
+    networks:
+      - backend-network      
 
-  # flights-backend:
-  #   build: './flights/backend'
-  #   ports:
-  #     - '8080:8080'
-  #   volumes:
-  #     - './flights/backend:/go/src/app'
-  #   depends_on:
-  #     - mongo
-  #   networks:
-  #     - backend-network
+  flights-backend:
+    build: './flights/backend'
+    ports:
+      - '8080:8080'
+    volumes:
+      - './flights/backend:/go/src/app'
+    depends_on:
+      - mongo
+    networks:
+      - backend-network
 
   mongo:
     image: 'mongo:latest'
@@ -127,15 +127,15 @@ services:
     networks:
       - backend-network
 
-  # neo4j:
-  #   image: 'neo4j:latest'
-  #   container_name: 'neo4j'
-  #   restart: on-failure:3
-  #   ports:
-  #     - 7474:7474
-  #     - 7687:7687
-  #   networks:
-  #     - backend-network
+  neo4j:
+    image: 'neo4j:latest'
+    container_name: 'neo4j'
+    restart: on-failure:3
+    ports:
+      - 7474:7474
+      - 7687:7687
+    networks:
+      - backend-network
 
 networks:
   backend-network:
