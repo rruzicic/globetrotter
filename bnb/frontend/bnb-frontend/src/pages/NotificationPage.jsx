@@ -53,7 +53,7 @@ const NotificationsPage = () => {
             {
                 notifications && notifications.map((notification) => {
                     return (
-                        <Container sx={{backgroundColor: theme.palette.primary.main, borderRadius: '1rem', padding: '1.5rem', width: '100%', margin: '0', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'}}>
+                        <Container sx={{backgroundColor: theme.palette.primary.main, color: theme.palette.secondary.main, fontWeight: 'bold', borderRadius: '1rem', padding: '1.5rem', width: '100%', margin: '0', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'}}>
                             {generateNotificationText(notification)}
                         </Container>
                     )
