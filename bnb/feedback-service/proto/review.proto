@@ -50,6 +50,11 @@ message RequestAvgRating{
     string id = 1;
 }
 
+message AvgRatingEvent{
+    string hostId = 1;
+    float avgRating = 2;
+}
+
 message EmptyReviewMsg {}
 
 service FeedbackService{

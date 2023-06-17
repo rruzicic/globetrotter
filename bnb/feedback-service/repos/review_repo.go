@@ -143,6 +143,22 @@ func UpdateHostReview(hostReview models.HostReview) error {
 	return nil
 }
 
+func CalcAvgRatingForHost(hostId string) (float32, error) {
+	allHostsReviews, err := GetHostReviewsByHostId(hostId)
+	if err != nil {
+		log.Print("Could not get reviews for hostId")
+		return 0, err
+	}
+
+	var sumRating float32 = 0
+	for _, review := range allHostsReviews {
+		sumRating += float32(review.Rating)
+	}
+	var avgRating float32 = sumRating / float32(len(allHostsReviews))
+
+	return avgRating, nil
+}
+
 //============================================================================================
 //============================================================================================
 

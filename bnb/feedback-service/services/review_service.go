@@ -4,10 +4,12 @@ import (
 	"errors"
 	"log"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
+	"github.com/rruzicic/globetrotter/bnb/feedback-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -61,7 +63,26 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 	}
 
 	if hasUserBeenToHosts {
-		return repos.CreateHostReview(hostReview)
+		createdHostReview, err := repos.CreateHostReview(hostReview)
+		if err != nil {
+			log.Panic(err)
+		}
+		//Publish an event to the account service
+		conn := Conn()
+		defer conn.Close()
+
+		newAvgRating, err := repos.CalcAvgRatingForHost(hostReviewDTO.HostId)
+		if err != nil {
+			log.Panic(err)
+		}
+		event := pb.AvgRatingEvent{HostId: hostReviewDTO.HostId, AvgRating: newAvgRating}
+		data, _ := proto.Marshal(&event)
+		err = conn.Publish("account-service", data)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		return createdHostReview, nil
 	} else {
 		return nil, errors.New("user has not been to any of the hosts accommodations before and therefore can't review him")
 	}
