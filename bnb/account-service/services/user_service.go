@@ -29,7 +29,7 @@ func LoginUser(credentials dto.CredentialsDTO) (string, error) {
 	if !verifyPassword(user.Password, credentials.Password) {
 		return "", errors.New("incorrect password")
 	}
-	token, err := jwt.GenerateToken(user.EMail, user.Role)
+	token, err := jwt.GenerateToken(user.EMail, user.Role, user.Id.Hex())
 	if err != nil {
 		return "", err
 	}

@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
@@ -47,6 +48,11 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 		if pastHost.HostId == hostId.Hex() {
 			hasUserBeenToHosts = true
 		}
+	}
+
+	_, err = grpcclient.HostRated(hostReview)
+	if err != nil {
+		log.Println("Error creating rating")
 	}
 
 	if hasUserBeenToHosts {
@@ -123,6 +129,12 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 			break
 		}
 	}
+
+	accommodation, err := grpcclient.GetAccommodationById(accommodationId.Hex())
+	if err != nil {
+		return nil, err
+	}
+	grpcclient.AccommodationRated(accommodationReview, accommodation.User)
 
 	if hasUserBeenToAccommodation {
 		return repos.CreateAccommodationReview(accommodationReview)

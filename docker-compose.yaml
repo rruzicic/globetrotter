@@ -11,6 +11,7 @@ services:
       - feedback-service
       - reservation-service
       # - search-service
+      - notification-service
     networks:
       - backend-network
 
@@ -65,7 +66,6 @@ services:
       - mongo
     networks:
       - backend-network
-    
 
   # search-service:
   #   restart: on-failure:3
@@ -78,6 +78,32 @@ services:
   #   depends_on:
   #     - mongo
 
+  notification-service:
+    restart: on-failure:3
+    build: './bnb/notification-service'
+    ports:
+      - '8087:8080'
+      - '50057:50051'
+    volumes:
+      - './bnb/notification-service:/go/src/app'
+    depends_on:
+      - mongo
+    networks:
+      - backend-network      
+      
+  recommendation-service:
+    restart: on-failure:3
+    build: './bnb/recommendation-service'
+    ports:
+      - '8086:8080'
+      - '50056:50051'
+    volumes: 
+      - './bnb/recommendation-service:/go/src/app'
+    # depends_on:
+      # - neo4j
+    networks:
+      - backend-network      
+
   flights-backend:
     build: './flights/backend'
     ports:
@@ -88,28 +114,6 @@ services:
       - mongo
     networks:
       - backend-network
-      
-  recommendation-service:
-    restart: on-failure:3
-    build: './bnb/recommendation-service'
-    ports:
-      - '8086:8080'
-      - '50056:50051'
-    volumes:
-      - './bnb/recommendation-service:/go/src/app'
-    depends_on:
-      - neo4j
-    networks:
-      - backend-network      
-
-  # flights-backend:
-  #   build: './flights/backend'
-  #   ports:
-  #     - '8080:8080'
-  #   volumes:
-  #     - './flights/backend:/go/src/app'
-  #   depends_on:
-  #     - mongo
 
   mongo:
     image: 'mongo:latest'

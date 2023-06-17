@@ -36,6 +36,11 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 	if err != nil {
 		return nil, err
 	}
+	
+	_, err = grpcclient.ReservationCreated(reservation, accommodation.Name, accommodation.User)
+	if err != nil {
+		return nil, err
+	}
 
 	accommodation_availability := models.TimeInterval{Start: accommodation.AvailabilityStartDate.AsTime(), End: accommodation.AvailabilityEndDate.AsTime()}
 	if !accommodation_availability.OtherIntervalIsDuring(reservation.DateInterval) {
@@ -142,7 +147,14 @@ func DeleteReservation(id string) error {
 		log.Print(err.Error())
 		return err
 	}
-
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		return err
+	}
+	_, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
+	if err != nil {
+		log.Print(err.Error())
+	}
 	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
 	if err != nil {
 		log.Print(res)
@@ -189,6 +201,8 @@ func ApproveReservation(id string) error {
 		}
 	}
 
+	grpcclient.ReservationResponse(*reservation, accommodation.Name)
+
 	return repos.UpdateReservation(*reservation)
 }
 
@@ -198,8 +212,16 @@ func RejectReservation(id string) error {
 		log.Panic("Could not get reservation by id. Error: ", err)
 		return err
 	}
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		log.Panic("Could not get accommodation by id from accommodation service. Error: ", err)
+		return err
+	}
 
 	reservation.IsApproved = false
+
+	grpcclient.ReservationResponse(*reservation, accommodation.Name)
+	
 	return repos.UpdateReservation(*reservation)
 }
 
