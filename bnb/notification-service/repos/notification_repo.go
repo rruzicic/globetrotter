@@ -52,6 +52,7 @@ func CreateReservationNotification(notification model.Notification) (*model.Noti
 }
 
 func CreateCancellationNotification(notification model.Notification) (*model.Notification, error) {
+	log.Println("Notification repo hit")
 	obj_id := primitive.NewObjectIDFromTimestamp(time.Now())
 	notification.Id = &obj_id
 	notification.CreatedOn = int(time.Now().Unix())

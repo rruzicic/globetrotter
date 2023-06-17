@@ -147,19 +147,15 @@ func DeleteReservation(id string) error {
 		log.Print(err.Error())
 		return err
 	}
-
-	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
-	if err != nil {
-		log.Print(res)
-		return err
-	}
-
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
 		return err
 	}
-
 	_, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
+	if err != nil {
+		log.Print(err.Error())
+	}
+	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
 	if err != nil {
 		log.Print(res)
 		return err

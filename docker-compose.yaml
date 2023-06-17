@@ -99,8 +99,8 @@ services:
       - '50056:50051'
     volumes: 
       - './bnb/recommendation-service:/go/src/app'
-    depends_on:
-      - neo4j
+    # depends_on:
+      # - neo4j
     networks:
       - backend-network      
 

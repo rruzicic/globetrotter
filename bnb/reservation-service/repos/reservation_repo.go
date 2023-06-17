@@ -212,14 +212,9 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
-	res, err := GetReservationById(id)
-	if err != nil {
-		return err
-	}
-
-	if err := grpcclient.DeleteReservation(*res); err != nil {
-		return err
-	}
+	// if err := grpcclient.DeleteReservation(*reservation); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }

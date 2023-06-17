@@ -10,12 +10,10 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/notification-service/model"
 )
 
-//define buffer sizes
 var upgrader = websocket.Upgrader{
 	ReadBufferSize: 1024,
 	WriteBufferSize: 1024,
 }
-//define map for assigning connections to users
 var connectedClients = struct {
 	sync.RWMutex
 	clients map[string]*websocket.Conn
@@ -37,12 +35,6 @@ func HandleWebSocket(c *gin.Context) {
 	if err != nil {
 		log.Println("Failed to upgrade connection:", err)
 		return
-	}
-
-	//TODO: remove later: purely to make sure the connection opened properly
-	err = conn.WriteMessage(websocket.TextMessage, []byte("Hello, client!"))
-	if err != nil {
-		log.Println("Error sending message:", err)
 	}
 
 	defer conn.Close();

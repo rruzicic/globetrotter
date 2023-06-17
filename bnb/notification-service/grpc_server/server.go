@@ -34,7 +34,7 @@ func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res 
 	return &emptypb.Empty{}, nil
 }
 func (s *NotificationServiceServer) ReservationCanceled(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error){
-
+	log.Println("notification server hit")
 	notification := model.Notification{
 		UserId: res.UserId,
 		AccommodationId: &res.AccommodationId,
