@@ -48,9 +48,22 @@ func UpdateUser(user models.User) bool {
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
-	update := bson.D{{Name: "$set", Value: bson.D{}}}
+	update := bson.M{"$set": bson.M{
+		"first_name":         user.FirstName,
+		"last_name":          user.LastName,
+		"email":              user.EMail,
+		"password":           user.Password,
+		"role":               user.Role,
+		"api_key.key":        user.ApiKey.Key,
+		"api_key.expiration": user.ApiKey.Expiration,
+		"address.country":    user.Address.Country,
+		"address.street":     user.Address.Street,
+		"address.street_num": user.Address.StreetNum,
+		"address.zip":        user.Address.ZIPCode,
+	}}
 
-	if _, err := usersCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := usersCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		log.Print("Error: ", err.Error())
 		return false
 	}
 	return true

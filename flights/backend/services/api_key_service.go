@@ -13,7 +13,7 @@ func GenerateAPIKey(temporary bool) models.APIKey {
 }
 
 func APIKeyExpired(key models.APIKey) bool {
-	return time.Now().Before(key.Expiration)
+	return !time.Now().Before(key.Expiration)
 }
 
 func AddAPIKeyToUser(user models.User, key models.APIKey) bool {
