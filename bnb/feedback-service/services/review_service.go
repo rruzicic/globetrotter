@@ -2,7 +2,9 @@ package services
 
 import (
 	"errors"
+	"log"
 
+	"github.com/nats-io/nats.go"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/feedback-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
@@ -47,6 +49,15 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 		if pastHost.HostId == hostId.Hex() {
 			hasUserBeenToHosts = true
 		}
+	}
+
+	//Publish an event to the account service
+	conn := Conn()
+	defer conn.Close()
+
+	err = conn.Publish("account-service", []byte("calculate avg rating"))
+	if err != nil {
+		log.Panic(err)
 	}
 
 	if hasUserBeenToHosts {
@@ -166,4 +177,12 @@ func UpdateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 	}
 
 	return repos.UpdateAccommodationReview(accommodationReview)
+}
+
+func Conn() *nats.Conn {
+	conn, err := nats.Connect("nats://localhost:4222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return conn
 }
