@@ -17,7 +17,7 @@ const LoginPage = () => {
     const onSubmit = (data) => {
         axios.post(`${CONSTANTS.GATEWAY}/user/login`, data)
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 return
             })
             .then((response) => {

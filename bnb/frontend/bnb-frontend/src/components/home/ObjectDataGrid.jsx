@@ -119,7 +119,6 @@ const ObjectDataGrid = () => {
                                 return
                             })
                             .then((response) => {
-                                console.log(response);
                             })
                     })
             })

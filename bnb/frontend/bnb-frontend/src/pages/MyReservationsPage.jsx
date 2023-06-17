@@ -33,7 +33,7 @@ const MyReservationsPage = () => {
                 return
             })
             .then((response) => {
-                // window.location.reload()
+                setData((prev) => prev.filter((a) => a.id !== id))
             })
     }
 

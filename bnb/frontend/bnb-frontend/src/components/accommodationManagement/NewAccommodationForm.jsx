@@ -9,7 +9,6 @@ const NewAccommodationForm = ({ setArray }) => {
         var file = element.target.files[0];
         var reader = new FileReader();
         reader.onloadend = function () {
-            console.log('RESULT', reader.result)
             setArray([reader.result])
         }
         reader.readAsDataURL(file);
