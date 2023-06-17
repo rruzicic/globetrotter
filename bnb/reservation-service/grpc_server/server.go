@@ -9,6 +9,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/services"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -127,13 +128,17 @@ func (s *ReservationServiceServer) GetFutureActiveReservationsByHost(req *pb.Req
 	return nil
 }
 
+func (s *ReservationServiceServer) Ping(ctx context.Context, req *pb.EmptyResMsg) (*pb.PingMessage, error) {
+	return &pb.PingMessage{Msg: "Hi there!"}, nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Panic("Reservation service failed to listen. Error: ", err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
 	pb.RegisterReservationServiceServer(server, &ReservationServiceServer{})
 
 	log.Println("Reservation gRPC server listening..")

@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
+	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/account-service/services"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -107,4 +108,13 @@ func DeleteUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, "User deleted successfully")
+}
+
+func Ping(ctx *gin.Context) {
+	msg, err := grpcclient.Ping()
+	if err != nil {
+		ctx.JSON(400, "Something went wrong")
+		return
+	}
+	ctx.JSON(200, msg)
 }

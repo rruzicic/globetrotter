@@ -6,13 +6,14 @@ import (
 	"log"
 
 	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func connectToReservationService() (*grpc.ClientConn, error) {
 	// var opts []grpc.DialOption
-	conn, err := grpc.Dial("reservation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("reservation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()))
 
 	if err != nil {
 		log.Panic("Could not connect to reservation service")
@@ -20,6 +21,20 @@ func connectToReservationService() (*grpc.ClientConn, error) {
 	}
 
 	return conn, nil
+}
+
+func Ping() (string, error) {
+	conn, err := connectToReservationService()
+	if err != nil {
+		return "", err
+	}
+	client := pb.NewReservationServiceClient(conn)
+
+	msg, err := client.Ping(context.Background(), &pb.EmptyResMsg{})
+	if err != nil {
+		return "", err
+	}
+	return msg.Msg, err
 }
 
 func GetActiveReservationsByUser(id string) ([](*pb.Reservation), error) {
