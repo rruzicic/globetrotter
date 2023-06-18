@@ -61,6 +61,7 @@ message TokenRequest {
 message UserResponse { User user = 1; }
 message BooleanReturn { bool boolean = 1;}
 
+
 service UserService {
     rpc GetUserById(UserRequestId) returns (UserResponse) {}
     rpc GetUserByEmail(UserRequestEmail) returns (UserResponse) {}
