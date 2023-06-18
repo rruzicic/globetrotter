@@ -1,9 +1,16 @@
 go 1.20
 
 use ./flights/backend/
+
 use ./bnb/accommodation-service
+
 use ./bnb/account-service
+
 use ./bnb/feedback-service
+
 use ./bnb/reservation-service
+
+use ./bnb/notification-service
+
 use ./bnb/search-service
 use ./bnb/recommendation-service

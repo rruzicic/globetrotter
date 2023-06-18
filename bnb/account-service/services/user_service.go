@@ -29,7 +29,7 @@ func LoginUser(credentials dto.CredentialsDTO) (string, error) {
 	if !verifyPassword(user.Password, credentials.Password) {
 		return "", errors.New("incorrect password")
 	}
-	token, err := jwt.GenerateToken(user.EMail, user.Role)
+	token, err := jwt.GenerateToken(user.EMail, user.Role, user.Id.Hex())
 	if err != nil {
 		return "", err
 	}
@@ -99,4 +99,8 @@ func IncrementCancellationsCounter(userId primitive.ObjectID) (*models.User, err
 
 func verifyPassword(dbPassword string, dtoPassword string) bool {
 	return dbPassword == dtoPassword
+}
+
+func AddAPIKeyToUser(email string, key string) (*models.User, error) {
+	return repos.AddAPIKeyToUser(email, key)
 }

@@ -12,13 +12,14 @@ import (
 
 const jwtSecret = "bnb-service-secret-key-123.Auth"
 
-func GenerateToken(email string, role string) (string, error) {
+func GenerateToken(email string, role string, id string) (string, error) {
 	tokenLifespanHrs := 1
 
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["email"] = email
 	claims["role"] = role
+	claims["id"] = id
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespanHrs)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

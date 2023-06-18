@@ -20,8 +20,8 @@ const AccommodationManagementPage = () => {
                         return
                     })
                     .then((response) => {
-                        console.log(response.data);
                         setObjects(response.data)
+                        console.log(response.data);
                     })
             })
     }, [])

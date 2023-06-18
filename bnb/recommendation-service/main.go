@@ -24,6 +24,7 @@ func ginSetup() {
 
 	rec := r.Group("/recommendation")
 	rec.POST("/flights", controllers.SearchFlights)
+	rec.POST("/flights/buy-ticket", controllers.BuyTicketFromBnBDTO)
 	rec.POST("/accommodations", controllers.GetRecommendedAccommodations)
 	rec.GET("/accommodations/init", controllers.InitDBData)
 	rec.GET("/accommodations/drop", controllers.DropDB)

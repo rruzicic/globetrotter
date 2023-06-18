@@ -20,6 +20,21 @@ func contains(list [](*pb.HostAnswer), item *pb.HostAnswer) bool {
 	return false
 }
 
+func GetAccommodationById(id string) (*pb.Accommodation, error) {
+	conn, _ := connectToAccommodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	accommodation, err := client.GetAccommodationById(context.Background(), &pb.RequestAccommodationById{Id: id})
+	if err != nil {
+		log.Panic("Could not get accommodation by id from accommodation service. Error: ", err)
+		return nil, err
+	}
+
+	defer conn.Close()
+
+	return accommodation, err
+}
+
 func connectToAccommodationService() (*grpc.ClientConn, error) {
 	conn, err := grpc.Dial("accommodation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 

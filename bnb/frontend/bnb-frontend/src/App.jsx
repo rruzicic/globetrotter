@@ -13,7 +13,9 @@ import NewAccommodationPage from './pages/NewAccommodationPage';
 import AccommodationInfoPage from './pages/AccommodationInfoPage';
 import "react-image-gallery/styles/css/image-gallery.css";
 import MyReservationsPage from './pages/MyReservationsPage';
-
+import NotificationsPage from './pages/NotificationPage';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -29,9 +31,11 @@ function App() {
               <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
               <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
               <Route path={'/myReservations'} element={<MyReservationsPage />} />
+              <Route path={'/notifications'} element={<NotificationsPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>
+        <ToastContainer />
     </ThemeProvider>
   );
 }

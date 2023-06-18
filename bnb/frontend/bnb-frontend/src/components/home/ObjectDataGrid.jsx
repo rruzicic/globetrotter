@@ -1,9 +1,10 @@
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button } from "@mui/material";
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Stack, TextField, Button, Grid, Typography, Divider, Slider, Checkbox } from "@mui/material";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from '../../config/interceptor'
 import CONSTANTS from '../../config/constants'
 import AuthContext from "../../config/authContext";
+import BenefitsSelectionGrid from "../common/BenefitSelectionGrid";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -13,7 +14,10 @@ const ObjectDataGrid = () => {
     const [guestNumberSP, setGuestNumberSP] = useState('')
     const [startDateSP, setStartDateSP] = useState()
     const [endDateSP, setEndDateSP] = useState()
+    const [priceRange, setPriceRange] = useState([10, 100])
     const [objects, setObjects] = useState(null)
+    const [shownObjects, setShownObjects] = useState(null)
+    const [benefits, setBenefits] = useState([])
 
 
     const handleChangePage = (event, newPage) => {
@@ -66,6 +70,7 @@ const ObjectDataGrid = () => {
             })
             .then((response) => {
                 setObjects(response.data)
+                setShownObjects(response.data)
             })
     }
 
@@ -85,6 +90,9 @@ const ObjectDataGrid = () => {
 
     const handleEndDateChange = (event) => {
         setEndDateSP(event.target.value)
+    }
+    const handlePriceRangeChange = (event, newValue) => {
+        setPriceRange(newValue)
     }
 
     const navigate = useNavigate()
@@ -119,10 +127,18 @@ const ObjectDataGrid = () => {
                                 return
                             })
                             .then((response) => {
-                                console.log(response);
                             })
                     })
             })
+    }
+
+    const isSubArray = (objectBenefits) => {
+        return benefits.every((benefit) => objectBenefits.includes(benefit))
+    }
+
+    const applyFilter = () => {
+        setShownObjects(() => objects.filter((object) => object.unitPrice.amount >= priceRange[0] && object.unitPrice.amount <= priceRange[1] && isSubArray(object.availableCommodations)))
+        console.log(benefits);
     }
 
     return (
@@ -132,69 +148,112 @@ const ObjectDataGrid = () => {
                 <TextField type="number" label="Guest number" variant="outlined" onChange={handleGuestNumberChange} />
                 <input type="date" onChange={handleStartDateChange} label='Start Date' />
                 <input type="date" onChange={handleEndDateChange} label='End Date' />
-                <Button variant="contained" color="primary" onClick={search}>
+                <Button variant="contained" color="primary" onClick={search} disabled={!(locationSP && startDateSP && endDateSP && guestNumberSP)}>
                     Search
                 </Button>
             </Stack>
-            {
-                objects && (
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        <TableContainer sx={{ maxHeight: 440 }}>
-                            <Table stickyHeader aria-label="sticky table">
-                                <TableHead>
-                                    <TableRow>
-                                        {columns.map((column) => (
-                                            <TableCell
-                                                key={column.id}
-                                                align={column.align}
-                                                style={{ minWidth: column.minWidth }}
-                                            >
-                                                {column.label}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {objects
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((object) => {
-                                            return (
-                                                <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
-                                                    <TableCell>
-                                                        <img src='/home.jpg' alt={object.name} height={'60px'} width={'auto'} />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {object.name}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {object.location.city}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {object.unitPrice.amount.toString()}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)} disabled={authCtx.isHost()}>
-                                                            Book!
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25, 100]}
-                            component="div"
-                            count={objects.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
+            <Grid container spacing={1}>
+                <Grid item xs={3}>
+                    <Paper sx={{ padding: '1rem', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                        <Typography variant="h5" >
+                            Filters:
+                        </Typography>
+                        <Divider />
+                        <Typography variant="subtitle1" >
+                            Price range per day
+                        </Typography>
+                        <Stack direction={"row"} spacing={2}>
+                            <Typography variant="subtitle1">
+                                {priceRange[0]}
+                            </Typography>
+                            <Slider
+                                value={priceRange}
+                                valueLabelDisplay="auto"
+                                min={0}
+                                max={500}
+                                onChange={handlePriceRangeChange}
+                                aria-labelledby="range-slider"
+                            />
+                            <Typography variant="subtitle1">
+                                {priceRange[1]}
+                            </Typography>
+                        </Stack>
+                        <Stack direction={"row"}>
+                            <Typography variant="subtitle1" alignSelf={'center'}>
+                                Super host:
+                            </Typography>
+                            <Checkbox size="small" />
+                        </Stack>
+                        <Stack sx={{display: 'grid', placeItems: 'center'}}>
+                            <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits}/>
+                        </Stack>
+                        <Button fullWidth variant="contained" color="primary" sx={{marginTop: '2rem'}} disabled={!objects} onClick={applyFilter}>
+                            Apply filters
+                        </Button>
                     </Paper>
-                )
-            }
+                </Grid>
+                {
+                    shownObjects && (
+                        <Grid item xs={9}>
+                            <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                                <TableContainer sx={{ maxHeight: 440 }}>
+                                    <Table stickyHeader aria-label="sticky table">
+                                        <TableHead>
+                                            <TableRow>
+                                                {columns.map((column) => (
+                                                    <TableCell
+                                                        key={column.id}
+                                                        align={column.align}
+                                                        style={{ minWidth: column.minWidth }}
+                                                    >
+                                                        {column.label}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {shownObjects
+                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                .map((object) => {
+                                                    return (
+                                                        <TableRow hover tabIndex={-1} key={object.id} onClick={() => seeInfo(object.id)}>
+                                                            <TableCell>
+                                                                <img src='/home.jpg' alt={object.name} height={'60px'} width={'auto'} />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {object.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {object.location.city}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {object.unitPrice.amount.toString()}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Button variant="outlined" color="primary" onClick={(e) => handleBook(object.id, e)} disabled={authCtx.isHost()}>
+                                                                    Book!
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 25, 100]}
+                                    component="div"
+                                    count={objects.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
+                            </Paper>
+                        </Grid>
+                    )
+                }
+            </Grid>
         </>
     );
 }

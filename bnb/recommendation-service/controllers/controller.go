@@ -28,6 +28,24 @@ func SearchFlights(ctx *gin.Context) {
 	return
 }
 
+func BuyTicketFromBnBDTO(ctx *gin.Context) {
+	var buyFromBnBDTO dtos.BuyTicketFromBnBDTO
+	if err := ctx.ShouldBindJSON(&buyFromBnBDTO); err != nil {
+		log.Print("Can't unmarshall given json. Error: ", err.Error())
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	if err := services.BuyTicketFromBnBDTO(buyFromBnBDTO); err != nil {
+		log.Print("Can't buy ticket from flights. Error: ", err.Error())
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, "Okay")
+	return
+}
+
 func GetRecommendedAccommodations(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
