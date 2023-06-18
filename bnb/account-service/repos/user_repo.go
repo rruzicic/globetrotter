@@ -7,7 +7,7 @@ import (
 
 	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
-	"github.com/rruzicic/globetrotter/bnb/feedback-service/pb"
+	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
@@ -73,12 +73,15 @@ func UpdateUser(user models.User) (*models.User, error) {
 		return &models.User{}, err
 	}
 	edited := bson.M{
-		"first_name": user.FirstName,
-		"last_name":  user.LastName,
-		"email":      user.EMail,
-		"password":   user.Password,
-		"address":    user.Address,
-		"super_host": user.SuperHost,
+		"first_name":                   user.FirstName,
+		"last_name":                    user.LastName,
+		"email":                        user.EMail,
+		"password":                     user.Password,
+		"address":                      user.Address,
+		"super_host":                   user.SuperHost,
+		"reservation_counter":          user.ReservationCounter,
+		"canceled_reservation_counter": user.CanceledReservationsCounter,
+		"total_reservation_duration":   user.TotalReservationDuration,
 	}
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 	update := bson.M{"$set": edited}
@@ -128,18 +131,44 @@ func AvgRatingChanged(hostId string, avgRating float32) error {
 	return nil
 }
 
-func HandleNewReservationEvent(reservation *pb.Reservation) error {
+func HandleNewReservationEvent(reservationEvent *pb.ReservationEvent) error {
+	objectId, err := primitive.ObjectIDFromHex(reservationEvent.HostId)
+	if err != nil {
+		return err
+	}
+	host, err := GetUserById(objectId)
+	if err != nil {
+		return err
+	}
+
+	host.ReservationCounter = host.ReservationCounter + 1
+	durationOfReservation := reservationEvent.EndDate.AsTime().Sub(reservationEvent.StartDate.AsTime())
+	host.TotalReservationDuration = host.TotalReservationDuration + durationOfReservation
+
+	err = CheckSuperHostStatus(host)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func CheckSuperHostStatus(user *models.User) error {
 	condition1 := false
+	condition3 := false
+	condition4 := false
 	if user.Rating > 4.7 {
 		condition1 = true
 	}
+	if user.ReservationCounter >= 5 {
+		condition3 = true
+	}
+	if user.TotalReservationDuration.Hours() >= (24 * 50) {
+		condition4 = true
+	}
 	//TODO add other conditions
 
-	if condition1 {
+	if condition1 && condition3 && condition4 {
 		user.SuperHost = true
 	} else {
 		user.SuperHost = false
