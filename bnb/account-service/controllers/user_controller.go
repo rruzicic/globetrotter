@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
@@ -94,6 +96,19 @@ func UpdateUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, updatedUser)
+}
+
+func UpdateWantedNotifications(ctx *gin.Context) {
+	var notificationPreferencesDTO dto.NotificationPreferencesDTO;
+	if err := ctx.BindJSON(&notificationPreferencesDTO); err != nil {
+		ctx.JSON(400, "Could not unmarshal request body, error: "+err.Error())
+		return
+	}
+	err := services.UpdateNotificationPreferences(notificationPreferencesDTO.UserId, notificationPreferencesDTO.NotificationTypeList)
+	if err != nil {
+		log.Println("User controller: could not update notification preferences!")
+	}
+	ctx.JSON(200, "Preferences updated!")
 }
 
 func DeleteUser(ctx *gin.Context) {
