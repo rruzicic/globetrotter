@@ -57,7 +57,19 @@ func main() {
 		if err == nil {
 			//Handle the message
 			log.Println("Recieved an event about a new reservation")
-			//repos.nekiKurac
+			repos.HandleNewReservationEvent(&event)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+	_, err = conn.Subscribe("account-service-3", func(message *nats.Msg) {
+		event := pb.ReservationEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			//Handle the message
+			log.Println("Recieved an event about a canceled reservation")
+			//repos.HandleNewReservationEvent(&event)
 		}
 	})
 	if err != nil {

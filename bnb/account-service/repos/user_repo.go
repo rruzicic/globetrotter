@@ -153,12 +153,36 @@ func HandleNewReservationEvent(reservationEvent *pb.ReservationEvent) error {
 	return nil
 }
 
+func HandleCanceledReservationEvent(reservationEvent *pb.ReservationEvent) error {
+	objectId, err := primitive.ObjectIDFromHex(reservationEvent.HostId)
+	if err != nil {
+		return err
+	}
+	host, err := GetUserById(objectId)
+	if err != nil {
+		return err
+	}
+
+	host.CanceledReservationsCounter = host.CanceledReservationsCounter + 1
+
+	err = CheckSuperHostStatus(host)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CheckSuperHostStatus(user *models.User) error {
 	condition1 := false
+	condition2 := false
 	condition3 := false
 	condition4 := false
 	if user.Rating > 4.7 {
 		condition1 = true
+	}
+	if float32(user.CanceledReservationsCounter)/float32(user.ReservationCounter) <= 0.05 {
+		condition2 = true
 	}
 	if user.ReservationCounter >= 5 {
 		condition3 = true
@@ -168,7 +192,7 @@ func CheckSuperHostStatus(user *models.User) error {
 	}
 	//TODO add other conditions
 
-	if condition1 && condition3 && condition4 {
+	if condition1 && condition2 && condition3 && condition4 {
 		user.SuperHost = true
 	} else {
 		user.SuperHost = false
