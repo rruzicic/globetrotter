@@ -10,7 +10,6 @@ services:
       - accommodation-service
       - feedback-service
       - reservation-service
-      # - search-service
       - notification-service
     networks:
       - backend-network
@@ -66,17 +65,6 @@ services:
       - mongo
     networks:
       - backend-network
-
-  # search-service:
-  #   restart: on-failure:3
-  #   build: './bnb/search-service'
-  #   ports:
-  #     - '8085:8080'
-  #     - '50055:50051'
-  #   volumes:
-  #     - './bnb/search-service:/go/src/app'
-  #   depends_on:
-  #     - mongo
 
   notification-service:
     restart: on-failure:3
