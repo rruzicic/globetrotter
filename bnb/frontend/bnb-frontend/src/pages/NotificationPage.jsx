@@ -13,7 +13,6 @@ const NotificationsPage = () => {
     const [printedTypes, setPrintedTypes] = useState()
 
     const handleCheckboxChange = (event) => {
-        console.log(event.target.name);
         if (wantedNotification.includes(event.target.name)) {
             setWantedNotification(wantedNotification.filter((item) => item !== event.target.name));
         } else {
@@ -23,7 +22,6 @@ const NotificationsPage = () => {
 
     useEffect(() => {
         ctx.clearNotificationCount()
-        console.log(ctx.getWantedNotifications());
         setPrintedTypes(ctx.getWantedNotifications())
     }, [])
 
@@ -56,13 +54,11 @@ const NotificationsPage = () => {
     }
 
     const submitChanges = () => {
-        console.log(wantedNotification);
         axiosInstance.patch(`${CONSTANTS.GATEWAY}/user/notificationPreferences`, { id: ctx.userId(), notificationList: wantedNotification })
             .catch((e) => {
                 console.error(e)
             })
             .then((response) => {
-                console.log(response);
                 ctx.updateWantedNotifications(wantedNotification)
             })
     }

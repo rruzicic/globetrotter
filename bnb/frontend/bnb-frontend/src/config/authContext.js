@@ -33,7 +33,6 @@ export const AuthContextProvider = ({ children }) => {
                 console.error(e);
             })
             .then((response) => {
-                console.log(response.data);
                 if (response.data.wantedNotifications) {
                     setWantedNotifications(response.data.wantedNotifications)
                 }
@@ -48,7 +47,6 @@ export const AuthContextProvider = ({ children }) => {
                 switch (message) {
                     case 'RESERVATION':
                         if (wantedNotification.includes('RESERVATION')) {
-                            console.log("Case passed");
                             setNewNotifications(prev => prev + 1)
                             toast('You have a new reservation request 🔥');
                         }
