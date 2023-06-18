@@ -28,16 +28,18 @@ export const AuthContextProvider = ({ children }) => {
     const isLoggedIn = !!token
 
     useEffect(() => {
-        axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userIdHandler()}`)
-            .catch((e) => {
-                console.error(e);
-            })
-            .then((response) => {
-                if (response.data.wantedNotifications) {
-                    setWantedNotifications(response.data.wantedNotifications)
-                }
-            })
-    }, [])
+        if (token) {
+            axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userIdHandler()}`)
+                .catch((e) => {
+                    console.error(e);
+                })
+                .then((response) => {
+                    if (response.data.wantedNotifications) {
+                        setWantedNotifications(response.data.wantedNotifications)
+                    }
+                })
+        }
+    }, [token])
 
     useEffect(() => {
         if (token) {
