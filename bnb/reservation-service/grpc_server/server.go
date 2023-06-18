@@ -138,7 +138,7 @@ func InitServer() {
 		log.Panic("Reservation service failed to listen. Error: ", err)
 	}
 
-	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
 	pb.RegisterReservationServiceServer(server, &ReservationServiceServer{})
 
 	log.Println("Reservation gRPC server listening..")

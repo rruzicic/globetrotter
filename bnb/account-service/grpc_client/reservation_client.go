@@ -13,7 +13,10 @@ import (
 
 func connectToReservationService() (*grpc.ClientConn, error) {
 	// var opts []grpc.DialOption
-	conn, err := grpc.Dial("reservation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()))
+	conn, err := grpc.Dial("reservation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+	)
 
 	if err != nil {
 		log.Panic("Could not connect to reservation service")

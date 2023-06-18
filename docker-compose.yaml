@@ -2,6 +2,7 @@ version: '3.3'
 services:
 
   nginx:
+    restart: on-failure:3
     build: './bnb/nginx'
     ports:
       - '4000:4000'
