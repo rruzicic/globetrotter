@@ -35,11 +35,11 @@ func HostRated(review models.HostReview) (*pb.UserResponse, error) {
 
 	return nil, nil
 }
-func AccommodationRated(review models.AccommodationReview, hostId string) (*pb.UserResponse, error) {
+func AccommodationRated(review models.AccommodationReview, hostId string, accommodationName string) (*pb.UserResponse, error) {
 	conn, _ := connectToNotificationService()
 	client := pb.NewNotificationServiceClient(conn)
 
-	_, err := client.AccommodationRated(context.Background(), &pb.AccommodationRatingNotification{OwnerId: hostId, RatedId: review.AccommodationId.Hex(), RaterId: review.UserId.Hex(), Rating: int64(review.Rating)})
+	_, err := client.AccommodationRated(context.Background(), &pb.AccommodationRatingNotification{OwnerId: hostId, RatedId: review.AccommodationId.Hex(), RaterId: review.UserId.Hex(), Rating: int64(review.Rating), AccommodationName: accommodationName})
 	if err != nil {
 		log.Panic(err)
 	}

@@ -75,6 +75,7 @@ func (s *NotificationServiceServer) AccommodationRated(ctx context.Context, rati
 		AccommodationId: &rating.RatedId,
 		RaterId: &rating.RaterId,
 		Rating:  &ratingValue,
+		AccommodationName: &rating.AccommodationName,
 	}
 
 	notif, err := repos.CreateAccommodationRatingNotification(notification);

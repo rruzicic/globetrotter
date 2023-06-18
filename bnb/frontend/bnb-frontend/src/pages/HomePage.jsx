@@ -1,8 +1,12 @@
 import { Box } from "@mui/material";
 import ObjectDataGrid from "../components/home/ObjectDataGrid";
 import Typography from '@mui/material/Typography'
+import RecommendationSection from "../components/home/RecommendationSection";
+import { useContext } from "react";
+import AuthContext from "../config/authContext";
 
 const HomePage = () => {
+    const ctx = useContext(AuthContext)
     return (
         <>
             <Box textAlign={"center"} width={'100%'} mt={4}>
@@ -11,6 +15,9 @@ const HomePage = () => {
                 </Typography>
             </Box>
             <ObjectDataGrid />
+            {
+                ctx.isUser() && <RecommendationSection />
+            }
         </>
     );
 }

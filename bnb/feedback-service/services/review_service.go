@@ -134,7 +134,7 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 	if err != nil {
 		return nil, err
 	}
-	grpcclient.AccommodationRated(accommodationReview, accommodation.User)
+	grpcclient.AccommodationRated(accommodationReview, accommodation.User, accommodation.Name)
 
 	if hasUserBeenToAccommodation {
 		return repos.CreateAccommodationReview(accommodationReview)
