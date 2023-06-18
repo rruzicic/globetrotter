@@ -5,11 +5,15 @@ import (
 	"log"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/nats-io/nats.go"
+	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reservation, error) {
@@ -78,7 +82,32 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 		reservation.IsApproved = false
 	}
 
-	return repos.CreateReservation(reservation)
+	returnValue, err := repos.CreateReservation(reservation)
+	if err != nil {
+		return nil, err
+	}
+
+	//Publish an event to the account service
+	conn := Conn()
+	defer conn.Close()
+
+	event := pb.Reservation{
+		AccommodationId: returnValue.AccommodationId.Hex(),
+		UserId:          returnValue.UserId.Hex(),
+		StartDate:       timestamppb.New(returnValue.DateInterval.Start),
+		EndDate:         timestamppb.New(returnValue.DateInterval.End),
+		NumOfGuests:     int32(returnValue.NumOfGuests),
+		IsApproved:      returnValue.IsApproved,
+		TotalPrice:      returnValue.TotalPrice,
+		Id:              returnValue.Id.Hex(),
+	}
+	data, _ := proto.Marshal(&event)
+	err = conn.Publish("account-service-2", data)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return returnValue, nil
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -211,4 +240,12 @@ func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
 	}
 
 	return reservations, err
+}
+
+func Conn() *nats.Conn {
+	conn, err := nats.Connect("nats://localhost:4222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return conn
 }
