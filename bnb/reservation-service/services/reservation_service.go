@@ -175,6 +175,29 @@ func DeleteReservation(id string) error {
 		return err
 	}
 
+	hostAnswer, _ := grpcclient.GetHostByAccommodation(reservation.AccommodationId.Hex())
+
+	//Publish an event to the account service
+	conn := Conn()
+	defer conn.Close()
+
+	event := pb.ReservationEvent{
+		AccommodationId: reservation.AccommodationId.Hex(),
+		UserId:          reservation.UserId.Hex(),
+		StartDate:       timestamppb.New(reservation.DateInterval.Start),
+		EndDate:         timestamppb.New(reservation.DateInterval.End),
+		NumOfGuests:     int32(reservation.NumOfGuests),
+		IsApproved:      reservation.IsApproved,
+		TotalPrice:      reservation.TotalPrice,
+		Id:              reservation.Id.Hex(),
+		HostId:          hostAnswer.HostId,
+	}
+	data, _ := proto.Marshal(&event)
+	err = conn.Publish("account-service-3", data)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
 	if err != nil {
 		log.Print(res)
