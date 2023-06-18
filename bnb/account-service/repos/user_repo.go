@@ -119,7 +119,7 @@ func AvgRatingChanged(hostId string, avgRating float32) error {
 		return err
 	}
 	user.Rating = avgRating
-	user, _ = CheckSuperHostStatus(user)
+	err = CheckSuperHostStatus(user)
 	if err != nil {
 		return err
 	}
@@ -127,12 +127,13 @@ func AvgRatingChanged(hostId string, avgRating float32) error {
 	return nil
 }
 
-func CheckSuperHostStatus(user *models.User) (*models.User, error) {
+func CheckSuperHostStatus(user *models.User) error {
 	condition1 := false
 	if user.Rating > 4.7 {
 		condition1 = true
 	}
 	//TODO add other conditions
+
 	if condition1 {
 		user.SuperHost = true
 	} else {
@@ -141,8 +142,8 @@ func CheckSuperHostStatus(user *models.User) (*models.User, error) {
 
 	_, err := UpdateUser(*user)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return user, nil
+	return nil
 }

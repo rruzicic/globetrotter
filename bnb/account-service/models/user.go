@@ -16,4 +16,5 @@ type User struct {
 	CancellationsCounter int    `json:"cancellationsCounter" bson:"cancellations_counter"`
 	RatingStatus
 	Address
+	ReservationStatus
 }
