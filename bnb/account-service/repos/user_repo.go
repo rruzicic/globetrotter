@@ -7,6 +7,7 @@ import (
 
 	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
+	"github.com/rruzicic/globetrotter/bnb/feedback-service/pb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
@@ -124,6 +125,10 @@ func AvgRatingChanged(hostId string, avgRating float32) error {
 		return err
 	}
 
+	return nil
+}
+
+func HandleNewReservationEvent(reservation *pb.Reservation) error {
 	return nil
 }
 

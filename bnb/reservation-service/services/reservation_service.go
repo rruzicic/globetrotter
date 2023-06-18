@@ -7,10 +7,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
-	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -86,12 +86,14 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 	if err != nil {
 		return nil, err
 	}
+	//Get Host Id
+	hostAnswer, _ := grpcclient.GetHostByAccommodation(reservation.AccommodationId.Hex())
 
 	//Publish an event to the account service
 	conn := Conn()
 	defer conn.Close()
 
-	event := pb.Reservation{
+	event := pb.ReservationEvent{
 		AccommodationId: returnValue.AccommodationId.Hex(),
 		UserId:          returnValue.UserId.Hex(),
 		StartDate:       timestamppb.New(returnValue.DateInterval.Start),
@@ -100,6 +102,7 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 		IsApproved:      returnValue.IsApproved,
 		TotalPrice:      returnValue.TotalPrice,
 		Id:              returnValue.Id.Hex(),
+		HostId:          hostAnswer.HostId,
 	}
 	data, _ := proto.Marshal(&event)
 	err = conn.Publish("account-service-2", data)
