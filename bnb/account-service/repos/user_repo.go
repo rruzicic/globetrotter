@@ -15,6 +15,7 @@ import (
 func CreateUser(user models.User) (*models.User, error) {
 	user.CreatedOn = int(time.Now().Unix())
 	user.ModifiedOn = int(time.Now().Unix())
+	user.WantedNotifications = []string{"RESERVATION", "CANCELLATION", "RATING", "A_RATING", "HOST_STATUS", "RESPONSE"}
 
 	inserted_id, err := usersCollection.InsertOne(context.TODO(), user)
 	if err != nil {

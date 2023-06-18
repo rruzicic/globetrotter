@@ -1,6 +1,8 @@
 import jwt_decode from "jwt-decode";
 import { useState, createContext, useEffect } from "react";
 import { toast } from "react-toastify";
+import { axiosInstance } from "./interceptor";
+import CONSTANTS from "./constants";
 
 const AuthContext = createContext({
     token: "",
@@ -12,7 +14,9 @@ const AuthContext = createContext({
     userEmail: () => { },
     userId: () => { },
     countNewNotifications: () => { },
-    clearNotificationCount: () => { }
+    clearNotificationCount: () => { },
+    updateWantedNotifications: () => { },
+    getWantedNotifications: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -20,37 +24,64 @@ export const AuthContextProvider = ({ children }) => {
     const [token, setToken] = useState(initialToken)
     const [socket, setSocket] = useState(null)
     const [newNotifications, setNewNotifications] = useState(0)
+    const [wantedNotification, setWantedNotifications] = useState([])
     const isLoggedIn = !!token
+
+    useEffect(() => {
+        axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userIdHandler()}`)
+            .catch((e) => {
+                console.error(e);
+            })
+            .then((response) => {
+                if (response.data.wantedNotifications) {
+                    setWantedNotifications(response.data.wantedNotifications)
+                }
+            })
+    }, [])
 
     useEffect(() => {
         if (token) {
             const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket/${userIdHandler()}`);
-
             newSocket.onmessage = (event) => {
                 const message = event.data;
                 switch (message) {
                     case 'RESERVATION':
-                        toast('You have a new reservation request 🔥');
+                        if (wantedNotification.includes('RESERVATION')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('You have a new reservation request 🔥');
+                        }
                         break;
                     case 'CANCELLATION':
-                        toast('Reservation has been cancelled 😢');
+                        if (wantedNotification.includes('CANCELLATION')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Reservation has been cancelled 😢');
+                        }
                         break;
                     case 'RATING':
-                        toast('Someone rated you 🚀');
+                        if (wantedNotification.includes('RATING')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Someone rated you 🚀');
+                        }
                         break;
                     case 'A_RATING':
-                        toast('Someone rated your accommodation 🚀');
+                        if (wantedNotification.includes('A_RATING')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Someone rated your accommodation 🚀');
+                        }
                         break;
                     case 'HOST_STATUS':
-                        toast('Host status changed 🔥');
+                        if (wantedNotification.includes('HOST_STATUS')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Host status changed 🔥');
+                        }
                         break;
                     case 'RESPONSE':
                         toast('Host responded to your reservation request 🔥');
+                        setNewNotifications(prev => prev + 1)
                         break;
                     default:
                         console.error('Unknown notification type');
                 }
-                setNewNotifications(prev => prev + 1)
             };
             setSocket(newSocket);
 
@@ -59,7 +90,11 @@ export const AuthContextProvider = ({ children }) => {
                 setSocket(null)
             };
         }
-    }, [token]);
+    }, [token, wantedNotification]);
+
+    const updateWantedNotificationsHandler = (notificationTypeArray) => {
+        setWantedNotifications(notificationTypeArray)
+    }
 
     const checkTokenExpiration = () => {
         if (token) {
@@ -117,6 +152,10 @@ export const AuthContextProvider = ({ children }) => {
         setNewNotifications(0);
     }
 
+    const getWantedNotificationsHandler = () => {
+        return wantedNotification
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -127,7 +166,9 @@ export const AuthContextProvider = ({ children }) => {
         userEmail: userEmailHandler,
         userId: userIdHandler,
         countNewNotifications: countNewNotificationsHandler,
-        clearNotificationCount: ClearNotificationCountHandler
+        clearNotificationCount: ClearNotificationCountHandler,
+        updateWantedNotifications: updateWantedNotificationsHandler,
+        getWantedNotifications: getWantedNotificationsHandler,
     };
 
     return (
