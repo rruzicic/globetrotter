@@ -25,6 +25,7 @@ message AccommodationRatingNotification {
     string ratedId = 2;
     string raterId = 3;
     int64 rating = 4;
+    string accommodationName = 5;
 }
 message ReservationResponseNotification {
     string userId = 1;
