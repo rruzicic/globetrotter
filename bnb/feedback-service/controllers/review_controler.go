@@ -198,3 +198,35 @@ func UpdateAccommodationReview(ctx *gin.Context) {
 
 	ctx.JSON(200, "Review for accommodation with id: "+accommodationReview.AccommodationId+" successfully updated.")
 }
+
+func GetPastAccommodationsByUser(ctx *gin.Context) {
+	userId := ctx.Param("userId")
+	if userId == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	accommodationIds, err := services.GetPastAccommodationsByUser(userId)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, accommodationIds)
+}
+
+func GetPastHostsByUser(ctx *gin.Context) {
+	userId := ctx.Param("userId")
+	if userId == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	hostsIds, err := services.GetPastHostsByUser(userId)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, hostsIds)
+}

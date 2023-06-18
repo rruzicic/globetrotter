@@ -179,3 +179,29 @@ func UpdateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 
 	return repos.UpdateAccommodationReview(accommodationReview)
 }
+
+// ======================Helper functions========================
+func GetPastAccommodationsByUser(userId string) ([]string, error) {
+	finishedReservations, err := grpcclient.GetFinishedReservationsByUser(userId)
+	if err != nil {
+		return nil, err
+	}
+	accommodationIds := []string{}
+	for _, reservation := range finishedReservations {
+		accommodationIds = append(accommodationIds, reservation.AccommodationId)
+	}
+	return accommodationIds, nil
+}
+
+func GetPastHostsByUser(userId string) ([]string, error) {
+	accommodationIds, _ := GetPastAccommodationsByUser(userId)
+	pastHostsAnswer, err := grpcclient.GetPastHostsByAccommodations(accommodationIds)
+	if err != nil {
+		return nil, err
+	}
+	pastHostsIds := []string{}
+	for _, p := range pastHostsAnswer {
+		pastHostsIds = append(pastHostsIds, p.HostId)
+	}
+	return pastHostsIds, nil
+}
