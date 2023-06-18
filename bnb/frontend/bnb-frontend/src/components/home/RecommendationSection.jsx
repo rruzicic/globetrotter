@@ -17,7 +17,6 @@ const RecommendationSection = () => {
                 console.error(err);
             })
             .then((response) => {
-                console.log(response);
                 setAccommodations(response.data)
             })
     }, [])

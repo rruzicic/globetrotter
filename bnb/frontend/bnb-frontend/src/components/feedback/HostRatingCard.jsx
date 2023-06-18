@@ -3,6 +3,7 @@ import { axiosInstance } from "../../config/interceptor";
 import CONSTANTS from "../../config/constants";
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, TextField, Typography } from "@mui/material";
 import AuthContext from "../../config/authContext";
+import { toast } from "react-toastify";
 
 const HostRatingCard = ({ id }) => {
     const [hostData, setHostData] = useState()
@@ -16,13 +17,12 @@ const HostRatingCard = ({ id }) => {
 
     const submitRating = () => {
         const dto = { rating: parseInt(rating), userId: ctx.userId(), hostId: id }
-        console.log(dto);
         axiosInstance.post(`${CONSTANTS.GATEWAY}/feedback/HostFeedback/`, dto)
             .catch((err) => {
                 console.error(err);
             })
             .then((response) => {
-                console.log(response);
+                toast('Successfully rated 🔥')
             })
     }
 

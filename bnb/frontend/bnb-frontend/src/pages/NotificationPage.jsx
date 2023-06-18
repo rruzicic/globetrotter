@@ -31,6 +31,7 @@ const NotificationsPage = () => {
                 console.error(err)
             })
             .then((response) => {
+                console.log(response.data);
                 setNotifications(response.data.sort((a, b) => b.createdOn - a.createdOn))
             })
     }, [])
