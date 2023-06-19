@@ -16,7 +16,8 @@ const AuthContext = createContext({
     countNewNotifications: () => { },
     clearNotificationCount: () => { },
     updateWantedNotifications: () => { },
-    getWantedNotifications: () => { }
+    getWantedNotifications: () => { },
+    isSuperHost: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
@@ -26,6 +27,7 @@ export const AuthContextProvider = ({ children }) => {
     const [newNotifications, setNewNotifications] = useState(0)
     const [wantedNotification, setWantedNotifications] = useState([])
     const isLoggedIn = !!token
+    const [superHost, setSuperHost] = useState(false)
 
     useEffect(() => {
         if (token) {
@@ -34,6 +36,9 @@ export const AuthContextProvider = ({ children }) => {
                     console.error(e);
                 })
                 .then((response) => {
+                    if (response.data) {
+                        setSuperHost(response.data.superHost)
+                    }
                     if (response.data.wantedNotifications) {
                         setWantedNotifications(response.data.wantedNotifications)
                     }
@@ -158,6 +163,10 @@ export const AuthContextProvider = ({ children }) => {
         return wantedNotification
     }
 
+    const isSuperHostHandler = () => {
+        return superHost
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -171,6 +180,7 @@ export const AuthContextProvider = ({ children }) => {
         clearNotificationCount: ClearNotificationCountHandler,
         updateWantedNotifications: updateWantedNotificationsHandler,
         getWantedNotifications: getWantedNotificationsHandler,
+        isSuperHost: isSuperHostHandler
     };
 
     return (

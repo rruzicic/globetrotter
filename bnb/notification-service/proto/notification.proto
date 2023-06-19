@@ -33,6 +33,9 @@ message ReservationResponseNotification {
     string accommodationName = 3;
     bool approved = 4;
 }
+message HostStatusNotification {
+    string userId = 1;
+}
 
 service NotificationService {
     rpc ReservationCreated(ReservationNotification) returns (google.protobuf.Empty) {}
@@ -40,4 +43,5 @@ service NotificationService {
     rpc HostRated(HostRatingNotification) returns (google.protobuf.Empty) {}
     rpc AccommodationRated(AccommodationRatingNotification) returns (google.protobuf.Empty) {}
     rpc ReservationResponse(ReservationResponseNotification) returns (google.protobuf.Empty) {}
+    rpc HostStatusChanged(HostStatusNotification) returns (google.protobuf.Empty) {}
 }

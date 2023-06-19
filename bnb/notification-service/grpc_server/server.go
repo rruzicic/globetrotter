@@ -104,6 +104,19 @@ func (s *NotificationServiceServer) ReservationResponse(ctx context.Context, rat
 
 	return &emptypb.Empty{}, nil
 }
+func (s *NotificationServiceServer) HostStatusChanged(ctx context.Context, rating *pb.HostStatusNotification) (*emptypb.Empty, error) {
+	notification := model.Notification{
+		UserId:            rating.UserId,
+	}
+
+	notif, err := repos.CreateHostStatusNotification(notification)
+	if err != nil {
+		log.Println("Error server.go notification service")
+	}
+	socket.SendNotification(*notif)
+
+	return &emptypb.Empty{}, nil
+}
 
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
