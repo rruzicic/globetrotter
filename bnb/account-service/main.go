@@ -5,10 +5,13 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/proto"
+	"github.com/nats-io/nats.go"
 	"github.com/rruzicic/globetrotter/bnb/account-service/controllers"
 	grpcserver "github.com/rruzicic/globetrotter/bnb/account-service/grpc_server"
 	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/middlewares"
+	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/account-service/repos"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
@@ -30,6 +33,49 @@ func main() {
 	defer shutdown(ctx)
 
 	repos.Connect()
+
+	//Subscribe to messages
+	log.Println("DOBAR DAN JA BIH DA UDJEM U SUBSCRIBE MESSAGE DEO AKO MOZE")
+	conn := Conn()
+	defer conn.Close()
+	_, err = conn.Subscribe("account-service", func(message *nats.Msg) {
+		log.Println("DOBAR DAN PRIMLJENO JE NESTO AL MOZDA NE VALJA JOS")
+		event := pb.AvgRatingEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			// Handle the message
+			log.Println("Recieved message to update host average rating")
+			repos.AvgRatingChanged(event.HostId, event.AvgRating)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+	_, err = conn.Subscribe("account-service-2", func(message *nats.Msg) {
+		event := pb.ReservationEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			//Handle the message
+			log.Println("Recieved an event about a new reservation")
+			repos.HandleNewReservationEvent(&event)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+	_, err = conn.Subscribe("account-service-3", func(message *nats.Msg) {
+		event := pb.ReservationEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			//Handle the message
+			log.Println("Recieved an event about a canceled reservation")
+			repos.HandleCanceledReservationEvent(&event)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
 	go ginSetup()
 	grpcserver.InitServer()
 	repos.Disconnect()
@@ -101,4 +147,12 @@ func newResource(ctx context.Context) *resource.Resource {
 
 func getSampler() trace.Sampler {
 	return trace.AlwaysSample()
+}
+
+func Conn() *nats.Conn {
+	conn, err := nats.Connect("nats:4222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return conn
 }

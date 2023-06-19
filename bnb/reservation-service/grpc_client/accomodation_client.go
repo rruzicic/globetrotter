@@ -94,6 +94,20 @@ func RemoveReservationFromAccommodation(acc_id string, res_id string) (*pb.BoolA
 	return boolAns, nil
 }
 
+func GetHostByAccommodation(accommodationId string) (*pb.HostAnswer, error) {
+	conn, _ := connectToAccomodationService()
+	client := pb.NewAccommodationServiceClient(conn)
+
+	hostAnswer, err := client.GetHostByAccommodation(context.Background(), &pb.RequestByAccommodationId{Id: accommodationId})
+	if err != nil {
+		log.Panic("Could not het host by accommodation ", err.Error())
+		return nil, err
+	}
+	defer conn.Close()
+
+	return hostAnswer, nil
+}
+
 func TestConnection(msg string) {
 	conn, _ := connectToAccomodationService()
 	client := pb.NewAccommodationServiceClient(conn)

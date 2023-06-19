@@ -27,7 +27,7 @@ func ginSetup() {
 	Feedback.GET("/pastAccommodations/:user_id", controllers.GetPastAccommodationsByUser)
 	Feedback.GET("/pastHosts/:user_id", controllers.GetPastHostsByUser)
 
-	HostFeedback := Feedback.Group("/HostFeedback")
+	HostFeedback := Feedback.Group("HostFeedback")
 	HostFeedback.POST("/", controllers.CreateHostReview)
 	HostFeedback.GET("/id/:id", controllers.GetHostReviewById)
 	HostFeedback.GET("/user/:user_id", controllers.GetHostReviewsByUserId)

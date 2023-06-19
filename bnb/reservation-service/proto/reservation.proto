@@ -15,6 +15,18 @@ message Reservation{
     string id = 8;
 }
 
+message ReservationEvent{
+    string accommodationId = 1;
+    string userId = 2;
+    google.protobuf.Timestamp startDate = 3;
+    google.protobuf.Timestamp endDate = 4;
+    int32 numOfGuests = 5;
+    bool isApproved = 6;
+    float totalPrice = 7;
+    string id = 8;
+    string hostId = 9;
+}
+
 message RequestReservationById{
     string id = 1;
 }
