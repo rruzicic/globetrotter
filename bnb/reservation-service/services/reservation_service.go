@@ -208,8 +208,23 @@ func DeleteReservation(id string) error {
 		if string(message.Data) == "OK" {
 			_, err = conn.Subscribe("saga-cancel-reservation-4", func(message *nats.Msg) {
 				if string(message.Data) == "OK" {
+					res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
+					if err != nil {
+						log.Print(res)
+					}
 
+					boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
+					if err != nil {
+						log.Print(boolAns, err.Error())
+					}
 				} else {
+					//rollback account-service stuff that happened and reservation canceling
+					err = conn.Publish("saga-cancel-rollback-account", data)
+					if err != nil {
+						log.Panic(err)
+					}
+					repos.CreateReservation(*reservation)
+					return
 
 				}
 			})
@@ -219,6 +234,7 @@ func DeleteReservation(id string) error {
 			}
 		} else {
 			//rollback reservation cancelling, or cancel canceling of reservation
+			repos.CreateReservation(*reservation)
 			return
 		}
 	})
@@ -227,21 +243,10 @@ func DeleteReservation(id string) error {
 		log.Panic(err)
 	}
 
-	_, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
-	if err != nil {
-		log.Print(err.Error())
-	}
-	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
-	if err != nil {
-		log.Print(res)
-		return err
-	}
-
-	boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
-	if err != nil {
-		log.Print(boolAns, err.Error())
-		return err
-	}
+	// _, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
+	// if err != nil {
+	// 	log.Print(err.Error())
+	// }
 
 	return nil
 }

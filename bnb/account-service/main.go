@@ -89,6 +89,18 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	_, err = conn.Subscribe("saga-cancel-rollback-account", func(message *nats.Msg) {
+		event := pb.ReservationEvent{}
+		err := proto.Unmarshal(message.Data, &event)
+		if err == nil {
+			//Handle the message
+			log.Println("Recieved an event about a new reservation")
+			repos.HandleRollbackCancleReservation(&event)
+		}
+	})
+	if err != nil {
+		log.Panic(err)
+	}
 
 	go ginSetup()
 	grpcserver.InitServer()
