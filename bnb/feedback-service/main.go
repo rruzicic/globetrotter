@@ -24,8 +24,8 @@ func ginSetup() {
 
 	//TODO implement controllers
 	Feedback := r.Group("/feedback")
-	Feedback.GET("/pastAccommodations/:userId", controllers.GetPastAccommodationsByUser)
-	Feedback.GET("/pastHosts/:userId", controllers.GetPastHostsByUser)
+	Feedback.GET("/pastAccommodations/:user_id", controllers.GetPastAccommodationsByUser)
+	Feedback.GET("/pastHosts/:user_id", controllers.GetPastHostsByUser)
 
 	HostFeedback := Feedback.Group("/HostFeedback")
 	HostFeedback.POST("/", controllers.CreateHostReview)
@@ -34,6 +34,7 @@ func ginSetup() {
 	HostFeedback.GET("/host/:host_id", controllers.GetHostReviewsByHostId)
 	HostFeedback.DELETE("/:id", controllers.DeleteHostReview)
 	HostFeedback.PUT("/", controllers.UpdateHostReview)
+	HostFeedback.GET("/hostAvgRating/:host_id", controllers.GetAvgRatingForHost)
 
 	AccommodationFeedback := Feedback.Group("AccommodationFeedback")
 	AccommodationFeedback.POST("/", controllers.CreateAccommodationReview)
@@ -42,6 +43,7 @@ func ginSetup() {
 	AccommodationFeedback.GET("/accommodation/:accommodation_id", controllers.GetAccommodationReviewsByAccommodationId)
 	AccommodationFeedback.DELETE("/:id", controllers.DeleteAccommodationReview)
 	AccommodationFeedback.PUT("/", controllers.UpdateAccommodationReview)
+	AccommodationFeedback.GET("accommodationAvgRating/:accommodation_id", controllers.GetAvgRatingForAccommodation)
 
 	r.Run(":8080")
 }
