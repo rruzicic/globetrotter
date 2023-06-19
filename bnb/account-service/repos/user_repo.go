@@ -197,6 +197,7 @@ func HandleRollbackCancleReservation(reservationEvent *pb.ReservationEvent) erro
 }
 
 func CheckSuperHostStatus(user *models.User) error {
+	hostStatusStart := user.SuperHost
 	condition1 := false
 	condition2 := false
 	condition3 := false
@@ -219,6 +220,10 @@ func CheckSuperHostStatus(user *models.User) error {
 		user.SuperHost = true
 	} else {
 		user.SuperHost = false
+	}
+	hostStatusEnd := user.SuperHost
+	if(hostStatusStart != hostStatusEnd) {
+		grpcclient.HostStatusChanged(user.Id.Hex())
 	}
 
 	_, err := UpdateUser(*user)
