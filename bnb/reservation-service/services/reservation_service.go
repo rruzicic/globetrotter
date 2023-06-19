@@ -182,46 +182,71 @@ func DeleteReservation(id string) error {
 
 	hostAnswer, _ := grpcclient.GetHostByAccommodation(reservation.AccommodationId.Hex())
 
+	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
+	if err != nil {
+		return err
+	}
+
 	//Publish an event to the account service
 	conn := Conn()
 	defer conn.Close()
 
 	event := pb.ReservationEvent{
-		AccommodationId: reservation.AccommodationId.Hex(),
-		UserId:          reservation.UserId.Hex(),
-		StartDate:       timestamppb.New(reservation.DateInterval.Start),
-		EndDate:         timestamppb.New(reservation.DateInterval.End),
-		NumOfGuests:     int32(reservation.NumOfGuests),
-		IsApproved:      reservation.IsApproved,
-		TotalPrice:      reservation.TotalPrice,
-		Id:              reservation.Id.Hex(),
-		HostId:          hostAnswer.HostId,
+		AccommodationId:   reservation.AccommodationId.Hex(),
+		UserId:            reservation.UserId.Hex(),
+		StartDate:         timestamppb.New(reservation.DateInterval.Start),
+		EndDate:           timestamppb.New(reservation.DateInterval.End),
+		NumOfGuests:       int32(reservation.NumOfGuests),
+		IsApproved:        reservation.IsApproved,
+		TotalPrice:        reservation.TotalPrice,
+		Id:                reservation.Id.Hex(),
+		HostId:            hostAnswer.HostId,
+		AccommodationName: accommodation.Name,
 	}
 	data, _ := proto.Marshal(&event)
-	err = conn.Publish("account-service-3", data)
+	_, err = conn.Subscribe("saga-cancel-reservation-2", func(message *nats.Msg) {
+		if string(message.Data) == "OK" {
+			_, err = conn.Subscribe("saga-cancel-reservation-4", func(message *nats.Msg) {
+				if string(message.Data) == "OK" {
+					res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
+					if err != nil {
+						log.Print(res)
+					}
+
+					boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
+					if err != nil {
+						log.Print(boolAns, err.Error())
+					}
+				} else {
+					//rollback account-service stuff that happened and reservation canceling
+					err = conn.Publish("saga-cancel-rollback-account", data)
+					if err != nil {
+						log.Panic(err)
+					}
+					repos.CreateReservation(*reservation)
+					return
+
+				}
+			})
+			err = conn.Publish("saga-cancel-reservation-3", data)
+			if err != nil {
+				log.Panic(err)
+			}
+		} else {
+			//rollback reservation cancelling, or cancel canceling of reservation
+			repos.CreateReservation(*reservation)
+			return
+		}
+	})
+	err = conn.Publish("saga-cancel-reservation-1", data)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
-	if err != nil {
-		return err
-	}
-	_, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
-	if err != nil {
-		log.Print(err.Error())
-	}
-	res, err := grpcclient.IncrementCancellationsCounter(reservation.UserId.Hex())
-	if err != nil {
-		log.Print(res)
-		return err
-	}
-
-	boolAns, err := grpcclient.RemoveReservationFromAccommodation(reservation.AccommodationId.Hex(), id)
-	if err != nil {
-		log.Print(boolAns, err.Error())
-		return err
-	}
+	// _, err = grpcclient.ReservationCanceled(*reservation, accommodation.Name, accommodation.User)
+	// if err != nil {
+	// 	log.Print(err.Error())
+	// }
 
 	return nil
 }

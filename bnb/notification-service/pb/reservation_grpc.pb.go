@@ -25,7 +25,6 @@ const (
 	ReservationService_GetActiveReservationsByUser_FullMethodName       = "/pb.ReservationService/GetActiveReservationsByUser"
 	ReservationService_GetFutureActiveReservationsByHost_FullMethodName = "/pb.ReservationService/GetFutureActiveReservationsByHost"
 	ReservationService_GetFinishedReservationsByUser_FullMethodName     = "/pb.ReservationService/GetFinishedReservationsByUser"
-	ReservationService_Ping_FullMethodName                              = "/pb.ReservationService/Ping"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -38,7 +37,6 @@ type ReservationServiceClient interface {
 	GetActiveReservationsByUser(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetActiveReservationsByUserClient, error)
 	GetFutureActiveReservationsByHost(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetFutureActiveReservationsByHostClient, error)
 	GetFinishedReservationsByUser(ctx context.Context, in *RequestUserId, opts ...grpc.CallOption) (ReservationService_GetFinishedReservationsByUserClient, error)
-	Ping(ctx context.Context, in *EmptyResMsg, opts ...grpc.CallOption) (*PingMessage, error)
 }
 
 type reservationServiceClient struct {
@@ -218,15 +216,6 @@ func (x *reservationServiceGetFinishedReservationsByUserClient) Recv() (*Reserva
 	return m, nil
 }
 
-func (c *reservationServiceClient) Ping(ctx context.Context, in *EmptyResMsg, opts ...grpc.CallOption) (*PingMessage, error) {
-	out := new(PingMessage)
-	err := c.cc.Invoke(ctx, ReservationService_Ping_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations must embed UnimplementedReservationServiceServer
 // for forward compatibility
@@ -237,7 +226,6 @@ type ReservationServiceServer interface {
 	GetActiveReservationsByUser(*RequestUserId, ReservationService_GetActiveReservationsByUserServer) error
 	GetFutureActiveReservationsByHost(*RequestUserId, ReservationService_GetFutureActiveReservationsByHostServer) error
 	GetFinishedReservationsByUser(*RequestUserId, ReservationService_GetFinishedReservationsByUserServer) error
-	Ping(context.Context, *EmptyResMsg) (*PingMessage, error)
 	mustEmbedUnimplementedReservationServiceServer()
 }
 
@@ -262,9 +250,6 @@ func (UnimplementedReservationServiceServer) GetFutureActiveReservationsByHost(*
 }
 func (UnimplementedReservationServiceServer) GetFinishedReservationsByUser(*RequestUserId, ReservationService_GetFinishedReservationsByUserServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetFinishedReservationsByUser not implemented")
-}
-func (UnimplementedReservationServiceServer) Ping(context.Context, *EmptyResMsg) (*PingMessage, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedReservationServiceServer) mustEmbedUnimplementedReservationServiceServer() {}
 
@@ -402,24 +387,6 @@ func (x *reservationServiceGetFinishedReservationsByUserServer) Send(m *Reservat
 	return x.ServerStream.SendMsg(m)
 }
 
-func _ReservationService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyResMsg)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReservationServiceServer).Ping(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ReservationService_Ping_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReservationServiceServer).Ping(ctx, req.(*EmptyResMsg))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -430,10 +397,6 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReservationById",
 			Handler:    _ReservationService_GetReservationById_Handler,
-		},
-		{
-			MethodName: "Ping",
-			Handler:    _ReservationService_Ping_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

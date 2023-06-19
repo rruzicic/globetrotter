@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/rruzicic/globetrotter/bnb/notification-service/model"
+	"github.com/rruzicic/globetrotter/bnb/notification-service/pb"
+	"github.com/rruzicic/globetrotter/bnb/notification-service/socket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -36,7 +38,7 @@ func GetNotificationsByUserId(id string) ([]model.Notification, error) {
 	return notifications, nil
 }
 
-func CreateReservationNotification(notification model.Notification) (*model.Notification, error){
+func CreateReservationNotification(notification model.Notification) (*model.Notification, error) {
 	obj_id := primitive.NewObjectIDFromTimestamp(time.Now())
 	notification.Id = &obj_id
 	notification.CreatedOn = int(time.Now().Unix())
@@ -125,4 +127,22 @@ func CreateReservationResponseNotification(notification model.Notification) (*mo
 		return nil, err
 	}
 	return &notification, nil
+}
+
+func ReservationCanceled(event *pb.ReservationEvent) error {
+	log.Println("notification server hit")
+	notification := model.Notification{
+		UserId:            event.UserId,
+		AccommodationId:   &event.AccommodationId,
+		AccommodationName: &event.AccommodationName,
+	}
+
+	notif, err := CreateCancellationNotification(notification)
+	if err != nil {
+		log.Panic("Notification creation failed")
+		return err
+	}
+	socket.SendNotification(*notif)
+
+	return nil
 }

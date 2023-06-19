@@ -176,6 +176,26 @@ func HandleCanceledReservationEvent(reservationEvent *pb.ReservationEvent) error
 	return nil
 }
 
+func HandleRollbackCancleReservation(reservationEvent *pb.ReservationEvent) error {
+	objectId, err := primitive.ObjectIDFromHex(reservationEvent.HostId)
+	if err != nil {
+		return err
+	}
+	host, err := GetUserById(objectId)
+	if err != nil {
+		return err
+	}
+
+	host.CanceledReservationsCounter = host.CanceledReservationsCounter - 1
+
+	err = CheckSuperHostStatus(host)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CheckSuperHostStatus(user *models.User) error {
 	condition1 := false
 	condition2 := false

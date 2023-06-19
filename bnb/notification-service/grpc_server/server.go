@@ -34,22 +34,23 @@ func (s *NotificationServiceServer) ReservationCreated(ctx context.Context, res 
 
 	return &emptypb.Empty{}, nil
 }
-func (s *NotificationServiceServer) ReservationCanceled(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error) {
-	log.Println("notification server hit")
-	notification := model.Notification{
-		UserId:            res.UserId,
-		AccommodationId:   &res.AccommodationId,
-		AccommodationName: &res.AccommodationName,
-	}
 
-	notif, err := repos.CreateCancellationNotification(notification)
-	if err != nil {
-		log.Panic("Notification creation failed")
-	}
-	socket.SendNotification(*notif)
+// func (s *NotificationServiceServer) ReservationCanceled(ctx context.Context, res *pb.ReservationNotification) (*emptypb.Empty, error){
+// 	log.Println("notification server hit")
+// 	notification := model.Notification{
+// 		UserId: res.UserId,
+// 		AccommodationId: &res.AccommodationId,
+// 		AccommodationName: &res.AccommodationName,
+// 	}
 
-	return &emptypb.Empty{}, nil
-}
+// 	notif, err := repos.CreateCancellationNotification(notification)
+// 	if err != nil {
+// 		log.Panic("Notification creation failed")
+// 	}
+// 	socket.SendNotification(*notif)
+
+// 	return &emptypb.Empty{}, nil
+// }
 
 func (s *NotificationServiceServer) HostRated(ctx context.Context, rating *pb.HostRatingNotification) (*emptypb.Empty, error) {
 	log.Println("Notification server hit")
