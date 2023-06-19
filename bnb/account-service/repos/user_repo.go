@@ -122,6 +122,7 @@ func AvgRatingChanged(hostId string, avgRating float32) error {
 	if err != nil {
 		return err
 	}
+	log.Println("USAO U AVGRATINGCHANGED: ", avgRating)
 	user.Rating = avgRating
 	err = CheckSuperHostStatus(user)
 	if err != nil {

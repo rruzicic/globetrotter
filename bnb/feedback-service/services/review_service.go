@@ -77,6 +77,7 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 		}
 		event := pb.AvgRatingEvent{HostId: hostReviewDTO.HostId, AvgRating: newAvgRating}
 		data, _ := proto.Marshal(&event)
+		log.Println("PUBLISHUJEM NOV AVG RATING: ", newAvgRating)
 		err = conn.Publish("account-service", data)
 		if err != nil {
 			log.Panic(err)
@@ -201,9 +202,9 @@ func UpdateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 }
 
 func Conn() *nats.Conn {
-	conn, err := nats.Connect("nats://localhost:4222")
+	conn, err := nats.Connect("nats:4222")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return conn
 }

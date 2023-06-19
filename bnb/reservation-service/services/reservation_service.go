@@ -269,7 +269,7 @@ func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
 }
 
 func Conn() *nats.Conn {
-	conn, err := nats.Connect("nats://localhost:4222")
+	conn, err := nats.Connect("nats:4222")
 	if err != nil {
 		log.Fatal(err)
 	}

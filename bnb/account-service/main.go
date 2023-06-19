@@ -33,13 +33,13 @@ func main() {
 	defer shutdown(ctx)
 
 	repos.Connect()
-	go ginSetup()
-	grpcserver.InitServer()
 
 	//Subscribe to messages
+	log.Println("DOBAR DAN JA BIH DA UDJEM U SUBSCRIBE MESSAGE DEO AKO MOZE")
 	conn := Conn()
 	defer conn.Close()
 	_, err = conn.Subscribe("account-service", func(message *nats.Msg) {
+		log.Println("DOBAR DAN PRIMLJENO JE NESTO AL MOZDA NE VALJA JOS")
 		event := pb.AvgRatingEvent{}
 		err := proto.Unmarshal(message.Data, &event)
 		if err == nil {
@@ -69,13 +69,15 @@ func main() {
 		if err == nil {
 			//Handle the message
 			log.Println("Recieved an event about a canceled reservation")
-			//repos.HandleNewReservationEvent(&event)
+			repos.HandleCanceledReservationEvent(&event)
 		}
 	})
 	if err != nil {
 		log.Panic(err)
 	}
 
+	go ginSetup()
+	grpcserver.InitServer()
 	repos.Disconnect()
 }
 
@@ -146,7 +148,7 @@ func getSampler() trace.Sampler {
 }
 
 func Conn() *nats.Conn {
-	conn, err := nats.Connect("nats://localhost:4222")
+	conn, err := nats.Connect("nats:4222")
 	if err != nil {
 		log.Fatal(err)
 	}

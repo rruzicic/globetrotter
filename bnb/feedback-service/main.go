@@ -25,7 +25,7 @@ func ginSetup() {
 	//TODO implement controllers
 	Feedback := r.Group("/feedback")
 
-	HostFeedback := Feedback.Group("/HostFeedback")
+	HostFeedback := Feedback.Group("HostFeedback")
 	HostFeedback.POST("/", controllers.CreateHostReview)
 	HostFeedback.GET("/id/:id", controllers.GetHostReviewById)
 	HostFeedback.GET("/user/:user_id", controllers.GetHostReviewsByUserId)
