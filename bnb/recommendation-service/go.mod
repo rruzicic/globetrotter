@@ -5,11 +5,17 @@ go 1.20
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/rruzicic/globetrotter/bnb/account-service v0.0.0-20230514211533-2a1dc09f36c0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0
 	google.golang.org/grpc v1.55.0
 )
 
 require (
+	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	go.opentelemetry.io/otel v1.16.0 // indirect
+	go.opentelemetry.io/otel/metric v1.16.0 // indirect
+	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
 )
 

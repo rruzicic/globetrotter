@@ -1,9 +1,10 @@
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import MyReservationCard from "../components/myReservations/MyReservationCard";
 import { axiosInstance } from "../config/interceptor"
 import AuthContext from "../config/authContext"
 import { useContext, useEffect, useState } from "react";
 import CONSTANTS from "../config/constants";
+import { useNavigate } from "react-router";
 
 const MyReservationsPage = () => {
     const authCtx = useContext(AuthContext)
@@ -37,25 +38,45 @@ const MyReservationsPage = () => {
             })
     }
 
+    const navigate = useNavigate()
+    const handleNavigate = (id) => {
+        navigate(`/reservationInfo/${id}`)
+    }
+
+    const styles = {
+        box: {
+            '&:hover': {
+                transform: 'scale(1.02)'
+            },
+            cursor: 'pointer',
+            transition: 'all 1s',
+            width: '100%',
+            boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+            borderRadius: '10px'
+        }
+    }
+
     return (
-        <Container sx={{ marginTop: '2rem' }}>
+        <Box sx={{ marginTop: '2rem', width: '90%', margin: '1rem auto' }}>
             {
                 data && data.map((reservation) => {
                     return (
-                        <MyReservationCard key={reservation.id}
-                            reservationId={reservation.id}
-                            handleCancel={handleCancel}
-                            objectId={reservation.accommodationId}
-                            start={reservation.dateInterval.start}
-                            end={reservation.dateInterval.end}
-                            guestNum={reservation.numOfGuests}
-                            totalPrice={reservation.totalPrice}
-                            status={reservation.isApproved}
-                            image='/home.jpg' />
+                        <Box key={reservation.id} onClick={() => handleNavigate(reservation.id)} sx={styles.box}>
+                            <MyReservationCard
+                                reservationId={reservation.id}
+                                handleCancel={handleCancel}
+                                objectId={reservation.accommodationId}
+                                start={reservation.dateInterval.start}
+                                end={reservation.dateInterval.end}
+                                guestNum={reservation.numOfGuests}
+                                totalPrice={reservation.totalPrice}
+                                status={reservation.isApproved}
+                                image='/home.jpg' />
+                        </Box>
                     )
                 })
             }
-        </Container>
+        </Box>
     );
 }
 

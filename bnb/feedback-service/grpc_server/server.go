@@ -9,6 +9,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/models"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/feedback-service/repos"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 
 	//"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
@@ -208,7 +209,7 @@ func InitServer() {
 		log.Println("Feedback service failed to listen. Error: ", err.Error())
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()), grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 	pb.RegisterFeedbackServiceServer(server, &FeedbackServiceServer{})
 
 	log.Println("Feedback gRPC server listening at ", listen.Addr())

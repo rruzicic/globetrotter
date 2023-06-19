@@ -9,6 +9,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/notification-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/repos"
 	"github.com/rruzicic/globetrotter/bnb/notification-service/socket"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -111,7 +112,7 @@ func InitServer() {
 		log.Panic("Notification service failed to listen. Error: ", err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()), grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 	pb.RegisterNotificationServiceServer(server, &NotificationServiceServer{})
 
 	log.Println("Notification gRPC server listening..")

@@ -5,12 +5,16 @@ import (
 	"log"
 
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func connectToUserService() (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial("account-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("account-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+	)
 
 	if err != nil {
 		log.Panic("Could not connect to reservation service")

@@ -12,5 +12,4 @@ use ./bnb/reservation-service
 
 use ./bnb/notification-service
 
-use ./bnb/search-service
 use ./bnb/recommendation-service

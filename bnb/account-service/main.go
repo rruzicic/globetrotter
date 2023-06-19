@@ -121,6 +121,7 @@ func ginSetup() {
 	protected.Use(jwt.AnyUserAuthMiddleware())
 
 	public.GET("/health", controllers.HealthCheck)
+	public.GET("/ping", controllers.Ping)
 	public.GET("/all", controllers.GetAll)
 	public.GET("/id/:id", controllers.GetById)
 	public.GET("/email/:email", controllers.GetByEmail)

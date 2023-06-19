@@ -9,7 +9,7 @@ const AuthContext = createContext({
     logout: () => { },
     isUser: () => { },
     isAdmin: () => { },
-    userEmail: () => { }
+    userEmail: () => { },
 })
 
 export const AuthContextProvider = ({ children }) => {
