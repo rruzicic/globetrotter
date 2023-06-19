@@ -120,6 +120,10 @@ const ObjectDataGrid = () => {
             .then((response) => {
                 dto.userId = response.data.id
                 axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/`, dto)
+                    .catch((e) => {
+                        console.error(e)
+                        return
+                    })
                     .then((response) => {
                         axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}/reservation/${response.data.id}`)
                             .catch((e) => {
@@ -183,10 +187,10 @@ const ObjectDataGrid = () => {
                             </Typography>
                             <Checkbox size="small" />
                         </Stack>
-                        <Stack sx={{display: 'grid', placeItems: 'center'}}>
-                            <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits}/>
+                        <Stack sx={{ display: 'grid', placeItems: 'center' }}>
+                            <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits} />
                         </Stack>
-                        <Button fullWidth variant="contained" color="primary" sx={{marginTop: '2rem'}} disabled={!objects} onClick={applyFilter}>
+                        <Button fullWidth variant="contained" color="primary" sx={{ marginTop: '2rem' }} disabled={!objects} onClick={applyFilter}>
                             Apply filters
                         </Button>
                     </Paper>

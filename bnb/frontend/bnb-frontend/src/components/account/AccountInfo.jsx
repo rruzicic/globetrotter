@@ -5,6 +5,7 @@ import { useContext } from "react";
 import AuthContext from "../../config/authContext";
 import { axiosInstance } from "../../config/interceptor";
 import CONSTANTS from "../../config/constants";
+import { toast } from "react-toastify";
 
 const AccountInfo = ({ setUpdate, userInfo }) => {
     const navigate = useNavigate()
@@ -25,6 +26,7 @@ const AccountInfo = ({ setUpdate, userInfo }) => {
                         return
                     })
                     .then((response) => {
+                        toast("Account deleted!")
                         authCtx.logout()
                     })
             })

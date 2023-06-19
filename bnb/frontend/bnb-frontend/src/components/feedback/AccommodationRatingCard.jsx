@@ -20,7 +20,8 @@ const AccommodationRatingCard = ({ id }) => {
         const dto = { rating: parseInt(rating), userId: ctx.userId(), accommodationId: id }
         axiosInstance.post(`${CONSTANTS.GATEWAY}/feedback/AccommodationFeedback/`, dto)
             .catch((err) => {
-                console.error(err);
+                console.log(err);
+                return;
             })
             .then((response) => {
                 toast('Successfully rated! 🔥')
@@ -31,6 +32,7 @@ const AccommodationRatingCard = ({ id }) => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${id}`)
             .catch((err) => {
                 console.error(err);
+                return;
             })
             .then((response) => {
                 setAccommodationData(response.data)

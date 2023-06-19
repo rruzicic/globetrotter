@@ -29,6 +29,7 @@ const NotificationsPage = () => {
         axiosInstance.get(`http://localhost:4000/notification/user/${ctx.userId()}`)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((response) => {
                 setNotifications(response.data.sort((a, b) => b.createdOn - a.createdOn))
@@ -57,6 +58,7 @@ const NotificationsPage = () => {
         axiosInstance.patch(`${CONSTANTS.GATEWAY}/user/notificationPreferences`, { id: ctx.userId(), notificationList: wantedNotification })
             .catch((e) => {
                 console.error(e)
+                return
             })
             .then((response) => {
                 ctx.updateWantedNotifications(wantedNotification)

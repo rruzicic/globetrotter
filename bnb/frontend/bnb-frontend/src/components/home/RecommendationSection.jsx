@@ -15,6 +15,7 @@ const RecommendationSection = () => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/recommendation/accommodations`, { name: "what", mongoId: ctx.userId() })
             .catch((err) => {
                 console.error(err);
+                return;
             })
             .then((response) => {
                 setAccommodations(response.data)

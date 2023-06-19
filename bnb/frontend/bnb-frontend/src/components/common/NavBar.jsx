@@ -8,7 +8,7 @@ const NavBar = () => {
     return (
         <Box style={{ backgroundColor: theme.palette.primary.main, width: '100%', padding: '1rem 0', display: 'flex', justifyContent: 'space-around', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
             {
-                authCtx.isHost() && <img src="/crown.png" alt="crown" height={"50px"} width={"40px"} />
+                authCtx.isSuperHost() && <img src="/crown.png" alt="crown" height={"50px"} width={"40px"} />
             }
             <Link to={'/'}>
                 <Button variant="contained" color="secondary">

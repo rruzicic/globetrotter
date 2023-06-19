@@ -4,6 +4,7 @@ import REGEX from "../../regex";
 import ChangeAccountInfoForm from "./ChangeAccountInfoForm";
 import { axiosInstance } from "../../config/interceptor";
 import CONSTANTS from "../../config/constants";
+import { toast } from "react-toastify";
 
 let emailRegex = new RegExp(REGEX.EMAIL)
 
@@ -53,6 +54,7 @@ const ChangeAccountInfo = ({ setUpdate, userInfo }) => {
             })
             .then((response) => {
                 setUpdate(false)
+                toast("Account info updated!")
                 window.location.reload();
             })
     }

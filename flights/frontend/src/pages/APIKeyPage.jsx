@@ -18,6 +18,7 @@ const APIKeyPage = () => {
         axiosInstance.get(`/api-key?temporary=${!permanent}`)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((response) => {
                 setApiKey(response.data.data.key)
@@ -25,9 +26,7 @@ const APIKeyPage = () => {
                 axiosInstance.post(`/api-key`, response.data.data)
                     .catch((e) => {
                         console.error(e)
-                    })
-                    .then((res) => {
-                        
+                        return
                     })
             })
     }

@@ -16,6 +16,7 @@ const FeedbackPage = () => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/feedback/pastAccommodations/${ctx.userId()}`)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((response) => {
                 setAccommodations(response.data)
@@ -23,6 +24,7 @@ const FeedbackPage = () => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/feedback/pastHosts/${ctx.userId()}`)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((response) => {
                 setHosts(response.data)

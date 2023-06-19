@@ -35,12 +35,14 @@ const ReservationInfoPage = () => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/${id}`)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((res) => {
                 setReservation(res.data)
                 axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${res.data.accommodationId}`)
                     .catch((err) => {
                         console.error(err)
+                        return
                     })
                     .then((res) => {
                         setAccommodation(res.data)
@@ -61,6 +63,7 @@ const ReservationInfoPage = () => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/recommendation/flights`, dto)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((res) => {
                 setFlights(res.data)

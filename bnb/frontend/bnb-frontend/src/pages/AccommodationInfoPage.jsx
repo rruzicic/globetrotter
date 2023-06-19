@@ -76,6 +76,7 @@ const AccommodationInfoPage = () => {
         axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/`, { ...objectInfo, availableCommodations: benefits })
             .catch((e) => {
                 console.error(e)
+                return;
             })
             .then((response) => {
                 toast("Benefits updated!")

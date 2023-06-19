@@ -20,6 +20,7 @@ const HostRatingCard = ({ id }) => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/feedback/HostFeedback/`, dto)
             .catch((err) => {
                 console.error(err);
+                return
             })
             .then((response) => {
                 toast('Successfully rated 🔥')
@@ -30,6 +31,7 @@ const HostRatingCard = ({ id }) => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${id}`)
             .catch((err) => {
                 console.error(err);
+                return
             })
             .then((response) => {
                 setHostData(response.data)

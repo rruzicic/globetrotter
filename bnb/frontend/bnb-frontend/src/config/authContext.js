@@ -34,6 +34,7 @@ export const AuthContextProvider = ({ children }) => {
             axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userIdHandler()}`)
                 .catch((e) => {
                     console.error(e);
+                    return
                 })
                 .then((response) => {
                     if (response.data) {

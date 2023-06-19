@@ -1,7 +1,6 @@
-import { Stack, Typography, Button, Grid } from "@mui/material";
+import { Typography, Button, Grid } from "@mui/material";
 import theme from "../../theme";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { axiosInstance } from "../../config/interceptor";
 import CONSTANTS from "../../config/constants";
 
