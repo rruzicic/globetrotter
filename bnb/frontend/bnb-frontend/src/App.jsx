@@ -17,6 +17,7 @@ import NotificationsPage from './pages/NotificationPage';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FeedbackPage from './pages/FeedbackPage';
+import ReservationInfoPage from './pages/ReservationInfoPage';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path={'/myReservations'} element={<MyReservationsPage />} />
             <Route path={'/notifications'} element={<NotificationsPage />} />
             <Route path={'/feedback'} element={<FeedbackPage />} />
+            <Route path={'/reservationInfo/:id'} element={<ReservationInfoPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
