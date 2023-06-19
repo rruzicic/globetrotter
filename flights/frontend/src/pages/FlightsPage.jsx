@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useContext, useEffect, useState } from "react";
 import theme from "theme";
@@ -19,9 +19,11 @@ const FlightsPage = () => {
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
 
-
     const [flights, setFlights] = useState([])
 
+    const [forFriend, setForFriend] = useState(false)
+    const [friendAPIKey, setFriendAPIKey] = useState(false)
+    const [myAPIKey, setMyAPIKey] = useState()
 
     const [departureSP, setDepartureSP] = useState("")
     const [departureDateSP, setDepartureDateSP] = useState(null)
@@ -59,11 +61,23 @@ const FlightsPage = () => {
     const changePassengerNumber = (e) => {
         setPassengerNumSP(e.target.value);
     }
+    const handleForFriend = () => {
+        setForFriend((prev) => !prev)
+    }
+    const handleFriendKey = (e) => {
+        setFriendAPIKey(e.target.value)
+    }
 
-    useEffect(()=> {
-        console.log(debounceDepartureDateSP);
-        console.log(departureDateSP);
-    }, [debounceDepartureDateSP])
+    useEffect(() => {
+        axiosInstance.get(`/user/current`)
+            .catch((e) => {
+                console.error(e)
+            })
+            .then((res) => {
+                console.log(res.data.data.apiKey.key)
+                setMyAPIKey(res.data.data.apiKey.key)
+            })
+    }, [])
 
     const sortedFlights = flights.sort((a, b) => {
         if (orderBy === 'departureDateTime' || orderBy === 'arrivalDateTime') {
@@ -151,23 +165,46 @@ const FlightsPage = () => {
     const authCtx = useContext(AuthContext)
 
     const buyTicket = (() => {
-        axiosInstance.post('/flights/buy-ticket', {
-            flightId: selectedFlight,
-            userEmail: authCtx.userEmail(),
-            numOfTicketsOptional: [parseInt(ticketNumber)]
-        })
-            .catch((err) => {
+        if (forFriend) {
+            axiosInstance.defaults.headers['x-api-key'] = myAPIKey;
+            axiosInstance.post(`/flights/buy-ticket-for-friend`, {
+                flightId: selectedFlight,
+                apiKey: friendAPIKey,
+                numOfTicketsOptional: [parseInt(ticketNumber)]
+            }).catch((e) => {
+                console.error(e);
                 toast('Not enough tickets left 😢')
                 return
+            }).then((res) => {
+                console.log(res);
+                toast('Successfully bought tickets! 😊')
+                resetSearch()
+                getAll()
+                handleClose()
+                return
             })
-            .then((response) => {
-                if (response !== undefined) {
-                    toast('Successfully bought tickets! 😊')
-                    resetSearch()
-                    getAll()
-                }
+            return
+        }
+
+        if (!forFriend) {
+            axiosInstance.post('/flights/buy-ticket', {
+                flightId: selectedFlight,
+                userEmail: authCtx.userEmail(),
+                numOfTicketsOptional: [parseInt(ticketNumber)]
             })
-        handleClose()
+                .catch((err) => {
+                    toast('Not enough tickets left 😢')
+                    return
+                })
+                .then((response) => {
+                    if (response !== undefined) {
+                        toast('Successfully bought tickets! 😊')
+                        resetSearch()
+                        getAll()
+                    }
+                })
+            handleClose()
+        }
     })
 
     const handleOpen = (flightId) => {
@@ -218,7 +255,20 @@ const FlightsPage = () => {
             >
                 <DialogTitle>{"How many tickets would you like to buy?"}</DialogTitle>
                 <DialogContent>
-                    <TextField onChange={changeTicketNumber} label="Number of Tickets" />
+                    <Stack>
+                        <TextField onChange={changeTicketNumber} label="Number of Tickets" />
+                        <Stack direction={"row"} alignItems={'center'} mt={2}>
+                            <Typography variant="subtitle1">
+                                I'm buying for a friend:
+                            </Typography>
+                            <Checkbox value={forFriend} onChange={handleForFriend} label='For friend' size="small" />
+                        </Stack>
+                        {
+                            forFriend && (
+                                <TextField onChange={handleFriendKey} label="Friends API KEY" />
+                            )
+                        }
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
