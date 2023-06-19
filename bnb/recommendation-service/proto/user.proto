@@ -3,6 +3,7 @@ syntax = "proto3";
 package pb;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 option go_package = "github.com/rruzicic/globetrotter/bnb/account-service/pb";
 
 message User {
@@ -27,6 +28,10 @@ message User {
     float rating = 15;
     int32 ratingNum = 16;
     int32 cancellationsCounter = 17;
+
+    int32 reservationCounter = 18;
+    int32 canceledReservationCounter = 19;
+    google.protobuf.Duration totalReservationDuration = 20;
 }
 
 message UserUpdateRequest {

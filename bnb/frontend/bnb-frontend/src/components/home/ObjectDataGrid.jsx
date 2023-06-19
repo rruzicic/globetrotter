@@ -137,8 +137,7 @@ const ObjectDataGrid = () => {
     }
 
     const applyFilter = () => {
-        setShownObjects(() => objects.filter((object) => object.unitPrice.amount >= priceRange[0] && object.unitPrice.amount <= priceRange[1] && isSubArray(object.availableCommodations)))
-        console.log(benefits);
+        setShownObjects(() => objects.filter((object) => object.unitPrice.amount >= priceRange[0] && object.unitPrice.amount <= priceRange[1] && isSubArray(object.availableCommodations ? object.availableCommodations : [])))
     }
 
     return (

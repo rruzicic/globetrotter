@@ -5,11 +5,15 @@ import (
 	"log"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/nats-io/nats.go"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/dtos"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/reservation-service/grpc_client"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/models"
+	"github.com/rruzicic/globetrotter/bnb/reservation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/reservation-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reservation, error) {
@@ -36,7 +40,7 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 	if err != nil {
 		return nil, err
 	}
-	
+
 	_, err = grpcclient.ReservationCreated(reservation, accommodation.Name, accommodation.User)
 	if err != nil {
 		return nil, err
@@ -83,7 +87,35 @@ func CreateReservation(reservationDTO dtos.CreateReservationDTO) (*models.Reserv
 		reservation.IsApproved = false
 	}
 
-	return repos.CreateReservation(reservation)
+	returnValue, err := repos.CreateReservation(reservation)
+	if err != nil {
+		return nil, err
+	}
+	//Get Host Id
+	hostAnswer, _ := grpcclient.GetHostByAccommodation(reservation.AccommodationId.Hex())
+
+	//Publish an event to the account service
+	conn := Conn()
+	defer conn.Close()
+
+	event := pb.ReservationEvent{
+		AccommodationId: returnValue.AccommodationId.Hex(),
+		UserId:          returnValue.UserId.Hex(),
+		StartDate:       timestamppb.New(returnValue.DateInterval.Start),
+		EndDate:         timestamppb.New(returnValue.DateInterval.End),
+		NumOfGuests:     int32(returnValue.NumOfGuests),
+		IsApproved:      returnValue.IsApproved,
+		TotalPrice:      returnValue.TotalPrice,
+		Id:              returnValue.Id.Hex(),
+		HostId:          hostAnswer.HostId,
+	}
+	data, _ := proto.Marshal(&event)
+	err = conn.Publish("account-service-2", data)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return returnValue, nil
 }
 
 func GetReservationById(id string) (*models.Reservation, error) {
@@ -147,6 +179,30 @@ func DeleteReservation(id string) error {
 		log.Print(err.Error())
 		return err
 	}
+
+	hostAnswer, _ := grpcclient.GetHostByAccommodation(reservation.AccommodationId.Hex())
+
+	//Publish an event to the account service
+	conn := Conn()
+	defer conn.Close()
+
+	event := pb.ReservationEvent{
+		AccommodationId: reservation.AccommodationId.Hex(),
+		UserId:          reservation.UserId.Hex(),
+		StartDate:       timestamppb.New(reservation.DateInterval.Start),
+		EndDate:         timestamppb.New(reservation.DateInterval.End),
+		NumOfGuests:     int32(reservation.NumOfGuests),
+		IsApproved:      reservation.IsApproved,
+		TotalPrice:      reservation.TotalPrice,
+		Id:              reservation.Id.Hex(),
+		HostId:          hostAnswer.HostId,
+	}
+	data, _ := proto.Marshal(&event)
+	err = conn.Publish("account-service-3", data)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	accommodation, err := grpcclient.GetAccommodationById(reservation.AccommodationId.Hex())
 	if err != nil {
 		return err
@@ -221,7 +277,7 @@ func RejectReservation(id string) error {
 	reservation.IsApproved = false
 
 	grpcclient.ReservationResponse(*reservation, accommodation.Name)
-	
+
 	return repos.UpdateReservation(*reservation)
 }
 
@@ -233,4 +289,12 @@ func GetReservationsByAccommodationId(id string) ([]models.Reservation, error) {
 	}
 
 	return reservations, err
+}
+
+func Conn() *nats.Conn {
+	conn, err := nats.Connect("nats:4222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return conn
 }

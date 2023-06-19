@@ -147,7 +147,6 @@ const AccommodationInfoPage = () => {
     }
     return (
         <>
-
             <Dialog open={open} onClose={handleOpen}>
                 <DialogTitle>Intervals and Price management</DialogTitle>
                 <DialogContent>
@@ -185,13 +184,12 @@ const AccommodationInfoPage = () => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-
             </Dialog>
             <Grid container mb={4} justifyContent={"center"} spacing={1}>
                 {
                     objectInfo && (
                         <>
-                            <Typography variant="h3" color="initial" mt={8}>
+                            <Typography variant="h3" color="initial" mt={8} fontWeight={"bold"} sx={{marginBottom: '2rem'}}>
                                 {objectInfo.name}
                             </Typography>
                             <Grid item xs={12}>
@@ -237,6 +235,9 @@ const AccommodationInfoPage = () => {
                                     </Button>
                                 )}
                             </Grid>
+                            <Grid item xs={12} sx={{ color: theme.palette.secondary.main, backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '1rem 10.5rem', textAlign: 'center', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                                This accommodation is available from: {new Date(objectInfo.availability.start).toLocaleDateString()}, to: {new Date(objectInfo.availability.end).toLocaleDateString()}
+                            </Grid>
                         </>
                     )
                 }
@@ -271,7 +272,7 @@ const AccommodationInfoPage = () => {
                 }
                 {
                     authCtx.isHost() && (
-                        <Grid item xs={12} mt={4}>
+                        <Grid item xs={12} mt={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             <Button variant="contained" color="primary" onClick={handleOpen}>
                                 Change info
                             </Button>

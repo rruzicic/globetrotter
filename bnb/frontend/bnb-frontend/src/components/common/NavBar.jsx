@@ -15,16 +15,16 @@ const NavBar = () => {
             {
                 authCtx.isLoggedIn && (
                     <>
-                    <Link to={'/account'}>
-                        <Button variant="contained" color="secondary">
-                            Account
-                        </Button>
-                    </Link>
-                    <Link to={'/notifications'}>
-                        <Button variant="contained" sx={{backgroundColor: authCtx.countNewNotifications() === 0 ? theme.palette.secondary.main : "red", color: authCtx.countNewNotifications() === 0 ? "black" : "white"}}>
-                            Notifications ({authCtx.countNewNotifications()})
-                        </Button>
-                    </Link>
+                        <Link to={'/account'}>
+                            <Button variant="contained" color="secondary">
+                                Account
+                            </Button>
+                        </Link>
+                        <Link to={'/notifications'}>
+                            <Button variant="contained" sx={{ backgroundColor: authCtx.countNewNotifications() === 0 ? theme.palette.secondary.main : "red", color: authCtx.countNewNotifications() === 0 ? "black" : "white" }}>
+                                Notifications ({authCtx.countNewNotifications()})
+                            </Button>
+                        </Link>
                     </>
                 )
             }
@@ -39,11 +39,18 @@ const NavBar = () => {
             }
             {
                 authCtx.isUser() && (
-                    <Link to={'/myReservations'}>
-                        <Button variant="contained" color="secondary">
-                            Reservations
-                        </Button>
-                    </Link>
+                    <>
+                        <Link to={'/myReservations'}>
+                            <Button variant="contained" color="secondary">
+                                Reservations
+                            </Button>
+                        </Link>
+                        <Link to={'/feedback'}>
+                            <Button variant="contained" color="secondary">
+                                Feedback
+                            </Button>
+                        </Link>
+                    </>
                 )
             }
             {

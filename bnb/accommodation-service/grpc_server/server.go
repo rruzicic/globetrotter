@@ -181,6 +181,16 @@ func (s *AccommodationServiceServer) GetAllAccommodations(req *pb.Empty, stream 
 	return nil
 }
 
+func (s *AccommodationServiceServer) GetHostByAccommodation(ctx context.Context, req *pb.RequestByAccommodationId) (*pb.HostAnswer, error) {
+	accommodation, err := repos.GetAccommodationById(req.Id)
+	if err != nil {
+		log.Println("Could not get accommodation. Error: ", err.Error())
+		return nil, err
+	}
+	grpc_hostId := buildGRPCHostId(accommodation.User.Hex())
+	return &grpc_hostId, nil
+}
+
 func InitServer() {
 	listen, err := net.Listen("tcp", ":50051")
 	if err != nil {

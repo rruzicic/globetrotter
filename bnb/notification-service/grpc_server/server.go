@@ -72,10 +72,11 @@ func (s *NotificationServiceServer) HostRated(ctx context.Context, rating *pb.Ho
 func (s *NotificationServiceServer) AccommodationRated(ctx context.Context, rating *pb.AccommodationRatingNotification) (*emptypb.Empty, error) {
 	ratingValue := int(rating.Rating)
 	notification := model.Notification{
-		UserId:          rating.OwnerId,
-		AccommodationId: &rating.RatedId,
-		RaterId:         &rating.RaterId,
-		Rating:          &ratingValue,
+		UserId:            rating.OwnerId,
+		AccommodationId:   &rating.RatedId,
+		RaterId:           &rating.RaterId,
+		Rating:            &ratingValue,
+		AccommodationName: &rating.AccommodationName,
 	}
 
 	notif, err := repos.CreateAccommodationRatingNotification(notification)

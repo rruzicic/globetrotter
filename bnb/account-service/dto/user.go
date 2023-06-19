@@ -65,3 +65,8 @@ type CredentialsDTO struct {
 	EMail    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=5"`
 }
+
+type NotificationPreferencesDTO struct {
+	UserId string `json:"id" binding:"required"`
+	NotificationTypeList []string `json:"notificationList" binding:"required"`
+}

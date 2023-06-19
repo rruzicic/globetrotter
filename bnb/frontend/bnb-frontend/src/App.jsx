@@ -16,26 +16,30 @@ import MyReservationsPage from './pages/MyReservationsPage';
 import NotificationsPage from './pages/NotificationPage';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import FeedbackPage from './pages/FeedbackPage';
+import ReservationInfoPage from './pages/ReservationInfoPage';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path={'/'} element={<HomePage />} />
-              <Route path={'/login'} element={<LoginPage />} />
-              <Route path={'/register'} element={<RegistrationPage />} />
-              <Route path={'/account'} element={<AccountPage />} />
-              <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
-              <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
-              <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
-              <Route path={'/myReservations'} element={<MyReservationsPage />} />
-              <Route path={'/notifications'} element={<NotificationsPage />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-        <ToastContainer />
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route path={'/'} element={<HomePage />} />
+            <Route path={'/login'} element={<LoginPage />} />
+            <Route path={'/register'} element={<RegistrationPage />} />
+            <Route path={'/account'} element={<AccountPage />} />
+            <Route path={'/myAccommodation'} element={<AccommodationManagementPage />} />
+            <Route path={'/newAccommodation'} element={<NewAccommodationPage />} />
+            <Route path={'/accommodationInfo/:id'} element={<AccommodationInfoPage />} />
+            <Route path={'/myReservations'} element={<MyReservationsPage />} />
+            <Route path={'/notifications'} element={<NotificationsPage />} />
+            <Route path={'/feedback'} element={<FeedbackPage />} />
+            <Route path={'/reservationInfo/:id'} element={<ReservationInfoPage />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+      <ToastContainer />
     </ThemeProvider>
   );
 }

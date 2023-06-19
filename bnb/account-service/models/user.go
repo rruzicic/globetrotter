@@ -17,4 +17,6 @@ type User struct {
 	ApiKey               string `json:"apiKey" bson:"api_key"`
 	RatingStatus
 	Address
+	ReservationStatus
+	WantedNotifications []string `json:"wantedNotifications" bson:"wanted_notifications"`
 }
