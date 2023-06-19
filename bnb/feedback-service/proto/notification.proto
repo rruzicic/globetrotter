@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/rruzicic/globetrotter/bnb/notification-service/pb";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message ReservationNotification {
+    string accommodationId = 1;
+    string userId = 2;
+    google.protobuf.Timestamp startDate = 3;
+    google.protobuf.Timestamp endDate = 4;
+    int32 numOfGuests = 5;
+    bool isApproved = 6;
+    float totalPrice = 7;
+    string accommodationName = 8;
+}
+message HostRatingNotification {
+    string ratedId = 1;
+    string raterId = 2;
+    int64 rating = 3;
+}
+message AccommodationRatingNotification {
+    string ownerId = 1;
+    string ratedId = 2;
+    string raterId = 3;
+    int64 rating = 4;
+    string accommodationName = 5;
+}
+message ReservationResponseNotification {
+    string userId = 1;
+    string accommodationId = 2;
+    string accommodationName = 3;
+    bool approved = 4;
+}
+
+service NotificationService {
+    rpc ReservationCreated(ReservationNotification) returns (google.protobuf.Empty) {}
+    rpc ReservationCanceled(ReservationNotification) returns (google.protobuf.Empty) {}
+    rpc HostRated(HostRatingNotification) returns (google.protobuf.Empty) {}
+    rpc AccommodationRated(AccommodationRatingNotification) returns (google.protobuf.Empty) {}
+    rpc ReservationResponse(ReservationResponseNotification) returns (google.protobuf.Empty) {}
+}

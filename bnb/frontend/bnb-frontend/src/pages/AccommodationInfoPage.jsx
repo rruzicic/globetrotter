@@ -1,18 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Grid, Typography, Button, Dialog, DialogTitle, DialogContent, TextField, Stack } from "@mui/material";
+import { Grid, Typography, Button, Dialog, DialogTitle, DialogContent, TextField, Stack, Box, Container } from "@mui/material";
 import RequestCard from "../components/accommodationManagement/RequestCard";
 import AuthContext from "../config/authContext";
 import ImageGallery from 'react-image-gallery';
 import theme from "../theme";
 import { axiosInstance } from "../config/interceptor";
 import CONSTANTS from "../config/constants";
+import BenefitsSelectionGrid from "../components/common/BenefitSelectionGrid";
+import { toast } from "react-toastify";
 
 const AccommodationInfoPage = () => {
     const { id } = useParams()
     const [objectInfo, setObjectInfo] = useState(null)
     const [requests, setRequests] = useState([])
     const [open, setOpen] = useState(false)
+    const [benefits, setBenefits] = useState([])
     let authCtx = useContext(AuthContext)
 
     const [price, setPrice] = useState('');
@@ -45,21 +48,6 @@ const AccommodationInfoPage = () => {
         setAEndDate(event.target.value);
     };
 
-    const images = [
-        {
-            original: '/home.jpg',
-            thumbnail: '/home1.jpg',
-        },
-        {
-            original: '/home1.jpg',
-            thumbnail: '/home1.jpg',
-        },
-        {
-            original: '/home2.jpg',
-            thumbnail: '/home2.jpg',
-        },
-    ];
-
     useEffect(() => {
         axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${id}`)
             .catch((error) => {
@@ -68,6 +56,11 @@ const AccommodationInfoPage = () => {
             })
             .then((response) => {
                 setObjectInfo(response.data)
+                if (response.data.availableCommodations) {
+                    setBenefits(response.data.availableCommodations)
+                } else {
+                    setBenefits([])
+                }
             })
         axiosInstance.get(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}`)
             .catch((error) => {
@@ -79,6 +72,16 @@ const AccommodationInfoPage = () => {
             })
     }, [])
 
+    const updateBenefits = () => {
+        axiosInstance.put(`${CONSTANTS.GATEWAY}/accommodation/`, { ...objectInfo, availableCommodations: benefits })
+            .catch((e) => {
+                console.error(e)
+            })
+            .then((response) => {
+                toast("Benefits updated!")
+            })
+    }
+
     const acceptReservation = (id) => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/approve/${id}`)
             .catch((error) => {
@@ -86,7 +89,11 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
-                window.location.reload()
+                setRequests((prevRequests) =>
+                    prevRequests.map((request) =>
+                        request.id === id ? { ...request, isApproved: true } : request
+                    )
+                );
             })
     }
     const declineReservation = (id) => {
@@ -96,7 +103,7 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
-                window.location.reload()
+                setRequests((prev) => prev.filter((a) => a.id !== id))
             })
     }
     const handleOpen = () => {
@@ -180,62 +187,73 @@ const AccommodationInfoPage = () => {
                 </DialogContent>
 
             </Dialog>
-            <Grid container mb={4} justifyContent={"center"} spacing={4}>
+            <Grid container mb={4} justifyContent={"center"} spacing={1}>
                 {
                     objectInfo && (
                         <>
-                            <Typography variant="h3" color="initial" mt={8}>
+                            <Typography variant="h3" color="initial" mt={8} fontWeight={"bold"} sx={{marginBottom: '2rem'}}>
                                 {objectInfo.name}
                             </Typography>
                             <Grid item xs={12}>
-                                <ImageGallery items={images} />
+                                <ImageGallery items={[{ original: objectInfo.photos, thumbnail: objectInfo.photos }]} />
                             </Grid>
-                            <Grid item xs={5} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem' }}>
-                                <Typography variant="h6" color="initial">
+                            <Grid item xs={3} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem', textAlign: 'center', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                                <Typography variant="h6" color="secondary">
                                     Accommodation info
                                 </Typography>
-                                <Grid container>
-                                    <Grid item xs={6}>
+                                <Stack sx={{ marginTop: '2rem', color: 'white' }} spacing={2}>
+                                    <Box>
                                         Name: {objectInfo.name}
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                    </Box>
+                                    <Box>
                                         Maximal number of guests: {objectInfo.guests}
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                    </Box>
+                                    <Box>
                                         Price per unit: {objectInfo.unitPrice.amount.toString()}
-                                    </Grid>
-                                </Grid>
+                                    </Box>
+                                </Stack>
                             </Grid>
-                            <Grid item xs={5} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem' }}>
-                                <Typography variant="h6" color="initial">
+                            <Grid item xs={3} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '0 0.5rem', textAlign: 'center', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                                <Typography variant="h6" color="secondary">
                                     Location info
                                 </Typography>
-                                <Grid container>
-                                    <Grid item xs={12}>
+                                <Stack sx={{ marginTop: '2rem', color: 'white' }} spacing={2}>
+                                    <Box>
                                         Street: {objectInfo.location.street} {objectInfo.location.streetNum}
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                    </Box>
+                                    <Box>
                                         ZIP Code: {objectInfo.location.zip}
-                                    </Grid>
-                                    <Grid item xs={12}>
+                                    </Box>
+                                    <Box>
                                         Country: {objectInfo.location.country}
-                                    </Grid>
-                                </Grid>
+                                    </Box>
+                                </Stack>
+                            </Grid>
+                            <Grid item xs={3} sx={{ display: 'grid', placeItems: 'center', paddingLeft: '0', paddingRight: '0' }}>
+                                <BenefitsSelectionGrid selected={benefits} setSelected={setBenefits} disabled={!authCtx.isHost()} />
+                                {authCtx.isHost() && (
+                                    <Button variant="contained" color="primary" sx={{ marginTop: '1rem' }} onClick={updateBenefits}>
+                                        Update
+                                    </Button>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} sx={{ color: theme.palette.secondary.main, backgroundColor: theme.palette.primary.main, borderRadius: '10px', paddingLeft: '0', paddingTop: '0', padding: '1rem', margin: '1rem 10.5rem', textAlign: 'center', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
+                                This accommodation is available from: {new Date(objectInfo.availability.start).toLocaleDateString()}, to: {new Date(objectInfo.availability.end).toLocaleDateString()}
                             </Grid>
                         </>
                     )
                 }
                 {
                     requests && authCtx.isHost() && (
-                        <>
+                        <Container>
                             <Typography variant="h4" mt={4}>
                                 Reservation requests
                             </Typography>
                             <Grid container spacing={2} mt={4}>
                                 {
-                                    requests.map((request) => {
+                                    requests.map((request, index) => {
                                         return (
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} key={index}>
                                                 <RequestCard
                                                     requestId={request.id}
                                                     accept={acceptReservation}
@@ -251,12 +269,12 @@ const AccommodationInfoPage = () => {
                                     })
                                 }
                             </Grid>
-                        </>
+                        </Container>
                     )
                 }
                 {
                     authCtx.isHost() && (
-                        <Grid item xs={12} mt={4}>
+                        <Grid item xs={12} mt={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                             <Button variant="contained" color="primary" onClick={handleOpen}>
                                 Change info
                             </Button>

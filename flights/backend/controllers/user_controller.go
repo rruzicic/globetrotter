@@ -30,27 +30,3 @@ func Hello(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	httpGin.OK("Hello")
 }
-
-func AddUserAPIKey(ctx *gin.Context) {
-	httpGin := http.Gin{Context: ctx}
-	addUserAPIKeyDTO := dto.AddUserApiKeyDTO{}
-
-	if err := httpGin.Context.ShouldBindJSON(&addUserAPIKeyDTO); err != nil {
-		httpGin.BadRequest(err.Error())
-		return
-	}
-
-	user, err := services.FindUserByEmail(addUserAPIKeyDTO.UserMail)
-
-	if err != nil {
-		httpGin.BadRequest(nil)
-		return
-	}
-
-	if !services.AddUserAPIKey(*user, addUserAPIKeyDTO.APIKey) {
-		httpGin.InternalServerError(nil)
-		return
-	}
-
-	httpGin.OK("API Key Added")
-}

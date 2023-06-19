@@ -1,12 +1,12 @@
-import { Box, Button } from "@mui/material";
-import theme from "../../theme";
+import { Box, Button, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../../config/authContext";
 const NavBar = () => {
     const authCtx = useContext(AuthContext)
+    const theme = useTheme()
     return (
-        <Box style={{ backgroundColor: theme.palette.primary.main, width: '100%', padding: '1rem 0', display: 'flex', justifyContent: 'space-around' }}>
+        <Box style={{ backgroundColor: theme.palette.primary.main, width: '100%', padding: '1rem 0', display: 'flex', justifyContent: 'space-around', boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
             <Link to={'/'}>
                 <Button variant="contained" color="secondary">
                     Home
@@ -14,11 +14,18 @@ const NavBar = () => {
             </Link>
             {
                 authCtx.isLoggedIn && (
-                    <Link to={'/account'}>
-                        <Button variant="contained" color="secondary">
-                            Account
-                        </Button>
-                    </Link>
+                    <>
+                        <Link to={'/account'}>
+                            <Button variant="contained" color="secondary">
+                                Account
+                            </Button>
+                        </Link>
+                        <Link to={'/notifications'}>
+                            <Button variant="contained" sx={{ backgroundColor: authCtx.countNewNotifications() === 0 ? theme.palette.secondary.main : "red", color: authCtx.countNewNotifications() === 0 ? "black" : "white" }}>
+                                Notifications ({authCtx.countNewNotifications()})
+                            </Button>
+                        </Link>
+                    </>
                 )
             }
             {
@@ -32,11 +39,18 @@ const NavBar = () => {
             }
             {
                 authCtx.isUser() && (
-                    <Link to={'/myReservations'}>
-                        <Button variant="contained" color="secondary">
-                            Reservations
-                        </Button>
-                    </Link>
+                    <>
+                        <Link to={'/myReservations'}>
+                            <Button variant="contained" color="secondary">
+                                Reservations
+                            </Button>
+                        </Link>
+                        <Link to={'/feedback'}>
+                            <Button variant="contained" color="secondary">
+                                Feedback
+                            </Button>
+                        </Link>
+                    </>
                 )
             }
             {

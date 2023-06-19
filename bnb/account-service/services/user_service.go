@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
 	grpcclient "github.com/rruzicic/globetrotter/bnb/account-service/grpc_client"
@@ -29,7 +30,7 @@ func LoginUser(credentials dto.CredentialsDTO) (string, error) {
 	if !verifyPassword(user.Password, credentials.Password) {
 		return "", errors.New("incorrect password")
 	}
-	token, err := jwt.GenerateToken(user.EMail, user.Role)
+	token, err := jwt.GenerateToken(user.EMail, user.Role, user.Id.Hex())
 	if err != nil {
 		return "", err
 	}
@@ -50,6 +51,26 @@ func GetById(id primitive.ObjectID) (*models.User, error) {
 
 func UpdateUser(user models.User) (*models.User, error) {
 	return repos.UpdateUser(user)
+}
+
+func UpdateNotificationPreferences(id string, notificationList []string) error {
+	hexId, err := primitive.ObjectIDFromHex(id)
+	if(err != nil) {
+		log.Println("User service: Could not convert id to hex!")
+		return err
+	}
+	user, err := GetById(hexId)
+	if(err != nil) {
+		log.Println("User service: Could not find user with id: ", hexId)
+		return err
+	}
+	user.WantedNotifications = notificationList;
+	_, err = UpdateUser(*user)
+	if err != nil {
+		log.Println("User service: Could not update user!")
+		return err
+	}
+	return nil
 }
 
 func DeleteUser(id primitive.ObjectID) error {
@@ -99,4 +120,8 @@ func IncrementCancellationsCounter(userId primitive.ObjectID) (*models.User, err
 
 func verifyPassword(dbPassword string, dtoPassword string) bool {
 	return dbPassword == dtoPassword
+}
+
+func AddAPIKeyToUser(email string, key string) (*models.User, error) {
+	return repos.AddAPIKeyToUser(email, key)
 }

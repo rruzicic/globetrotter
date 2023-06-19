@@ -48,9 +48,22 @@ func UpdateUser(user models.User) bool {
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
-	update := bson.D{{Name: "$set", Value: bson.D{}}}
+	update := bson.M{"$set": bson.M{
+		"first_name":         user.FirstName,
+		"last_name":          user.LastName,
+		"email":              user.EMail,
+		"password":           user.Password,
+		"role":               user.Role,
+		"api_key.key":        user.ApiKey.Key,
+		"api_key.expiration": user.ApiKey.Expiration,
+		"address.country":    user.Address.Country,
+		"address.street":     user.Address.Street,
+		"address.street_num": user.Address.StreetNum,
+		"address.zip":        user.Address.ZIPCode,
+	}}
 
-	if _, err := usersCollection.UpdateByID(context.TODO(), filter, update); err != nil {
+	if _, err := usersCollection.UpdateOne(context.TODO(), filter, update); err != nil {
+		log.Print("Error: ", err.Error())
 		return false
 	}
 	return true
@@ -69,34 +82,4 @@ func FindUserByEmail(mail string) (*models.User, error) {
 	}
 
 	return &user, nil
-}
-
-func FindUserByAPIKey(api_key string) (*models.User, error) {
-	var user models.User
-
-	filter := bson.M{"api_key": bson.M{"value": bson.M{"$eq": api_key}}}
-
-	if err := usersCollection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
-		log.Panic("Could not find user by api key: ", api_key)
-		return nil, err
-	}
-
-	return &user, nil
-}
-
-func AddUserAPIKey(user models.User, api_key models.API_Key) bool {
-	user.APIKey = api_key
-	return UpdateUser(user)
-}
-
-func DeleteUserAPIKey(api_key string) bool {
-	user, err := FindUserByAPIKey(api_key)
-
-	if err != nil {
-		return false
-	}
-
-	user.APIKey = models.API_Key{}
-
-	return UpdateUser(*user)
 }

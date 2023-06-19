@@ -1,6 +1,8 @@
 import jwt_decode from "jwt-decode";
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
+import { toast } from "react-toastify";
 import { axiosInstance } from "./interceptor";
+import CONSTANTS from "./constants";
 
 const AuthContext = createContext({
     token: "",
@@ -10,12 +12,91 @@ const AuthContext = createContext({
     isUser: () => { },
     isHost: () => { },
     userEmail: () => { },
+    userId: () => { },
+    countNewNotifications: () => { },
+    clearNotificationCount: () => { },
+    updateWantedNotifications: () => { },
+    getWantedNotifications: () => { }
 })
 
 export const AuthContextProvider = ({ children }) => {
     const initialToken = localStorage.getItem("bnb_jwt")
     const [token, setToken] = useState(initialToken)
+    const [socket, setSocket] = useState(null)
+    const [newNotifications, setNewNotifications] = useState(0)
+    const [wantedNotification, setWantedNotifications] = useState([])
     const isLoggedIn = !!token
+
+    useEffect(() => {
+        if (token) {
+            axiosInstance.get(`${CONSTANTS.GATEWAY}/user/id/${userIdHandler()}`)
+                .catch((e) => {
+                    console.error(e);
+                })
+                .then((response) => {
+                    if (response.data.wantedNotifications) {
+                        setWantedNotifications(response.data.wantedNotifications)
+                    }
+                })
+        }
+    }, [token])
+
+    useEffect(() => {
+        if (token) {
+            const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket/${userIdHandler()}`);
+            newSocket.onmessage = (event) => {
+                const message = event.data;
+                switch (message) {
+                    case 'RESERVATION':
+                        if (wantedNotification.includes('RESERVATION')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('You have a new reservation request 🔥');
+                        }
+                        break;
+                    case 'CANCELLATION':
+                        if (wantedNotification.includes('CANCELLATION')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Reservation has been cancelled 😢');
+                        }
+                        break;
+                    case 'RATING':
+                        if (wantedNotification.includes('RATING')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Someone rated you 🚀');
+                        }
+                        break;
+                    case 'A_RATING':
+                        if (wantedNotification.includes('A_RATING')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Someone rated your accommodation 🚀');
+                        }
+                        break;
+                    case 'HOST_STATUS':
+                        if (wantedNotification.includes('HOST_STATUS')) {
+                            setNewNotifications(prev => prev + 1)
+                            toast('Host status changed 🔥');
+                        }
+                        break;
+                    case 'RESPONSE':
+                        toast('Host responded to your reservation request 🔥');
+                        setNewNotifications(prev => prev + 1)
+                        break;
+                    default:
+                        console.error('Unknown notification type');
+                }
+            };
+            setSocket(newSocket);
+
+            return () => {
+                newSocket.close();
+                setSocket(null)
+            };
+        }
+    }, [token, wantedNotification]);
+
+    const updateWantedNotificationsHandler = (notificationTypeArray) => {
+        setWantedNotifications(notificationTypeArray)
+    }
 
     const checkTokenExpiration = () => {
         if (token) {
@@ -37,6 +118,11 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     const logoutHandler = () => {
+        if (socket) {
+            socket.close();
+            setSocket(null);
+        }
+
         setToken(null);
         localStorage.removeItem("bnb_jwt");
     };
@@ -56,6 +142,22 @@ export const AuthContextProvider = ({ children }) => {
         return jwt_decode(localStorage.getItem("bnb_jwt")).email
     }
 
+    const userIdHandler = () => {
+        return jwt_decode(localStorage.getItem("bnb_jwt")).id
+    }
+
+    const countNewNotificationsHandler = () => {
+        return newNotifications
+    }
+
+    const ClearNotificationCountHandler = () => {
+        setNewNotifications(0);
+    }
+
+    const getWantedNotificationsHandler = () => {
+        return wantedNotification
+    }
+
     const contextValue = {
         token: token,
         isLoggedIn: isLoggedIn,
@@ -64,6 +166,11 @@ export const AuthContextProvider = ({ children }) => {
         login: loginHandler,
         logout: logoutHandler,
         userEmail: userEmailHandler,
+        userId: userIdHandler,
+        countNewNotifications: countNewNotificationsHandler,
+        clearNotificationCount: ClearNotificationCountHandler,
+        updateWantedNotifications: updateWantedNotificationsHandler,
+        getWantedNotifications: getWantedNotificationsHandler,
     };
 
     return (

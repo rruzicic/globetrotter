@@ -22,8 +22,8 @@ func InitRouter() *gin.Engine {
 	adminProtected := r.Group("")
 	adminProtected.Use(middlewares.AdminAuthMiddleware())
 
-	useAPIKeyMiddleware := r.Group("")
-	useAPIKeyMiddleware.Use(middlewares.APIKeyAuthMiddleware())
+	apiKeyProtected := r.Group("")
+	apiKeyProtected.Use(middlewares.APIKeyMiddleware())
 
 	public.GET("/hello", controllers.Hello)
 
@@ -31,7 +31,6 @@ func InitRouter() *gin.Engine {
 	public.POST("/user/login", controllers.Login)
 	adminProtected.GET("/user/all", controllers.GetAllUsers)
 	userProtected.GET("/user/current", controllers.CurrentUser) // change possibly to get both user and admin auth
-	userProtected.POST("/user/add-api-key-to-user", controllers.AddUserAPIKey)
 
 	public.GET("/flights", controllers.GetAllFlights)
 	public.GET("/flights/search", controllers.SearchFlights)
@@ -40,10 +39,12 @@ func InitRouter() *gin.Engine {
 	adminProtected.DELETE("/flights/delete", controllers.DeleteFlight)
 	userProtected.POST("/flights/buy-ticket", controllers.BuyTicket)
 	userProtected.GET("/flights/get-tickets-by-user", controllers.GetTicketsByUser)
+	apiKeyProtected.POST("/flights/buy-ticket-for-friend", controllers.BuyTicketForFriend)
 
-	useAPIKeyMiddleware.POST("/flights/buy-ticket-for-other-user", controllers.BuyTicketForOtherUser)
-
-	userProtected.GET("/api-key", controllers.CreateAPIKey)
+	userProtected.GET("/api-key", controllers.GenerateAPIKey)
+	userProtected.POST("/api-key", controllers.AddAPIKeyToUser)
+	userProtected.POST("/api-key/expired", controllers.APIKeyExpired)
+	public.POST("/api-key/find-user", controllers.FindUserByAPIKey)
 
 	r.Run(config.Configuration.GetString("PORT"))
 	return nil

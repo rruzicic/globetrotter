@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type API_Key struct {
-	Value    string    `json:"value" bson:"value"`
-	Duration time.Time `json:"duration" bson:"duration"`
+type APIKey struct {
+	Key        string    `bson:"key" json:"key"`
+	Expiration time.Time `bson:"expiration" json:"expiration"`
 }

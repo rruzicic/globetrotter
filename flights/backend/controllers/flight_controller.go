@@ -43,7 +43,7 @@ func DeleteFlight(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 
 	id := ctx.Query("id")
-	if(id == "") {
+	if id == "" {
 		httpGin.BadRequest("Invalid flight id")
 		return
 	}
@@ -143,23 +143,6 @@ func GetTicketsByUser(ctx *gin.Context) {
 	httpGin.OK(tickets)
 }
 
-func BuyTicketForOtherUser(ctx *gin.Context) {
-	httpGin := http.Gin{Context: ctx}
-	buyTicketForOtherUserDTO := dto.BuyTicketForOtherUserDTO{}
-
-	if err := httpGin.Context.ShouldBindJSON(&buyTicketForOtherUserDTO); err != nil {
-		httpGin.BadRequest(nil)
-		return
-	}
-
-	if err := services.BuyTicketForOtherUser(buyTicketForOtherUserDTO); err != nil {
-		httpGin.InternalServerError(nil)
-		return
-	}
-
-	httpGin.OK("Ticket Bought for Other User")
-}
-
 func SearchFlights(ctx *gin.Context) {
 	httpGin := http.Gin{Context: ctx}
 	var searchFlightsDTO dto.SearchFlightsDTO
@@ -167,8 +150,7 @@ func SearchFlights(ctx *gin.Context) {
 
 	searchFlightsDTO.Destination = httpGin.Context.Query("destination")
 	searchFlightsDTO.Departure = httpGin.Context.Query("departure")
-	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber")) 
-
+	searchFlightsDTO.PassengerNumber, _ = strconv.Atoi(httpGin.Context.Query("passengerNumber"))
 
 	departureDateString := httpGin.Context.Query("departureDateTime")
 	if len(departureDateString) != 0 {

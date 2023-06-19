@@ -98,6 +98,8 @@ func ginSetup() {
 	public.GET("/all", controllers.GetAll)
 	public.GET("/id/:id", controllers.GetById)
 	public.GET("/email/:email", controllers.GetByEmail)
+	public.GET("/api-key", controllers.AddAPIKeyToUser)
+	public.PATCH("/notificationPreferences", controllers.UpdateWantedNotifications)
 
 	public.POST("/register/host", controllers.RegisterHost)
 	public.POST("/register/guest", controllers.RegisterGuest)

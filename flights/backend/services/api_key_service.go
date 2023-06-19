@@ -1,32 +1,42 @@
 package services
 
 import (
-	"math/rand"
+	"log"
 	"time"
 
 	"github.com/rruzicic/globetrotter/flights/backend/models"
+	"github.com/rruzicic/globetrotter/flights/backend/repos"
 )
 
-func CreateAPIKey() string {
-	rand.Seed(time.Now().UnixNano())
-
-	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	key := make([]rune, 30)
-	for i := range key {
-		key[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(key)
+func GenerateAPIKey(temporary bool) models.APIKey {
+	return repos.GenerateAPIKey(temporary)
 }
 
-func CheckAPIKeyExpiration(api_key models.API_Key) bool {
-	if (api_key.Duration == time.Time{}) {
-		return false
+func APIKeyExpired(key models.APIKey) bool {
+	return !time.Now().Before(key.Expiration)
+}
+
+func AddAPIKeyToUser(user models.User, key models.APIKey) bool {
+	// Overwrites the last key!
+	user.ApiKey = key
+	return repos.UpdateUser(user)
+}
+
+func FindUserByAPIKey(key models.APIKey) (*models.User, error) {
+	return repos.FindUserByAPIKey(key)
+}
+
+func BuyTicketForFriend(flightId string, key string, numOfTicketsOptional ...int) error {
+	friend, err := FindUserByAPIKey(models.APIKey{Key: key, Expiration: time.Now()})
+	if err != nil {
+		log.Print("Could not find friend with given key. Error: ", err)
+		return err
 	}
 
-	if time.Now().After(api_key.Duration) {
-		return true
+	if APIKeyExpired(friend.ApiKey) {
+		log.Print("Friend's key has expired. Error: ", err)
+		return err
 	}
 
-	return false
+	return BuyTicket(flightId, friend.EMail, numOfTicketsOptional...)
 }

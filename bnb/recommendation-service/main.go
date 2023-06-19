@@ -23,7 +23,8 @@ func ginSetup() {
 	r.NoRoute()
 
 	rec := r.Group("/recommendation")
-	rec.GET("/flights", controllers.SearchFlights)
+	rec.POST("/flights", controllers.SearchFlights)
+	rec.POST("/flights/buy-ticket", controllers.BuyTicketFromBnBDTO)
 	rec.POST("/accommodations", controllers.GetRecommendedAccommodations)
 	rec.GET("/accommodations/init", controllers.InitDBData)
 	rec.GET("/accommodations/drop", controllers.DropDB)

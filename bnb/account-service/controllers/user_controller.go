@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rruzicic/globetrotter/bnb/account-service/dto"
+	"github.com/rruzicic/globetrotter/bnb/account-service/jwt"
 	"github.com/rruzicic/globetrotter/bnb/account-service/services"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -95,6 +98,19 @@ func UpdateUser(ctx *gin.Context) {
 	ctx.JSON(200, updatedUser)
 }
 
+func UpdateWantedNotifications(ctx *gin.Context) {
+	var notificationPreferencesDTO dto.NotificationPreferencesDTO;
+	if err := ctx.BindJSON(&notificationPreferencesDTO); err != nil {
+		ctx.JSON(400, "Could not unmarshal request body, error: "+err.Error())
+		return
+	}
+	err := services.UpdateNotificationPreferences(notificationPreferencesDTO.UserId, notificationPreferencesDTO.NotificationTypeList)
+	if err != nil {
+		log.Println("User controller: could not update notification preferences!")
+	}
+	ctx.JSON(200, "Preferences updated!")
+}
+
 func DeleteUser(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
@@ -107,4 +123,21 @@ func DeleteUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, "User deleted successfully")
+}
+
+func AddAPIKeyToUser(ctx *gin.Context) {
+	key := ctx.Query("key")
+	email, err := jwt.ExtractTokenEmail(ctx)
+	if err != nil {
+		ctx.JSON(500, err.Error())
+		return
+	}
+
+	user, err := services.AddAPIKeyToUser(email, key)
+	if err != nil {
+		ctx.JSON(500, err.Error())
+		return
+	}
+
+	ctx.JSON(200, user)
 }

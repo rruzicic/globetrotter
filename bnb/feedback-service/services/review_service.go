@@ -53,13 +53,9 @@ func CreateHostReview(hostReviewDTO dtos.CreateHostReviewDTO) (*models.HostRevie
 		}
 	}
 
-	//Publish an event to the account service
-	conn := Conn()
-	defer conn.Close()
-
-	err = conn.Publish("account-service", []byte("calculate avg rating"))
+	_, err = grpcclient.HostRated(hostReview)
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error creating rating")
 	}
 
 	if hasUserBeenToHosts {
@@ -157,6 +153,12 @@ func CreateAccommodationReview(accommodationReviewDTO dtos.CreateAccommodationRe
 		}
 	}
 
+	accommodation, err := grpcclient.GetAccommodationById(accommodationId.Hex())
+	if err != nil {
+		return nil, err
+	}
+	grpcclient.AccommodationRated(accommodationReview, accommodation.User, accommodation.Name)
+
 	if hasUserBeenToAccommodation {
 		return repos.CreateAccommodationReview(accommodationReview)
 	} else {
@@ -207,4 +209,30 @@ func Conn() *nats.Conn {
 		log.Panic(err)
 	}
 	return conn
+}
+
+// ======================Helper functions========================
+func GetPastAccommodationsByUser(userId string) ([]string, error) {
+	finishedReservations, err := grpcclient.GetFinishedReservationsByUser(userId)
+	if err != nil {
+		return nil, err
+	}
+	accommodationIds := []string{}
+	for _, reservation := range finishedReservations {
+		accommodationIds = append(accommodationIds, reservation.AccommodationId)
+	}
+	return accommodationIds, nil
+}
+
+func GetPastHostsByUser(userId string) ([]string, error) {
+	accommodationIds, _ := GetPastAccommodationsByUser(userId)
+	pastHostsAnswer, err := grpcclient.GetPastHostsByAccommodations(accommodationIds)
+	if err != nil {
+		return nil, err
+	}
+	pastHostsIds := []string{}
+	for _, p := range pastHostsAnswer {
+		pastHostsIds = append(pastHostsIds, p.HostId)
+	}
+	return pastHostsIds, nil
 }
