@@ -25,6 +25,7 @@ message ReservationEvent{
     float totalPrice = 7;
     string id = 8;
     string hostId = 9;
+    string accommodationName = 10;
 }
 
 message RequestReservationById{

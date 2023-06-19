@@ -63,13 +63,27 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	_, err = conn.Subscribe("account-service-3", func(message *nats.Msg) {
+	_, err = conn.Subscribe("saga-cancel-reservation-1", func(message *nats.Msg) {
 		event := pb.ReservationEvent{}
 		err := proto.Unmarshal(message.Data, &event)
 		if err == nil {
 			//Handle the message
 			log.Println("Recieved an event about a canceled reservation")
-			repos.HandleCanceledReservationEvent(&event)
+			err = repos.HandleCanceledReservationEvent(&event)
+			if err == nil {
+				//Return sucess messsage
+				err = conn.Publish("saga-cancel-reservation-2", []byte("OK"))
+				if err != nil {
+					log.Panic(err)
+				}
+			} else {
+				//Return error message
+				err = conn.Publish("saga-cancel-reservation-2", []byte("ERROR"))
+				if err != nil {
+					log.Panic(err)
+				}
+			}
+
 		}
 	})
 	if err != nil {
