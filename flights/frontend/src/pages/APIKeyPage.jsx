@@ -7,6 +7,7 @@ import { axiosInstance } from 'config/interceptor';
 
 const APIKeyPage = () => {
     const [apiKey, setApiKey] = useState('')
+    const [keyObject, setKeyObject] = useState()
     const [permanent, setPermanent] = useState(false)
 
     const changePermanent = () => {
@@ -14,13 +15,21 @@ const APIKeyPage = () => {
     }
 
     const getAPIKey = () => {
-        axiosInstance.get('/api-key')
-        .catch((err)=>{
-            console.error(err)
-        })
-        .then((response) => {
-            setApiKey(response.data.data)
-        })
+        axiosInstance.get(`/api-key?temporary=${!permanent}`)
+            .catch((err) => {
+                console.error(err)
+            })
+            .then((response) => {
+                setApiKey(response.data.data.key)
+                setKeyObject(response.data.data)
+                axiosInstance.post(`/api-key`, response.data.data)
+                    .catch((e) => {
+                        console.error(e)
+                    })
+                    .then((res) => {
+                        
+                    })
+            })
     }
 
     return (
@@ -33,7 +42,7 @@ const APIKeyPage = () => {
                 <Typography variant="body1" color="initial" marginTop={'0.5rem'}>
                     Should the key be permanent?
                 </Typography>
-                <Checkbox label='Should the key be permanent?' onChange={changePermanent}/>
+                <Checkbox label='Should the key be permanent?' onChange={changePermanent} />
             </Stack>
             <Button variant="contained" color="primary" onClick={getAPIKey}>
                 Get API key

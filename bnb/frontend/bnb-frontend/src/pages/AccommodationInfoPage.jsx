@@ -147,7 +147,6 @@ const AccommodationInfoPage = () => {
     }
     return (
         <>
-
             <Dialog open={open} onClose={handleOpen}>
                 <DialogTitle>Intervals and Price management</DialogTitle>
                 <DialogContent>
@@ -185,7 +184,6 @@ const AccommodationInfoPage = () => {
                         </Grid>
                     </Grid>
                 </DialogContent>
-
             </Dialog>
             <Grid container mb={4} justifyContent={"center"} spacing={1}>
                 {
