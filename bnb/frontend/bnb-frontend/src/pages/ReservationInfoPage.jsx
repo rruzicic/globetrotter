@@ -80,8 +80,80 @@ const ReservationInfoPage = () => {
         }
     }
 
+    const [apiKey, setApiKey] = useState()
+    const [openApi, setOpenApi] = useState(false)
+    const [selectedFlightId, setSelectedFlightId] = useState()
+    const handleApiKeyChange = (e) => {
+        setApiKey(e.target.value)
+    }
+    const handleOpenApi = (id) => {
+        setSelectedFlightId(id)
+        setOpenApi((prev) => !prev)
+    }
+    const handleBook = (id) => {
+        const dto = {
+            apiKey: apiKey,
+            flightId: selectedFlightId,
+            numOfTicketsOptional: [parseInt(reservation.numOfGuests)]
+        }
+        axiosInstance.post(`${CONSTANTS.GATEWAY}/recommendation/flights/buy-ticket`, dto)
+            .catch((err) => {
+                console.error(err)
+            })
+            .then((res) => {
+                console.log(res);
+            })
+
+        handleOpenApi()
+    }
+
     return (
         <>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Tell us more about your journey</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To recommend flights that align with your reservation we need a bit more information.
+                    </DialogContentText>
+                    <TextField
+                        id="startLocation"
+                        label="Where are you starting your journey?"
+                        fullWidth
+                        variant="standard"
+                        onChange={handleStartLocationChange}
+                    />
+                    <TextField
+                        id="endLocation"
+                        label="Where are you ending your journey?"
+                        fullWidth
+                        variant="standard"
+                        onChange={handleEndLocationChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleRecommend}>Recommend</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={openApi} onClose={handleOpenApi}>
+                <DialogTitle>IDENTIFY YOURSELF</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To book this flight we need a reference to your globetrotter account
+                    </DialogContentText>
+                    <TextField
+                        id="startLocation"
+                        label="Enter you globetrotter API key (found on your profile)"
+                        fullWidth
+                        variant="standard"
+                        onChange={handleApiKeyChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleOpenApi}>Cancel</Button>
+                    <Button onClick={handleBook}>Book</Button>
+                </DialogActions>
+            </Dialog>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Tell us more about your journey</DialogTitle>
                 <DialogContent>
@@ -217,7 +289,7 @@ const ReservationInfoPage = () => {
                                             <TableCell>{flight.duration}</TableCell>
                                             <TableCell>{reservation.numOfGuests}</TableCell>
                                             <TableCell>
-                                                <Button variant="contained" color="primary">
+                                                <Button variant="contained" color="primary" onClick={() => handleOpenApi(flight.id)}>
                                                     Book!
                                                 </Button>
                                             </TableCell>
