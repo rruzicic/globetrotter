@@ -200,7 +200,7 @@ func UpdateAccommodationReview(ctx *gin.Context) {
 }
 
 func GetPastAccommodationsByUser(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId := ctx.Param("user_id")
 	if userId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -216,7 +216,7 @@ func GetPastAccommodationsByUser(ctx *gin.Context) {
 }
 
 func GetPastHostsByUser(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId := ctx.Param("user_id")
 	if userId == "" {
 		ctx.JSON(400, "Bad Request")
 		return
@@ -229,4 +229,36 @@ func GetPastHostsByUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, hostsIds)
+}
+
+func GetAvgRatingForHost(ctx *gin.Context) {
+	hostId := ctx.Param("host_id")
+	if hostId == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	avgRating, err := services.GetAvgRatingForHost(hostId)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, avgRating)
+}
+
+func GetAvgRatingForAccommodation(ctx *gin.Context) {
+	accommodationId := ctx.Param("accommodation_id")
+	if accommodationId == "" {
+		ctx.JSON(400, "Bad Request")
+		return
+	}
+
+	avgRating, err := services.GetAvgRatingForAccommodation(accommodationId)
+	if err != nil {
+		ctx.JSON(500, "Server Error")
+		return
+	}
+
+	ctx.JSON(200, avgRating)
 }

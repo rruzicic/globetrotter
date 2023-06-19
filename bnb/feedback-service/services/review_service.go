@@ -205,3 +205,35 @@ func GetPastHostsByUser(userId string) ([]string, error) {
 	}
 	return pastHostsIds, nil
 }
+
+func GetAvgRatingForHost(hostId string) (float32, error) {
+	hostReviews, err := repos.GetHostReviewsByHostId(hostId)
+	if err != nil {
+		log.Println("Could not get host reviews for host id ", hostId, ", error: ", err.Error())
+		return 0, err
+	}
+
+	var sumRating float32 = 0
+	for _, review := range hostReviews {
+		sumRating += float32(review.Rating)
+	}
+	var avgRating float32 = sumRating / float32(len(hostReviews))
+
+	return avgRating, nil
+}
+
+func GetAvgRatingForAccommodation(accommodationId string) (float32, error) {
+	accommodationReviews, err := repos.GetAccommodationReviewsByAccommodationId(accommodationId)
+	if err != nil {
+		log.Println("Could not get accommodation reviews for accommodation id ", accommodationId, ", error: ", err.Error())
+		return 0, err
+	}
+
+	var sumRating float32 = 0
+	for _, review := range accommodationReviews {
+		sumRating += float32(review.Rating)
+	}
+	var avgRating float32 = sumRating / float32(len(accommodationReviews))
+
+	return avgRating, nil
+}
