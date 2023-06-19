@@ -9,6 +9,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/accommodation-service/repos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -196,7 +197,7 @@ func InitServer() {
 		log.Println("Accommodation service failed to listen. Error: ", err.Error())
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()), grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 	pb.RegisterAccommodationServiceServer(server, &AccommodationServiceServer{})
 
 	log.Println("Accommodation gRPC server listening..")

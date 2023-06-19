@@ -6,12 +6,16 @@ import (
 
 	"github.com/rruzicic/globetrotter/bnb/account-service/models"
 	"github.com/rruzicic/globetrotter/bnb/account-service/pb"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func connectToRecommendationService() (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial("recommendation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("recommendation-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+	)
 
 	if err != nil {
 		log.Panicf("Could not connect to recommendation service")

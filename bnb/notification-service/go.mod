@@ -3,11 +3,19 @@ module github.com/rruzicic/globetrotter/bnb/notification-service
 go 1.20
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
-	github.com/rruzicic/globetrotter/bnb/accommodation-service v0.0.0-20230514211533-2a1dc09f36c0
 	go.mongodb.org/mongo-driver v1.11.7
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
+)
+
+require (
+	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
+	go.opentelemetry.io/otel v1.16.0 // indirect
+	go.opentelemetry.io/otel/metric v1.16.0 // indirect
+	go.opentelemetry.io/otel/trace v1.16.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (

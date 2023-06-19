@@ -8,6 +8,7 @@ import (
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/models"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/pb"
 	"github.com/rruzicic/globetrotter/bnb/recommendation-service/repos"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -163,7 +164,7 @@ func InitServer() {
 		log.Println("Recommendation service failed to listen. Error: ", err.Error())
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()), grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 	pb.RegisterRecommendationServiceDBEventsServer(server, &RecommendationServiceDBEventsServer{})
 
 	log.Println("Recommendation server gRPC server listening..")

@@ -41,6 +41,10 @@ message RequestUserId{
 
 message EmptyResMsg {}
 
+message PingMessage {
+    string msg = 1;
+}
+
 service ReservationService {
     rpc GetAllReservations(EmptyResMsg) returns (stream Reservation) {}
     rpc GetReservationById(RequestReservationById) returns (Reservation) {}
@@ -48,5 +52,6 @@ service ReservationService {
     rpc GetActiveReservationsByUser(RequestUserId) returns (stream Reservation) {}
     rpc GetFutureActiveReservationsByHost(RequestUserId) returns (stream Reservation) {}
     rpc GetFinishedReservationsByUser(RequestUserId) returns (stream Reservation) {}
+    rpc Ping(EmptyResMsg) returns (PingMessage) {}
 }
 
