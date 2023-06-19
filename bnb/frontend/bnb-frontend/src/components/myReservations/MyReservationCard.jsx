@@ -15,7 +15,6 @@ const MyReservationCard = ({ objectId, start, end, guestNum, totalPrice, image, 
                 return
             })
             .then((response) => {
-                console.log(response.data);
                 setObject(response.data)
             })
     }, [])

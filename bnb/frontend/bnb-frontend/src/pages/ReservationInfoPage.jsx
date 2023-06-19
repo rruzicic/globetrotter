@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { axiosInstance } from "../config/interceptor";
 import CONSTANTS from "../config/constants";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, TextField, useTheme, Typography } from "@mui/material";
+import { toast } from "react-toastify";
 
 const ReservationInfoPage = () => {
     const theme = useTheme()
@@ -36,7 +37,6 @@ const ReservationInfoPage = () => {
                 console.error(err)
             })
             .then((res) => {
-                console.log(res.data);
                 setReservation(res.data)
                 axiosInstance.get(`${CONSTANTS.GATEWAY}/accommodation/${res.data.accommodationId}`)
                     .catch((err) => {
@@ -44,7 +44,6 @@ const ReservationInfoPage = () => {
                     })
                     .then((res) => {
                         setAccommodation(res.data)
-                        console.log(res.data);
                     })
             })
     }, [])
@@ -64,10 +63,8 @@ const ReservationInfoPage = () => {
                 console.error(err)
             })
             .then((res) => {
-                console.log(res.data);
                 setFlights(res.data)
             })
-        console.log(dto);
         handleClose()
     }
 
@@ -99,9 +96,10 @@ const ReservationInfoPage = () => {
         axiosInstance.post(`${CONSTANTS.GATEWAY}/recommendation/flights/buy-ticket`, dto)
             .catch((err) => {
                 console.error(err)
+                return
             })
             .then((res) => {
-                console.log(res);
+                toast("Bought ticket!")
             })
 
         handleOpenApi()

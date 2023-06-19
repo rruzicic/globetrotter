@@ -74,7 +74,6 @@ const FlightsPage = () => {
                 console.error(e)
             })
             .then((res) => {
-                console.log(res.data.data.apiKey.key)
                 setMyAPIKey(res.data.data.apiKey.key)
             })
     }, [])
@@ -176,7 +175,6 @@ const FlightsPage = () => {
                 toast('Not enough tickets left 😢')
                 return
             }).then((res) => {
-                console.log(res);
                 toast('Successfully bought tickets! 😊')
                 resetSearch()
                 getAll()

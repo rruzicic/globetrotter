@@ -27,7 +27,7 @@ const APIKeyPage = () => {
                         console.error(e)
                     })
                     .then((res) => {
-                        console.log(res);
+                        
                     })
             })
     }
