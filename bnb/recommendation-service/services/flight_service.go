@@ -130,7 +130,10 @@ func BuyTicketFromBnBDTO(buyFromBnBDTO dtos.BuyTicketFromBnBDTO) error {
 		log.Print("Could not marshal buy from bnb dto. Error: ", err.Error())
 	}
 
-	res, err := http.Post(urlStr, "application/json", bytes.NewBuffer(reqBody))
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", urlStr, bytes.NewBuffer(reqBody))
+	req.Header.Set("x-api-key", buyFromBnBDTO.ApiKey)
+	res, err := client.Do(req)
 	if err != nil {
 		log.Print("Could not send request. Error: ", err.Error())
 		return err
