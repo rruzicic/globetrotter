@@ -4,7 +4,7 @@ import { axiosInstance } from "../../config/interceptor";
 import CONSTANTS from "../../config/constants";
 import { useEffect, useState } from "react";
 
-const MyReservationCard = ({ objectId, start, end, guestNum, totalPrice, image, handleCancel, reservationId, status }) => {
+const MyReservationCard = ({ objectId, start, end, guestNum, totalPrice, image, reservationId, status }) => {
 
     const [object, setObject] = useState(null)
 
@@ -48,11 +48,6 @@ const MyReservationCard = ({ objectId, start, end, guestNum, totalPrice, image, 
                 <Typography variant="h6" >
                     Approved: {status.toString()}
                 </Typography>
-            </Grid>
-            <Grid item xs={1} sx={{ paddingTop: '0', paddingLeft: '0', padding: '0.5rem', display: 'grid', placeItems: 'center' }}>
-                <Button variant="contained" onClick={() => handleCancel(reservationId)}>
-                    Cancel
-                </Button>
             </Grid>
         </Grid>
     );

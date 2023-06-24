@@ -126,6 +126,7 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
+                toast("Price changed successfully!")
                 handleOpen()
             })
     }
@@ -143,6 +144,7 @@ const AccommodationInfoPage = () => {
                 return
             })
             .then((response) => {
+                toast("Availability updated!")
                 handleOpen()
             })
     }

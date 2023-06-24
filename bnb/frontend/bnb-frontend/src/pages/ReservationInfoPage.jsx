@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { axiosInstance } from "../config/interceptor";
 import CONSTANTS from "../config/constants";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, TextField, useTheme, Typography } from "@mui/material";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 const ReservationInfoPage = () => {
     const theme = useTheme()
+    const navigate = useNavigate()
     const { id } = useParams();
     const [reservation, setReservation] = useState()
     const [accommodation, setAccommodation] = useState()
@@ -106,6 +107,18 @@ const ReservationInfoPage = () => {
             })
 
         handleOpenApi()
+    }
+
+    const handleCancel = () => {
+        axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${reservation.id}`)
+            .catch((error) => {
+                console.error(error)
+                return
+            })
+            .then((response) => {
+                toast('Successfully canceled!')
+                navigate('/myReservations')
+            })
     }
 
     return (
@@ -219,9 +232,14 @@ const ReservationInfoPage = () => {
                                     </Typography>
                                 </Stack>
                             </Stack>
-                            <Button variant="contained" color="primary" onClick={handleClickOpen} sx={{ marginTop: '2rem' }}>
-                                Recommend flights that match this reservation
-                            </Button>
+                            <Stack direction={"row"} justifyContent={"center"} >
+                                <Button variant="contained" color="primary" onClick={handleCancel} sx={{ marginTop: '2rem' }}>
+                                    Cancel reservation
+                                </Button>
+                                <Button variant="contained" color="primary" onClick={handleClickOpen} sx={{ marginTop: '2rem' }}>
+                                    Recommend flights that match this reservation
+                                </Button>
+                            </Stack>
                         </>
                     )
                 }

@@ -27,16 +27,7 @@ const MyReservationsPage = () => {
                     })
             })
     }, [])
-    const handleCancel = (id) => {
-        axiosInstance.delete(`${CONSTANTS.GATEWAY}/reservation/${id}`)
-            .catch((error) => {
-                console.error(error)
-                return
-            })
-            .then((response) => {
-                setData((prev) => prev.filter((a) => a.id !== id))
-            })
-    }
+
 
     const navigate = useNavigate()
     const handleNavigate = (id) => {
@@ -64,7 +55,6 @@ const MyReservationsPage = () => {
                         <Box key={reservation.id} onClick={() => handleNavigate(reservation.id)} sx={styles.box}>
                             <MyReservationCard
                                 reservationId={reservation.id}
-                                handleCancel={handleCancel}
                                 objectId={reservation.accommodationId}
                                 start={reservation.dateInterval.start}
                                 end={reservation.dateInterval.end}

@@ -5,6 +5,7 @@ import { axiosInstance } from '../../config/interceptor'
 import CONSTANTS from '../../config/constants'
 import AuthContext from "../../config/authContext";
 import BenefitsSelectionGrid from "../common/BenefitSelectionGrid";
+import { toast } from "react-toastify";
 
 const ObjectDataGrid = () => {
     const [page, setPage] = useState(0);
@@ -125,6 +126,7 @@ const ObjectDataGrid = () => {
                         return
                     })
                     .then((response) => {
+                        toast("Reservation request sent!")
                         axiosInstance.post(`${CONSTANTS.GATEWAY}/reservation/accommodation/${id}/reservation/${response.data.id}`)
                             .catch((e) => {
                                 console.error(e)

@@ -50,8 +50,10 @@ export const AuthContextProvider = ({ children }) => {
     useEffect(() => {
         if (token) {
             const newSocket = new WebSocket(`ws://localhost:4000/notification/websocket/${userIdHandler()}`);
+            console.log(newSocket);
             newSocket.onmessage = (event) => {
                 const message = event.data;
+                console.log(message);
                 switch (message) {
                     case 'RESERVATION':
                         if (wantedNotification.includes('RESERVATION')) {
